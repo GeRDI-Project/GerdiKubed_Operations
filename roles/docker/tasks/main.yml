@@ -39,16 +39,6 @@
   apt:
     update_cache: yes
 
-    #- name: Create docker conf folder
-    #  file:
-    #      path: "/etc/docker"
-    #      state: directory
-    #
-    #- name: configure overlay as standard storage driver
-    #  template:
-    #      src: daemon.json.j2
-    #      dest: /etc/docker/daemon.json
-    #
 # TODO after testing this should not be latest but present with docher-ce=<tested_version>
 - name: install docker
   apt: 
