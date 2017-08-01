@@ -1,0 +1,11 @@
+---
+# Common tasks on every host
+- name: Install requirements for adding new deb-repo packages & interactive ansible
+  apt:
+      pkg: "{{ item }}"
+      state: latest
+  with_items:
+      - apt-transport-https
+      - ca-certificates
+      - python3-dbus
+
