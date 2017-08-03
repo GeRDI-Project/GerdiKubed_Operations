@@ -7,7 +7,10 @@
   nmcli:
     conn_name: docker0
     ifname: docker0
+    type: bridge
     state: absent
+  # Ignore error when trying to delete interface without connection
+  ignore_errors: True
 
 #- name: purge any older docker server
 #  apt:
