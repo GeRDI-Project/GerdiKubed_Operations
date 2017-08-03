@@ -3,5 +3,6 @@
   remote_user: gerdi
   become: true
   roles:
-    - docker
+    - common
+    #- docker
     - docker-kubernetes
