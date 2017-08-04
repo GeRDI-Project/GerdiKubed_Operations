@@ -6,6 +6,7 @@
       state: latest
   with_items:
       - apt-transport-https
+      - bridge-utils
       - ca-certificates
       - libnm-glib-dev
       - python-dbus
