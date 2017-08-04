@@ -12,3 +12,17 @@
   # Ignore error when trying to delete interface without connection
   ignore_errors: True
 
+# FIXME: this step does not work
+- name: Creating network bridge cbr0 for per-node CIDR ranges 
+  nmcli:
+    conn_name: cbr0
+    type: bridge
+    ifname: cbr0
+    mtu: 1460
+    # TODO: update ip to match your environment
+    # The bridge itself needs an address from $NODE_X_POD_CIDR - by
+    # convention the first IP. Call this NODE_X_BRIDGE_ADDR. For example, if
+    # NODE_X_POD_CIDR is 10.0.0.0/16, then NODE_X_BRIDGE_ADDR is 10.0.0.1/16.
+    # NOTE: this retains the /16 suffix because of how this is used later.
+    ip4: 10.0.0.1 # TODO: update to match installation
+    state: present
