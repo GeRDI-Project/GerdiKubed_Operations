@@ -26,3 +26,6 @@ ansible-playbook -i production kubernetes-nodes.yml -K
 * python > 2.6
 * ansible > 2.3.1 (on the control machine, only macOS and linux distros are supported!)
 
+# CI
+
+The repository is now checked by a CI-Task in Bamboo (push to bitbucket)
