@@ -3,7 +3,12 @@ MAINTAINER Tobias Adolph
 
 RUN apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -yq curl gnupg
+    && apt-get install -yq \
+      apt-utils \
+      curl \
+      gnupg \
+      python \
+      python-yaml
 
 RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
 
