@@ -8,7 +8,7 @@ do
     fi
 done
 
-for dir in roles group_vars
+for dir in roles
 do
     if [ ! -d "$dir" ]
     then
