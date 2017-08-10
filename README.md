@@ -3,7 +3,7 @@
 This repo has all necessary roles to setup a kubernetes cluster (req. see below).
 
 There are two playbooks in the root of the git-repo:
-* kubernetes-master.yml 
+* kubernetes-master.yml
 * kubernetes-nodes.yml
 
 # Usage

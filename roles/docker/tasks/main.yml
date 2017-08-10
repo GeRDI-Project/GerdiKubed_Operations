@@ -20,7 +20,7 @@
     state=present
   with_items:
     - apt-transport-https
-    - ca-certificates 
+    - ca-certificates
     - curl
     - software-properties-common
 
@@ -41,7 +41,7 @@
 
 # TODO after testing this should not be latest but present with docher-ce=<tested_version>
 - name: install docker
-  apt: 
+  apt:
       name: docker-ce
       state: latest
       install_recommends: yes
