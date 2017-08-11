@@ -8,3 +8,4 @@
       - apt-transport-https
       - ca-certificates
       - python3-dbus
+      - python-openssl
