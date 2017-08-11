@@ -5,7 +5,6 @@
     path: "/etc/ssl/gerdi/ca.pem"
   register: ca_key_exists
 
-
 # create canonical place for certs and keys on control machine
 - name: Create directory fpr certs and keys on control machine
   local_action:
@@ -15,7 +14,7 @@
     owner: root
     group: root
     mode: 0500
-  when: ca_key_exists == False
+  when: ca_key_exists.stat.exists == False
 
 # create CA key and cert if it does not exist
 - name: Create CA key and cert
@@ -23,4 +22,16 @@
     module: openssl_privatekey
     path: /etc/ssl/gerdi/ca.pem
     size: 2048
-  when: ca_key_exists == False
+  when: ca_key_exists.stat.exists == False
+
+- name: Check for existing certificate file
+  local_action:
+    module: stat
+    path: "/etc/ssl/gerdi/ca.crt"
+  register: ca_crt_exists
+
+- name: Create CA certificate
+  become: true
+  local_action:
+    module: command openssl req -x509 -new -nodes -key /etc/ssl/gerdi/ca.pem -subj "/CN={{ MASTER_IP}}" -days 10000 -out /etc/ssl/gerdi/ca.crt
+  when: ca_crt_exists.stat.exists == False
