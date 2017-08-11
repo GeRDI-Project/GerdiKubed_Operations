@@ -3,7 +3,7 @@
 This repo has all necessary roles to setup a kubernetes cluster (req. see below).
 
 There are two playbooks in the root of the git-repo:
-* kubernetes-master.yml 
+* kubernetes-master.yml
 * kubernetes-nodes.yml
 
 # Usage
@@ -26,3 +26,6 @@ ansible-playbook -i production kubernetes-nodes.yml -K
 * python > 2.6
 * ansible > 2.3.1 (on the control machine, only macOS and linux distros are supported!)
 
+# CI
+
+The repository is now checked by a CI-Task in Bamboo (push to bitbucket)
