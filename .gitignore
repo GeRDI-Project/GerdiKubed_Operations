@@ -1,3 +1,4 @@
+*.swp
 *.pem
 *.retry
 group_vars/all
