@@ -1,0 +1,26 @@
+---
+- name: Check whether cert infrastructure needs setup
+  local_action:
+    module: stat
+    path: "/etc/ssl/gerdi/ca.pem"
+  register: ca_key_exists
+
+
+# create canonical place for certs and keys on control machine
+- name: Create directory fpr certs and keys on control machine
+  local_action:
+    module: file
+    path: "/etc/ssl/gerdi"
+    state: directory
+    owner: root
+    group: root
+    mode: 0500
+  when: ca_key_exists == False
+
+# create CA key and cert if it does not exist
+- name: Create CA key and cert
+  local_action:
+    module: openssl_privatekey
+    path: /etc/ssl/gerdi/ca.pem
+    size: 2048
+  when: ca_key_exists == False
