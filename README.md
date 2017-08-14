@@ -18,13 +18,14 @@ ansible-playbook -i production kubernetes-nodes.yml -K
 
 # Requirements
 
-* debian 9.1 or higher
-* running sshd
-* sudo
-* user "gerdi" with sudo rights
-* pub key in .ssh/authorized_keys in gerdi's home
+* debian 9.1 or higher on the remote machines
+* running sshd on the remote machines
+* sudo on the remote machines
+* user "gerdi" with sudo rights on the remote machines
+* pub key in .ssh/authorized_keys in gerdi's home on the remote machines
 * python > 2.6
 * ansible > 2.3.1 (on the control machine, only macOS and linux distros are supported!)
+* python-pyOpenSSL on the control machine (for cert-signing).
 
 # CI
 
