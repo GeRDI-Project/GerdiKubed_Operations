@@ -1,0 +1,14 @@
+# These task follow the description made here:
+# https://github.com/openvswitch/ovn-kubernetes
+# commit 601c5b3 (2017/09/21)
+
+- name: Common tasks on master and nodes
+  import_tasks: ovn_common.yml
+
+- name: Initialize k8s master
+  import_tasks: initialize_master.yml
+  when: inventory_hostname in groups['kubernetes-masters']
+
+- name: Initialize k8s node
+  import_tasks: initialize_node.yml
+  when: inventory_hostname in groups['kubernetes-nodes']

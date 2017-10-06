@@ -1,0 +1,2 @@
+- name: Set the k8s API server address in the Open vSwitch database
+  shell: ovs-vsctl set Open_vSwitch . external_ids:k8s-api-server="{{MASTER_IP}}:8080"
