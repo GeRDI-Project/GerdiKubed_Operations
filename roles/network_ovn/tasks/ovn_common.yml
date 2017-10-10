@@ -1,3 +1,15 @@
+- name: install common ovs and ovn packages
+  package:
+    name={{ item }}
+    state=present
+  with_items:
+    - git
+    - openvswitch-switch
+    - openvswitch-common
+    - ovn-common
+    - python-pip
+    - virtualenv
+
 - name: Set db entries on both masters and nodes
   shell: ovs-vsctl set Open_vSwitch . external_ids:{{item}}
   with_items:
@@ -5,3 +17,23 @@
     - ovn-nb="tcp:{{MASTER_IP}}:6641"
     - ovn-encap-ip={{ansible_default_ipv4.address}}
     - ovn-encap-type="{{ENCAP_TYPE}}"
+
+# TODO: version should sometime be specified to guarantee that it works
+- name: Pull k8s ovn integration scripts
+  git:
+    repo: 'https://github.com/openvswitch/ovn-kubernetes.git'
+    dest: "{{ OVN_K8S_DIR }}"
+
+- name: Update pip
+  pip:
+    name: pip
+    state: latest
+
+- name: Install python requirements for k8s ovn integration scripts
+  pip:
+    requirements: "{{ OVN_K8S_DIR }}/requirements.txt"
+
+- name: Install k8s ovn integration scripts
+  shell: "pip install ."
+  args:
+    chdir: "{{ OVN_K8S_DIR }}"
