@@ -6,7 +6,7 @@ Howto build (based on http://willhaley.com/blog/create-a-custom-debian-stretch-l
 
 Tested on a ubuntu 16.04
 
-```bash 
+```bash
 
 BUILDDIR=~/live_boot
 DEBIAN=stretch
@@ -60,10 +60,10 @@ Name=en*
 [Network]
 DHCP=yes" > /etc/systemd/network/wired.network
 
-systemctl enable systemd-networkd.service 
+systemctl enable systemd-networkd.service
 rm /etc/resolv.conf
 ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
-systemctl enable systemd-resolved.service 
+systemctl enable systemd-resolved.service
 
 exit
 
@@ -86,8 +86,8 @@ menu title Debian Live
 
 timeout 1
 
-label Debian Live 
-menu label ^Debian Live 
+label Debian Live
+menu label ^Debian Live
 menu default
 kernel /live/vmlinuz1
 append initrd=/live/initrd1 boot=live" > $BUILDDIR/image/isolinux/isolinux.cfg
@@ -101,7 +101,7 @@ append initrd=/live/initrd1 boot=live" > $BUILDDIR/image/isolinux/isolinux.cfg
     cp /usr/lib/syslinux/modules/bios/libmenu.c32 isolinux/ && \
     cp /usr/lib/syslinux/modules/bios/libcom32.c32 isolinux/ && \
     cp /usr/lib/syslinux/modules/bios/libgpl.c32 isolinux/ && \
-    cp /usr/share/misc/pci.ids isolinux/ 
+    cp /usr/share/misc/pci.ids isolinux/
 )
 
 genisoimage \
