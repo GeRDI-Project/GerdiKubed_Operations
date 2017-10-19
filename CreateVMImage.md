@@ -23,7 +23,7 @@ mkdir $BUILDDIR
 # enable nbd kernel module
 sudo modprobe nbd
 
-sudo qemu-img create -f qcow2 $BUILDDIR/$IMAGE $SIZE 
+sudo qemu-img create -f qcow2 $BUILDDIR/$IMAGE $SIZE
 
 sudo qemu-nbd -c /dev/nbd0 $BUILDDIR/$IMAGE
 
