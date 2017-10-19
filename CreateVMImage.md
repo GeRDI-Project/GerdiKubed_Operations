@@ -63,6 +63,9 @@ apt-get install \
     python
 
 # when asked by group for a device enter /dev/nbd0 (NOT /dev/nbd0p2)
+apt-cache clean
+
+grub-install /dev/nbd0
 update-grub
 
 passwd root
