@@ -113,10 +113,6 @@ exit
 
 sudo sed -i 's/nbd0p2/sda2/g' $MNTDIR/boot/grub/grub.cfg
 
-# necessary? Try without!
-sudo grub-install /dev/nbd0 --root-directory=$MNTDIR --modules="biosdisk part_msdos"
-
-
 sudo umount $MNTDIR
 sudo qemu-nbd -d /dev/nbd0
 
