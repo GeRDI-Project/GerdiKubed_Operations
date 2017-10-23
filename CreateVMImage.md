@@ -63,7 +63,7 @@ apt-get install \
     python
 
 # when asked by group for a device enter /dev/nbd0 (NOT /dev/nbd0p2)
-apt-cache clean
+apt-get clean
 
 grub-install /dev/nbd0
 update-grub
@@ -76,8 +76,10 @@ cat > /etc/fstab <<EOF
 EOF
 
 mkdir /root/.ssh
+#TODO: Not nice: Hard coding ssh-keys, but works sofar ;)
 cat > /root/.ssh/authorized_keys <<EOF
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9olNhMkCbQPJ2vcjIFwNSB8IW/BwuA6fm8Hu1GsPFPsvMYGxibOZ0lXQNu5tyUfv7dQaq3hS4p2jCWp1ldFB64+GjiuFNuJSijER/p28VUCxF7FIslNLUTXWdNIHttZaZ1ugrKZwdkUbdOmsDQ8OBOuRlSAjMmuGQxstrnwfKYddnvbguUU4C3smAC/AEVst9yPLu2QwrRAe2R8Dg0TvMckkzQVompft/jSoIwC2GCkx4ZkDrPOZiXqy241Tt1LaEjuj1Kz/iKw065XGwChfIgEdKGa8sS1t3cv/wwLaGBz26ujJ0OrcRvwlGOkPTLZ9vz4BPyet3U7dYHLZNwkdB tobi@Joschka
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDFFtpcNHDgsysmAHibEnJzRD2NvL0RAdgwZ7x3fcykLuEoF7D6G+YgYETzBZFg61ZtwzPQJWDUq4f7+lklZmZzUtFqbLMBwkDN9CAIWbK3BVtO4umzXmN8oyTNmRKIV0lyDM6WMe4w/6eKG/W6zXXujCMG4UE/SWTOdUOWD7eaTEUt1X46XvWfZOyWXodizxFZwE0MD35Z45zJQ9wC5oU1fvgrB9SCGPyI0w9PgdTLrqAOrVJNNSzCfszzXCG9TSNw72zGh3dsHnWnJ5Ru2dJEK6qUi7eW/k2qfEKbHOH7eY7tXahLuYzvaZ7ixdCtlyApaZkkKFkLZ80o9x8wRmhj di72jiv@di72jiv-Latitude-E7270
 EOF
 
 cat > /etc/systemd/network/wired.network <<EOF
@@ -96,6 +98,15 @@ rm /etc/resolv.conf
 ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
 systemctl enable systemd-resolved.service
 
+# Shrink image (zero bytes are non-dirty, host will not see them as "claimed" by guest)
+# see https://serverfault.com/questions/329287/free-up-not-used-space-on-a-qcow2-image-file-on-kvm-qemu
+# TODO: There might be a more elegant solution, since this consumes a lot of time...
+# Saves ~ 300MB of image size. If this is the way to go, we should tune it further
+# (delete unnecessary files befor dd'ing)
+dd if=/dev/zero of=/tmp/somefile
+rm /tmp/somefile
+
+
 umount /proc/ /sys/ /dev/
 
 exit
@@ -108,6 +119,11 @@ sudo grub-install /dev/nbd0 --root-directory=$MNTDIR --modules="biosdisk part_ms
 
 sudo umount $MNTDIR
 sudo qemu-nbd -d /dev/nbd0
+
+# use resized image
+qemu-img convert -O qcow2 $BUILDDIR/${IMAGE} $BUILDDIR/${IMAGE}_bkp
+rm $BUILDDIR/${IMAGE}
+mv $BUILDDIR/${IMAGE}_bkp $BUILDDIR/${IMAGE}
 
 # Test locally
 sudo qemu-system-x86_64 -hda $BUILDDIR/$IMAGE -m 1024 -device e1000,netdev=user.0 -netdev user,id=user.0,hostfwd=tcp::5555-:22
