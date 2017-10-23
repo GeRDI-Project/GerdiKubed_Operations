@@ -50,7 +50,7 @@ sudo chroot $MNTDIR /bin/bash
 mount -t proc none /proc
 mount -t sysfs none /sys
 
-# openssh-server + python to be ansible ready (python has to be > 3 as of the time writing)
+# openssh-server + python + iprout2 to be ansible ready (python has to be > 3 as of the time writing)
 # TODO: replace grub2 with lightweight isolinux
 # TODO: no init script in /sbin unless systemd-sysv is installed?
 apt-get install \
@@ -60,7 +60,8 @@ apt-get install \
     systemd-sysv \
     grub-pc \
     openssh-server \
-    python
+    python \
+    iproute2
 
 # when asked by group for a device enter /dev/nbd0 (NOT /dev/nbd0p2)
 apt-get clean
