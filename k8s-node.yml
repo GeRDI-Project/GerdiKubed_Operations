@@ -5,4 +5,5 @@
   roles:
     - common
     - docker
+    - k8s-binaries
     - network_ovn
