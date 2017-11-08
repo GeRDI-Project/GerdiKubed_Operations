@@ -1,0 +1,15 @@
+- name: install ovs and ovn master packages
+  package:
+    name={{ item }}
+    state=present
+  with_items:
+    - ovn-central
+
+- name: Set the k8s api server address in the Open vSwitch database
+  shell: ovs-vsctl set Open_vSwitch . external_ids:k8s-api-server="127.0.0.1:8080"
+
+- name: Actually initialize master
+  shell: "ovn-k8s-overlay master-init --cluster-ip-subnet={{CLUSTER_IP_SUBNET}} --master-switch-subnet={{ MASTER_SWITCH_SUBNET}} --node-name={{ ansible_hostname }}"
+
+- name: Run Watcher on master
+  shell: "ovn-k8s-watcher --overlay --pidfile --log-file -vfile:info -vconsole:emer --detach"

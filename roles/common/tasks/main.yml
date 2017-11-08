@@ -9,3 +9,28 @@
       - ca-certificates
       - python3-dbus
       - python-openssl
+      - iproute2
+
+- name: Create k8s directories
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: "{{ item.mode }}"
+  with_items:
+    - { path: "{{ K8S_BASE_DIR    }}", mode: '0755' }
+    - { path: "{{ CERT_FILES_DIR  }}", mode: '0700' }
+
+  #- name: get variables
+  #debug: var=hostvars[inventory_hostname]
+
+- name: Install certs
+  local_action: command scp "{{ CERT_INFRASTRUCTURE_DIR }}/ca.crt" "{{ ansible_user_id }}@{{ inventory_hostname }}:{{ CERT_FILES_DIR }}/ca.crt"
+- name: set hostname for master
+  hostname:
+    name: "{{ CLUSTER_NAME}}-master-{{hostname_suffix}}"
+  when: inventory_hostname in groups['kubernetes-masters']
+
+- name: set hostname for node
+  hostname:
+    name: "{{ CLUSTER_NAME}}-node-{{hostname_suffix}}"
+  when: inventory_hostname in groups['kubernetes-nodes']
