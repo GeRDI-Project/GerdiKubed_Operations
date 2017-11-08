@@ -11,9 +11,16 @@
 - name: Secure connection to k8s API server
   shell: ovs-vsctl set Open_vSwitch . external_ids:{{item}}
   with_items:
-    - k8s-api-server="https://{{K8S_API_SERVER_IP}}"
+    - k8s-api-server="https://{{MASTER_IP}}"
     - k8s-ca-certificate="{{CA_CRT}}"
     - k8s-api-token="{{API_TOKEN}}"
 
 - name: Actually inizitalize node
   shell: ovn-k8s-overlay minion-init --cluster-ip-subnet="{{ CLUSTER_IP_SUBNET }}" --minion-switch-subnet="{{MINION_SWITCH_SUBNET}}" --node-name="{{ ansible_hostname }}"
+
+- name: Determine Gateway for North-South Interface
+  shell: ip route show | grep default | grep ens6 | awk '{ print $3 }'
+  register: nb_gateway
+
+- name: Setup Gateway
+  shell: ovn-k8s-overlay gateway-init --cluster-ip-subnet="{{ CLUSTER_IP_SUBNET }}" --physical-interface ens6 --physical-ip "{{ ansible_ens6.ipv4.address }}" --node-name="{{ ansible_hostname }}" --default-gw "{{ nb_gateway.stdout }}"

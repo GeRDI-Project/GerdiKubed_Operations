@@ -3,8 +3,5 @@
   remote_user: root
   roles:
     - common
-    - ovs_ovn
+    - docker
     - network_ovn
-#    - docker
-#    - docker-kubernetes
-#
