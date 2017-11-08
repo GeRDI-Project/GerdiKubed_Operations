@@ -24,13 +24,16 @@
   #debug: var=hostvars[inventory_hostname]
 
 - name: Install certs
-  local_action: command scp "{{ CERT_INFRASTRUCTURE_DIR }}/ca.crt" "{{ ansible_user_id }}@{{ inventory_hostname }}:{{ CERT_FILES_DIR }}/ca.crt"
+  copy:
+    src:  "{{ CERT_INFRASTRUCTURE_DIR }}/ca.crt"
+    dest: "{{ CERT_FILES_DIR }}/ca.crt"
+
 - name: set hostname for master
   hostname:
-    name: "{{ CLUSTER_NAME}}-master-{{hostname_suffix}}"
+    name: "{{ CLUSTER_NAME}}-mstr-{{hostname_suffix}}"
   when: inventory_hostname in groups['kubernetes-masters']
 
 - name: set hostname for node
   hostname:
-    name: "{{ CLUSTER_NAME}}-node-{{hostname_suffix}}"
+    name: "{{ CLUSTER_NAME}}-nd-{{hostname_suffix}}"
   when: inventory_hostname in groups['kubernetes-nodes']

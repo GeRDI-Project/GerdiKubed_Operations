@@ -16,11 +16,22 @@
     - k8s-api-token="{{API_TOKEN}}"
 
 - name: Actually inizitalize node
-  shell: ovn-k8s-overlay minion-init --cluster-ip-subnet="{{ CLUSTER_IP_SUBNET }}" --minion-switch-subnet="{{MINION_SWITCH_SUBNET}}" --node-name="{{ ansible_hostname }}"
+  shell: |
+    ovn-k8s-overlay minion-init \
+      --cluster-ip-subnet={{ CLUSTER_IP_SUBNET }} \
+      --minion-switch-subnet={{MINION_SWITCH_SUBNET}}\
+      --node-name={{ ansible_hostname }}
 
 - name: Determine Gateway for North-South Interface
-  shell: ip route show | grep default | grep ens6 | awk '{ print $3 }'
+  shell: ip route show | grep default | grep ens4 | awk '{ print $3 }'
   register: nb_gateway
 
 - name: Setup Gateway
-  shell: ovn-k8s-overlay gateway-init --cluster-ip-subnet="{{ CLUSTER_IP_SUBNET }}" --physical-interface ens6 --physical-ip "{{ ansible_ens6.ipv4.address }}" --node-name="{{ ansible_hostname }}" --default-gw "{{ nb_gateway.stdout }}"
+  shell: |
+    ovn-k8s-overlay gateway-init \
+    --cluster-ip-subnet={{ CLUSTER_IP_SUBNET }} \
+    --physical-interface ens4 \
+    --physical-ip {{ ansible_ens4.ipv4.address }} \
+    --node-name={{ ansible_hostname }}\
+    --default-gw {{ nb_gateway.stdout }}
+  when: nb_gateway.stdout | ipaddr
