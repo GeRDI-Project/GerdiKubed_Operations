@@ -1,3 +1,6 @@
+- name: Debug
+  debug: var=alt_names
+
 - name: "Check if key, cert and csr exists for {{ filename }}"
   stat:
     path: "{{ checkitem }}"
@@ -22,7 +25,7 @@
       -x509 \
       -config {{ CONTROL_CONFIG_DIR }}/{{ filename }}.openssl.cnf \
       -out {{ CONTROL_CERT_DIR }}/{{ filename }}.crt.pem \
-      {{ extensions }}
+      -extensions v3_ca
   when: check.results[0].stat.exists == False and check.results[1].stat.exists == False and sign == False
 
 - name: "Create selfsigned cert without key for {{ filename }}"
@@ -33,7 +36,7 @@
       -key {{ CONTROL_KEY_DIR }}/{{ filename }}.key \
       -config {{ CONTROL_CONFIG_DIR }}/{{ filename }}.openssl.cnf \
       -out {{ CONTROL_CERT_DIR }}/{{ filename }}.crt.pem \
-      {{ extensions }}
+      -extensions v3_ca
   when: check.results[0].stat.exists == True and check.results[1].stat.exists == False and sign == False
 
 - name: "Create csr with    key for {{ filename }}"
@@ -43,7 +46,7 @@
       -new \
       -config {{ CONTROL_CONFIG_DIR }}/{{ filename }}.openssl.cnf \
       -out {{ CONTROL_CSR_DIR }}/{{ filename }}.csr.pem \
-      {{ extensions }}
+      -extensions v3_req
   when: check.results[0].stat.exists == False and check.results[2].stat.exists == False and sign == True
 
 - name: "Create csr without key for {{ filename }}"
@@ -53,17 +56,17 @@
       -key {{ CONTROL_KEY_DIR }}/{{ filename }}.key \
       -config {{ CONTROL_CONFIG_DIR }}/{{ filename }}.openssl.cnf \
       -out {{ CONTROL_CSR_DIR }}/{{ filename }}.csr.pem \
-      {{ extensions }}
+      -extensions v3_req
   when: check.results[0].stat.exists == True and check.results[2].stat.exists == False and sign == True
 
 - name: "Create signed cert for {{ filename }}"
   shell: |
-    openssl x509 \
-    -req \
+    openssl ca \
+    -config {{ CONTROL_CONFIG_DIR }}/{{ filename }}.openssl.cnf \
     -in {{ CONTROL_CSR_DIR }}/{{ filename }}.csr.pem \
-    -CA {{ CONTROL_CERT_DIR }}/ca.crt.pem \
-    -CAkey {{ CONTROL_KEY_DIR }}/ca.key \
-    -CAcreateserial \
     -out {{ CONTROL_CERT_DIR }}/{{ filename }}.crt.pem \
-    -extfile {{ CONTROL_CONFIG_DIR }}/ca.openssl.cnf
+    -policy signing_policy \
+    -extensions signing_req \
+    -extensions v3_req \
+    -batch
   when: check.results[1].stat.exists == False and sign == True

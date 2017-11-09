@@ -1,6 +1,6 @@
 ---
 # create canonical place for certs and keys on control machine
-- name: Create directory for certs and keys on control machine
+- name: Create directory structure for certs and keys on control machine
   file:
     path: "{{ item.path }}"
     state: directory
@@ -11,18 +11,40 @@
     - { path: "{{CONTROL_KEY_DIR}}"   , mode: '0700' }
     - { path: "{{CONTROL_CONFIG_DIR}}", mode: '0700' }
     - { path: "{{CONTROL_CSR_DIR}}"   , mode: '0700' }
+    - { path: "{{CONTROL_CA_DIR}}"    , mode: '0700' }
+
+- name: Initialize ca administration files
+  file:
+    path: "{{ CONTROL_CA_DIR }}/{{ item }}"
+    state: touch
+  with_items:
+    - serial.txt
+    - index.txt
+
+- name: Check if serial numbers must be initialized
+  stat:
+    path: "{{ CONTROL_CA_DIR }}/serial.txt"
+  register: serial
+
+- name: Initialize serial numbers
+  shell: "echo '01' > {{ CONTROL_CA_DIR }}/serial.txt"
+  when: serial.stat.size == 0
 
 # create keys and certs and sign them
 - name: Create keys and certs and sign them
-  include_tasks: createKeysAndCertsAndSignThem.yml extensions={{ item.extensions }} filename={{ item.filename }} d_name={{ item.d_name }} sign={{ item.sign }}
+  include_tasks: createKeysAndCertsAndSignThem.yml filename={{ item.filename }} cname={{ item.cname }} sign={{ item.sign }} alt_names={{ item.alt_names | default(None) }}
   with_items:
-    - { extensions: "-extensions v3_ca",
-        filename:   "ca",
-        d_name:     "{{ MASTER_IP }}",
-        sign:       False
-      }
-    - { extensions: "",
-        filename:   "server",
-        d_name:     "{{ MASTER_IP }}",
-        sign:       True
-      }
+    - cname:    "CA-Certificate"
+      filename:   "ca"
+      sign:       False
+    - cname:    "etcd.gerdi"
+      filename:   "etcd"
+      alt_names:
+        - type:   "DNS"
+          name:   "etcd.gerdi"
+        - type:   "IP"
+          name:   "{{ MASTER_IP }}"
+      sign:       True
+    - cname:     "Etcd Client"
+      filename:   "etcd-client"
+      sign:       True

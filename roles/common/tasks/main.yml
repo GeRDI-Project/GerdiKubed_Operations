@@ -26,8 +26,8 @@
 
 - name: Install certs
   copy:
-    src:  "{{ CONTROL_CERT_DIR }}/ca.pem.crt"
-    dest: "{{ CERT_FILES_DIR }}/ca.pem.crt"
+    src:  "{{ CONTROL_CERT_DIR }}/ca.crt.pem"
+    dest: "{{ CERT_FILES_DIR }}/ca.crt.pem"
 
 - name: set hostname for master
   hostname:

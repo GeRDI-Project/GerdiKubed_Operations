@@ -6,27 +6,30 @@
 default_ca                      = CA_default
 
 [ CA_default ]
-dir                             = {{ CONTROL_BASE_DIR }}
-serial                          = $dir/ca/serial
-database                        = $dir/ca/indext.txt
-new_certs_dir                   = $dir/certs
-certificate                     = $dir/certs/ca.crt.pem
-private_key                     = $dir/keys/ca.key
+serial                          = {{ CONTROL_CA_DIR }}/serial.txt
+database                        = {{ CONTROL_CA_DIR }}/index.txt
+new_certs_dir                   = {{ CONTROL_CERT_DIR }}
+certificate                     = {{ CONTROL_CERT_DIR }}/ca.crt.pem
+private_key                     = {{ CONTROL_KEY_DIR }}/ca.key
 default_days                    = 5000
 default_md                      = sha256
 preserve                        = no
 email_in_dn                     = no
-nameopt                         = default_ca
-certopt                         = default_ca
-policy                          = policy_match
+unique_subject                  = no
 
-[ policy_match ]
+[ signing_policy ]
 countryName                     = match
 stateOrProvinceName             = match
 organizationName                = match
 organizationalUnitName          = optional
 commonName                      = supplied
 emailAddress                    = optional
+
+[ signing_req ]
+subjectKeyIdentifier            = hash
+authorityKeyIdentifier          = keyid,issuer
+basicConstraints                = CA:FALSE
+keyUsage                        = digitalSignature, keyEncipherment
 
 [ req ]
 prompt                          = no
@@ -38,7 +41,6 @@ distinguished_name              = req_distinguished_name
 req_extensions                  = v3_req
 
 [ req_distinguished_name ]
-
 # Default values for the above, for consistency and less typing.
 # Variable name                    Value
 #------------------------------    ------------------------------
@@ -47,20 +49,23 @@ ST                              = Bayern
 L                               = Garching b. Muenchen
 O                               = GeRDI
 OU                              = GeRDI-Kubernetes
-CN                              = { dn_name }
-
-
-
+CN                              = {{ cname }}
 
 [ v3_ca ]
-basicConstraints                = CA:TRUE
+basicConstraints                = critical, CA:TRUE
 subjectKeyIdentifier            = hash
 authorityKeyIdentifier          = keyid:always,issuer:always
+keyUsage                        = keyCertSign, cRLSign
 
 [ v3_req ]
+subjectKeyIdentifier            = hash
 basicConstraints                = CA:FALSE
-extendedKeyUsage                = serverAuth
+keyUsage                        = digitalSignature, keyEncipherment
+{% if alt_names != "" %}
 subjectAltName                  = @alt_names
 
 [alt_names]
-DNS.1                           = {{ d_name }}
+{% for alt_name in alt_names %}
+{{ alt_name.type }}.{{ loop.index }}                            = {{ alt_name.name }}
+{% endfor %}
+{% endif %}
