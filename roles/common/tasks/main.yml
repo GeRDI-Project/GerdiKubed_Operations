@@ -18,15 +18,16 @@
     mode: "{{ item.mode }}"
   with_items:
     - { path: "{{ K8S_BASE_DIR    }}", mode: '0755' }
-    - { path: "{{ CERT_FILES_DIR  }}", mode: '0700' }
+    - { path: "{{ CERT_FILES_DIR  }}", mode: '0755' }
+    - { path: "{{ KEY_FILES_DIR  }}", mode: '0700' }
 
   #- name: get variables
   #debug: var=hostvars[inventory_hostname]
 
 - name: Install certs
   copy:
-    src:  "{{ CERT_INFRASTRUCTURE_DIR }}/ca.crt"
-    dest: "{{ CERT_FILES_DIR }}/ca.crt"
+    src:  "{{ CONTROL_CERT_DIR }}/ca.pem.crt"
+    dest: "{{ CERT_FILES_DIR }}/ca.pem.crt"
 
 - name: set hostname for master
   hostname:

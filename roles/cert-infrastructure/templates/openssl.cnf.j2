@@ -1,0 +1,66 @@
+#
+# OpenSSL configuration file for {{ filename }}.
+#
+
+[ ca ]
+default_ca                      = CA_default
+
+[ CA_default ]
+dir                             = {{ CONTROL_BASE_DIR }}
+serial                          = $dir/ca/serial
+database                        = $dir/ca/indext.txt
+new_certs_dir                   = $dir/certs
+certificate                     = $dir/certs/ca.crt.pem
+private_key                     = $dir/keys/ca.key
+default_days                    = 5000
+default_md                      = sha256
+preserve                        = no
+email_in_dn                     = no
+nameopt                         = default_ca
+certopt                         = default_ca
+policy                          = policy_match
+
+[ policy_match ]
+countryName                     = match
+stateOrProvinceName             = match
+organizationName                = match
+organizationalUnitName          = optional
+commonName                      = supplied
+emailAddress                    = optional
+
+[ req ]
+prompt                          = no
+default_bits                    = 2048
+default_keyfile                 = {{ CONTROL_KEY_DIR }}/{{ filename }}.key
+default_md                      = sha256
+string_mask                     = nombstr
+distinguished_name              = req_distinguished_name
+req_extensions                  = v3_req
+
+[ req_distinguished_name ]
+
+# Default values for the above, for consistency and less typing.
+# Variable name                    Value
+#------------------------------    ------------------------------
+C                               = DE
+ST                              = Bayern
+L                               = Garching b. Muenchen
+O                               = GeRDI
+OU                              = GeRDI-Kubernetes
+CN                              = { dn_name }
+
+
+
+
+[ v3_ca ]
+basicConstraints                = CA:TRUE
+subjectKeyIdentifier            = hash
+authorityKeyIdentifier          = keyid:always,issuer:always
+
+[ v3_req ]
+basicConstraints                = CA:FALSE
+extendedKeyUsage                = serverAuth
+subjectAltName                  = @alt_names
+
+[alt_names]
+DNS.1                           = {{ d_name }}
