@@ -1,0 +1,39 @@
+[Unit]
+Description=etcd
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+# basic config
+Environment=ETCD_DATA_DIR=/var/lib/etcd
+Environment=ETCD_NAME={{ CLUSTER_NAME }}etcd{{ hostname_suffix }}
+Environment=ETCD_LISTEN_PEER_URLS=https://{{ MASTER_IP }}:2380
+Environment=ETCD_LISTEN_CLIENT_URLS=https://{{ MASTER_IP }}:2379
+Environment=ETCD_ADVERTISE_CLIENT_URLS=https://{{ MASTER_IP }}:2379
+
+# initial cluster configuration
+Environment=ETCD_INITIAL_CLUSTER={{ CLUSTER_NAME }}etcd{{ hostname_suffix }}=https://{{ MASTER_IP }}:2380
+Environment=ETCD_INITIAL_CLUSTER_TOKEN=your-unique-token
+Environment=ETCD_INITIAL_CLUSTER_STATE=new
+Environment=ETCD_INITIAL_ADVERTISE_PEER_URLS=https://{{ MASTER_IP }}:2380
+
+# security
+Environment=ETCD_TRUSTED_CA_FILE={{ CERT_FILES_DIR }}/ca.crt.pem
+Environment=ETCD_CERT_FILE={{ CERT_FILES_DIR }}/etcd.crt.pem
+Environment=ETCD_KEY_FILE={{ KEY_FILES_DIR }}/etcd.key
+Environment=ETCD_CLIENT_CERT_AUTH=1
+
+Environment=ETCD_PEER_TRUSTED_CA_FILE={{ CERT_FILES_DIR }}/ca.crt.pem
+Environment=ETCD_PEER_CERT_FILE={{ CERT_FILES_DIR }}/etcd.crt.pem
+Environment=ETCD_PEER_KEY_FILE={{ KEY_FILES_DIR }}/etcd.key
+Environment=ETCD_PEER_CLIENT_CERT_AUTH=1
+
+# tuning see https://github.com/coreos/etcd/blob/master/Documentation/tuning.md
+Environment=ETCD_HEARTBEAT_INTERVAL=100
+Environment=ETCD_ELECTION_TIMEOUT=2500
+
+ExecStart=/usr/bin/etcd
+Restart=always
+Type=notify

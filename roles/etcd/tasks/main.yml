@@ -1,0 +1,57 @@
+---
+- name: Install server key and cert
+  copy:
+    src:  "{{ item.src  }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+  with_items:
+    - { src:  "{{ CONTROL_KEY_DIR}}/etcd.key",
+        dest: "{{ KEY_FILES_DIR }}/etcd.key",
+        mode: '0400' }
+    - { src:  "{{ CONTROL_CERT_DIR}}/etcd.crt.pem",
+        dest: "{{ CERT_FILES_DIR }}/etcd.crt.pem",
+        mode: '0444' }
+    - { src:  "{{ CONTROL_KEY_DIR}}/etcd-client.key",
+        dest: "{{ KEY_FILES_DIR }}/etcd-client.key",
+        mode: '0400' }
+    - { src:  "{{ CONTROL_CERT_DIR}}/etcd-client.crt.pem",
+        dest: "{{ CERT_FILES_DIR }}/etcd-client.crt.pem",
+        mode: '0444' }
+
+- name: Get etcd Binaries
+  unarchive:
+    src:  "{{ ETCD_DOWNLOAD_URL }}"
+    dest: "{{ K8S_BASE_DIR }}"
+    copy: no
+    creates: "{{ ETCD_DIR }}/etcd"
+
+- name: Install etcd and etcdctl
+  file:
+    src:  "{{ ETCD_DIR }}/{{ item }}"
+    dest: "/usr/bin/{{ item }}"
+    state: link
+  with_items:
+    - etcd
+    - etcdctl
+
+- name: Create persistence directory for etcd
+  file:
+    path: "/var/lib/etcd"
+    state: directory
+
+- name: Create a systemd unit file
+  template:
+    src:  etcd.service.j2
+    dest: /etc/systemd/system/etcd.service
+  notify:
+    - restart etcd
+
+- name: Register etcd to systemd
+  systemd:
+    state: started
+    name: etcd
+    enabled: yes
+    daemon-reload: yes
+
+
+
