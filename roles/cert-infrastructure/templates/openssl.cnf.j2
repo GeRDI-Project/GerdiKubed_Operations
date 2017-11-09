@@ -29,7 +29,6 @@ emailAddress                    = optional
 subjectKeyIdentifier            = hash
 authorityKeyIdentifier          = keyid,issuer
 basicConstraints                = CA:FALSE
-keyUsage                        = digitalSignature, keyEncipherment
 
 [ req ]
 prompt                          = no
@@ -61,6 +60,11 @@ keyUsage                        = keyCertSign, cRLSign
 subjectKeyIdentifier            = hash
 basicConstraints                = CA:FALSE
 keyUsage                        = digitalSignature, keyEncipherment
+{% if type == "client" %}
+extendedKeyUsage                = clientAuth
+{% elif type == "server" %}
+extendedKeyUsage                = serverAuth
+{% endif %}
 {% if alt_names != "" %}
 subjectAltName                  = @alt_names
 

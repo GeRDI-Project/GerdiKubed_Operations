@@ -32,19 +32,22 @@
 
 # create keys and certs and sign them
 - name: Create keys and certs and sign them
-  include_tasks: createKeysAndCertsAndSignThem.yml filename={{ item.filename }} cname={{ item.cname }} sign={{ item.sign }} alt_names={{ item.alt_names | default(None) }}
+  include_tasks: createKeysAndCertsAndSignThem.yml filename={{ item.filename }} cname={{ item.cname }} sign={{ item.sign }} type={{ item.type }} alt_names={{ item.alt_names | default(None) }}
   with_items:
     - cname:    "CA-Certificate"
-      filename:   "ca"
-      sign:       False
+      filename: "ca"
+      sign:     False
+      type:     "ca"
     - cname:    "etcd.gerdi"
-      filename:   "etcd"
+      filename: "etcd"
       alt_names:
-        - type:   "DNS"
-          name:   "etcd.gerdi"
-        - type:   "IP"
-          name:   "{{ MASTER_IP }}"
-      sign:       True
-    - cname:     "Etcd Client"
-      filename:   "etcd-client"
-      sign:       True
+        - type: "DNS"
+          name: "etcd.gerdi"
+        - type: "IP"
+          name: "{{ MASTER_IP }}"
+      sign:     True
+      type:     "server"
+    - cname:    "Etcd Client"
+      filename: "etcd-client"
+      sign:     True
+      type:     "client"
