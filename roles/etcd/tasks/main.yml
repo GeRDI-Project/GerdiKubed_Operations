@@ -52,6 +52,3 @@
     name: etcd
     enabled: yes
     daemon-reload: yes
-
-
-
