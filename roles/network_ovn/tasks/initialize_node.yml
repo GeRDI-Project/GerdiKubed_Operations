@@ -12,7 +12,7 @@
   shell: ovs-vsctl set Open_vSwitch . external_ids:{{item}}
   with_items:
     - k8s-api-server="https://{{MASTER_IP}}"
-    - k8s-ca-certificate="{{CA_CRT}}"
+    - k8s-ca-certificate="{{ CERT_FILES_DIR }}/ca.crt.pem"
     - k8s-api-token="{{API_TOKEN}}"
 
 - name: Actually inizitalize node
