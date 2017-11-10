@@ -51,3 +51,12 @@
       filename: "etcd-client"
       sign:     True
       type:     "client"
+    - cname:    "apiserver.gerdi"
+      filename: "apiserver"
+      alt_names:
+        - type: "DNS"
+          name: "apiserver.gerdi"
+        - type: "IP"
+          name: "{{ MASTER_IP }}"
+      sign:     True
+      type:     "server"
