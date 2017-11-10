@@ -46,3 +46,10 @@
       name: docker-ce
       state: latest
       install_recommends: yes
+
+- name: Configure docker
+  template:
+    src:  "daemon.json.j2"
+    dest: "/etc/docker/daemon.json"
+  notify:
+    - restart docker
