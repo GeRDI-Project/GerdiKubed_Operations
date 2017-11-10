@@ -1,0 +1,80 @@
+{
+  "kind": "Pod",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "kube-apiserver"
+  },
+  "spec": {
+    "hostNetwork": true,
+    "containers": [
+      {
+        "name": "kube-apiserver",
+        "image": "gcr.io/google-containers/hyperkube:{{ K8S_VERSION }}",
+        "command": [
+          "/hyperkube",
+          "apiserver",
+          "--address={{ MASTER_IP }}",
+          "--service-cluster-ip-range={{ CLUSTER_IP_SUBNET }}",
+          "--etcd-servers=https://{{ MASTER_IP }}:2379",
+          "--etcd-cafile={{ CERT_FILES_DIR }}/ca.crt.pem",
+          "--etcd-certfile={{ CERT_FILES_DIR }}/etcd-client.crt.pem",
+          "--etcd-keyfile={{ KEY_FILES_DIR }}/etcd-client.key",
+          "--tls-cert-file={{ CERT_FILES_DIR }}/apiserver.crt.pem",
+          "--tls-private-key-file={{ KEY_FILES_DIR }}/apiserver.key",
+          "--client-ca-file={{ CERT_FILES_DIR }}/ca.crt.pem",
+          "--token-auth-file={{ AUTH_FILES_DIR }}/known_tokens.csv",
+          "--basic-auth-file={{ AUTH_FILES_DIR }}/basic_auth.csv",
+          "--admission-control=AlwaysAdmit",
+          "--allow-privileged=true"
+        ],
+        "ports": [
+          {
+            "name": "https",
+            "hostPort": 443,
+            "containerPort": 443
+          },
+          {
+            "name": "local",
+            "hostPort": 8080,
+            "containerPort": 8080
+          }
+        ],
+        "volumeMounts": [
+          {
+            "name": "k8s-base-dir",
+            "mountPath": "{{ K8S_BASE_DIR }}",
+            "readOnly": true
+          },
+          {
+            "name": "logdir",
+            "mountPath": "/var/log"
+          }
+        ],
+        "livenessProbe": {
+          "httpGet": {
+            "scheme": "HTTP",
+            "host": "127.0.0.1",
+            "port": 8080,
+            "path": "/healthz"
+          },
+          "initialDelaySeconds": 15,
+          "timeoutSeconds": 15
+        }
+      }
+    ],
+    "volumes": [
+      {
+        "name": "k8s-base-dir",
+        "hostPath": {
+          "path": "{{ K8S_BASE_DIR }}"
+        }
+      },
+      {
+        "name": "logdir",
+        "hostPath": {
+          "path": "/var/log"
+        }
+      }
+    ]
+  }
+}
