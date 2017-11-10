@@ -1,16 +1,24 @@
 [Unit]
-Description=Kubernetes Kubelet
-Documentation=https://github.com/kubernetes/kubernetes
+Description=Kubernetes Kubelet Server
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+After=docker.service
+Requires=docker.service
 
 [Service]
-ExecStartPre=/bin/mkdir -p /etc/kubernetes/manifests
+WorkingDirectory=/var/lib/kubelet
+EnvironmentFile=-/etc/kubernetes/config
+EnvironmentFile=-/etc/kubernetes/kubelet
 ExecStart=/usr/bin/kubelet \
-  --api-servers=http://{{ MASTER_IP }}:8080 \
-  --allow-privileged=true \
-  --config=/etc/kubernetes/manifests \
-  --v=2
+	    $KUBE_LOGTOSTDERR \
+	    $KUBE_LOG_LEVEL \
+	    $KUBELET_API_SERVER \
+	    $KUBELET_ADDRESS \
+	    $KUBELET_PORT \
+	    $KUBELET_HOSTNAME \
+	    $KUBE_ALLOW_PRIV \
+	    $KUBELET_ARGS
 Restart=on-failure
-RestartSec=5
+KillMode=process
 
 [Install]
 WantedBy=multi-user.target

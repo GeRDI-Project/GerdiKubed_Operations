@@ -5,6 +5,11 @@
     dest:   "/usr/bin/kubelet"
     state:  link
 
+- name: Create a kubelet environment file
+  template:
+    src: kubelet.j2
+    dest: /etc/kubernetes/kubelet
+
 - name: Create a systemd unit file
   template:
     src: kubelet.service.j2
