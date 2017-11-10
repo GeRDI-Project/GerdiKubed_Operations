@@ -1,0 +1,45 @@
+{
+  "kind": "Pod",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "kube-scheduler"
+  },
+  "spec": {
+    "hostNetwork": true,
+    "containers": [
+      {
+        "name": "kube-scheduler",
+        "image": "gcr.io/google-containers/hyperkube:{{ K8S_VERSION }}",
+        "command": [
+          "/hyperkube",
+          "scheduler",
+          "--master={{ MASTER_IP }}:8080"
+        ],
+        "volumeMounts": [
+          {
+            "name": "logdir",
+            "mountPath": "/var/log"
+          }
+        ],
+        "livenessProbe": {
+          "httpGet": {
+            "scheme": "HTTP",
+            "host": "127.0.0.1",
+            "port": 10251,
+            "path": "/healthz"
+          },
+          "initialDelaySeconds": 15,
+          "timeoutSeconds": 15
+        }
+      }
+    ],
+    "volumes": [
+      {
+        "name": "logdir",
+        "hostPath": {
+          "path": "/var/log"
+        }
+      }
+    ]
+  }
+}
