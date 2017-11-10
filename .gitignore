@@ -2,3 +2,4 @@
 *.retry
 group_vars/all
 testing
+*.swp
