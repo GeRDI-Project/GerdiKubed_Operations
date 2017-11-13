@@ -1,0 +1,5 @@
+---
+- name: Create scheduler manifest and give it kubelet
+  template:
+    src:  "scheduler.json.j2"
+    dest: "/etc/kubernetes/manifests/scheduler.json"

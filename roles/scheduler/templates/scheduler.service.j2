@@ -1,0 +1,14 @@
+[Unit]
+Description=Kubernetes Scheduler Plugin
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+
+# TODO: Create kubeconfig with authorization information
+[Service]
+ExecStart=/usr/bin/scheduler \
+      --v=4 \
+      --master=https://{{ MASTER_IP }}:6643
+Restart=on-failure
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
