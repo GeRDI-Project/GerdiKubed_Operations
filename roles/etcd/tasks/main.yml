@@ -52,3 +52,23 @@
     name: etcd
     enabled: yes
     daemon-reload: yes
+
+- name: Create etcdctl helper script for debugging purposes
+  template:
+    src:  "etcdctl_env.sh.j2"
+    dest: "/usr/bin/etcdctl_env"
+    mode: "0500"
+
+# We pipe through cat to set rc to 0, otherwise task fails (not elegant, but effective)
+- name: Check whether helper script must be registered
+  shell: grep "/usr/bin/etcdctl_env" /root/.profile | cat
+  register: helperIsInstalled
+
+
+- name: Include helper script into profile file
+  lineinfile:
+    path: "/root/.profile"
+    line: ". /usr/bin/etcdctl_env"
+    state: present
+    insertafter: EOF
+  when: helperIsInstalled.stdout == ""

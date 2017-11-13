@@ -1,0 +1,5 @@
+#!/bin/bash
+export ETCDCTL_CERT_FILE={{ CERT_FILES_DIR }}/etcd-client.crt.pem
+export ETCDCTL_KEY_FILE={{ KEY_FILES_DIR }}/etcd-client.key
+export ETCDCTL_CA_FILE={{ CERT_FILES_DIR }}/ca.crt.pem
+export ETCDCTL_PEERS=https://{{ MASTER_IP }}:2379
