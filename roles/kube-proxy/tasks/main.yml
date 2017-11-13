@@ -12,11 +12,6 @@
     dest:   "/usr/bin/kube-proxy"
     state:  link
 
-- name: Create a kubelet environment file
-  template:
-    src: kube-proxy.j2
-    dest: /etc/kubernetes/kube-proxy
-
 - name: Create a systemd unit file
   template:
     src: kube-proxy.service.j2
