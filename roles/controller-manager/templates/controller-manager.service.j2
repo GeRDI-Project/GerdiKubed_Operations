@@ -2,10 +2,12 @@
 Description=Kubernetes Controller Manager
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 
+# TODO: Sync with json file
 [Service]
-ExecStart=/usr/bin/kube-controller-manager \
+ExecStart=/usr/bin/controller-manager \
       --v=4 \
-      --master=https://{{ MASTER_IP }}:6643
+      --master=https://{{ MASTER_IP }}:6643 \
+      --cluster-cidr={{ CLUSTER_IP_SUBNET }}
 
 Restart=on-failure
 LimitNOFILE=65536

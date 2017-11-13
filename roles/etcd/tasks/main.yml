@@ -44,6 +44,7 @@
     src:  etcd.service.j2
     dest: /etc/systemd/system/etcd.service
   notify:
+    - reload daemon
     - restart etcd
 
 - name: Register etcd to systemd

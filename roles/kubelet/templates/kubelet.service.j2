@@ -8,13 +8,13 @@ Requires=docker.service
 WorkingDirectory=/var/lib/kubelet
 ExecStart=/usr/bin/kubelet \
 	    --v=4 \
-      --api-servers=https://{{ MASTER_IP }} \
+      --kubeconfig=/etc/kubernetes/kubeconfig \
       --address=127.0.0.1 \
       --hostname-override=127.0.0.1 \
       --cgroup-driver=systemd \
       --pod-manifest-path=/etc/kubernetes/manifests \
       --tls-cert-file={{ CERT_FILES_DIR }}/kubelet.crt.pem \
-      --tls-private-key={{ KEY_FILES_DIR }}/kubelet.key \
+      --tls-private-key-file={{ KEY_FILES_DIR }}/kubelet.key
 Restart=on-failure
 KillMode=process
 
