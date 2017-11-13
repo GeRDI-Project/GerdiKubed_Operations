@@ -1,6 +1,3 @@
-- name: Debug
-  debug: var=alt_names
-
 - name: "Check if key, cert and csr exists for {{ filename }}"
   stat:
     path: "{{ checkitem }}"
