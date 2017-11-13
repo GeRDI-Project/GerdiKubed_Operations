@@ -4,5 +4,11 @@
   roles:
     - common
     - docker
-    - k8s-binaries
     - network_ovn
+    - etcd
+    - k8s-binaries
+    - kubelet
+    - kube-proxy
+    - apiserver
+    - scheduler
+    - controller-manager

@@ -2,30 +2,34 @@
 
 This repo has all necessary roles to setup a kubernetes cluster (req. see below).
 
-There are two playbooks in the root of the git-repo:
-* kubernetes-master.yml
-* kubernetes-nodes.yml
+There are three playbooks in the root of the git-repo:
+* k8s-master.yml
+* k8s-nodes.yml
+* k8s-mgmt.yml
 
 # Usage
 
 ```bash
+# setup certificates
+ansible-playbook -i production k8s-mgmt.yml
+
 # setup master
-ansible-playbook -i production kubernetes-master.yml -K
+ansible-playbook -i production k8s-master.yml
 
 # setup nodes
-ansible-playbook -i production kubernetes-nodes.yml -K
+ansible-playbook -i production k8s-nodes.yml -K
 ```
 
 # Requirements
 
 * debian 9.1 or higher on the remote machines
 * running sshd on the remote machines
-* sudo on the remote machines
-* user "gerdi" with sudo rights on the remote machines
-* pub key in .ssh/authorized_keys in gerdi's home on the remote machines
+* pub key in .ssh/authorized_keys in roots's home on the remote machines
 * python > 2.6
-* ansible > 2.3.1 (on the control machine, only macOS and linux distros are supported!)
-* python-pyOpenSSL on the control machine (for cert-signing).
+* ansible >= 2.4.1.0 (on the control machine, only linux distros are supported!)
+* iproute2 installed
+* at least two network interface for k8s-ndes
+
 
 # CI
 
