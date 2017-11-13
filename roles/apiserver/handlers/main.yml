@@ -1,0 +1,5 @@
+---
+- name: restart apiserver
+  service:
+    name: apiserver
+    state: restarted

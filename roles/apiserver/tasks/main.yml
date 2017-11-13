@@ -12,17 +12,15 @@
         dest: "{{ CERT_FILES_DIR }}/apiserver.crt.pem",
         mode: '0444' }
 
-- name: Create token and basic_auth files
-  file:
-    path: "{{ item }}"
-    state: touch
-  with_items:
-    - "{{ AUTH_FILES_DIR }}/known_tokens.csv"
-    - "{{ AUTH_FILES_DIR }}/basic_auth.csv"
-
-
-- name: Create api-server manifest and give it kubelet
+- name: Create token file
   template:
-    src:  "apiserver.json.j2"
-    dest: "/etc/kubernetes/manifests/apiserver.json"
+    src:  "known_tokens.csv.j2"
+    dest: "{{ AUTH_FILES_DIR }}/known_tokens.csv"
 
+- name: Start apiserver as a pod
+  import_tasks: apiserverAsPod.yml
+  when: APISERVER_AS_POD
+
+- name: Start apiserver as a service
+  import_tasks: apiserverAsService.yml
+  when: APISERVER_AS_SERVICE
