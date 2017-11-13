@@ -16,6 +16,7 @@ default_md                      = sha256
 preserve                        = no
 email_in_dn                     = no
 unique_subject                  = no
+copy_extensions                 = copy
 
 [ signing_policy ]
 countryName                     = match
@@ -26,9 +27,7 @@ commonName                      = supplied
 emailAddress                    = optional
 
 [ signing_req ]
-subjectKeyIdentifier            = hash
-authorityKeyIdentifier          = keyid,issuer
-basicConstraints                = CA:FALSE
+authorityKeyIdentifier          = keyid:always,issuer
 
 [ req ]
 prompt                          = no

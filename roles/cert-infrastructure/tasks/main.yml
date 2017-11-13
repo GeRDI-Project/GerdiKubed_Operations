@@ -31,6 +31,7 @@
   when: serial.stat.size == 0
 
 # create keys and certs and sign them
+# TODO switch from ip to dns based configuration
 - name: Create keys and certs and sign them
   include_tasks: createKeysAndCertsAndSignThem.yml filename={{ item.filename }} cname={{ item.cname }} sign={{ item.sign }} type={{ item.type }} alt_names={{ item.alt_names | default(None) }}
   with_items:
@@ -61,7 +62,7 @@
       filename: "kubelet-client"
       sign:     True
       type:     "client"
-    - cname:    "apiserver.gerdi"
+    - cname:    "{{ MASTER_IP }}"
       filename: "apiserver"
       alt_names:
         - type: "DNS"

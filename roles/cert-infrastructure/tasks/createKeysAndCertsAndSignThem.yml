@@ -64,6 +64,5 @@
     -out {{ CONTROL_CERT_DIR }}/{{ filename }}.crt.pem \
     -policy signing_policy \
     -extensions signing_req \
-    -extensions v3_req \
     -batch
   when: check.results[1].stat.exists == False and sign == True
