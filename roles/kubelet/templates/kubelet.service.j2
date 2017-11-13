@@ -6,17 +6,15 @@ Requires=docker.service
 
 [Service]
 WorkingDirectory=/var/lib/kubelet
-EnvironmentFile=-/etc/kubernetes/config
-EnvironmentFile=-/etc/kubernetes/kubelet
 ExecStart=/usr/bin/kubelet \
-	    $KUBE_LOGTOSTDERR \
-	    $KUBE_LOG_LEVEL \
-	    $KUBELET_API_SERVER \
-	    $KUBELET_ADDRESS \
-	    $KUBELET_PORT \
-	    $KUBELET_HOSTNAME \
-	    $KUBE_ALLOW_PRIV \
-	    $KUBELET_ARGS
+	    --v=4 \
+      --api-servers=https://{{ MASTER_IP }} \
+      --address=127.0.0.1 \
+      --hostname-override=127.0.0.1 \
+      --cgroup-driver=systemd \
+      --pod-manifest-path=/etc/kubernetes/manifests \
+      --tls-cert-file={{ CERT_FILES_DIR }}/kubelet.crt.pem \
+      --tls-private-key={{ KEY_FILES_DIR }}/kubelet.key \
 Restart=on-failure
 KillMode=process
 

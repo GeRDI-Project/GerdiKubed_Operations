@@ -1,14 +1,28 @@
 ---
+- name: Install server key and cert
+  copy:
+    src:  "{{ item.src  }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+  with_items:
+    - { src:  "{{ CONTROL_KEY_DIR}}/kubelet.key",
+        dest: "{{ KEY_FILES_DIR }}/kubelet.key",
+        mode: '0400' }
+    - { src:  "{{ CONTROL_CERT_DIR}}/kubelet.crt.pem",
+        dest: "{{ CERT_FILES_DIR }}/kubelet.crt.pem",
+        mode: '0444' }
+    - { src:  "{{ CONTROL_KEY_DIR}}/kubelet-client.key",
+        dest: "{{ KEY_FILES_DIR }}/kubelet-client.key",
+        mode: '0400' }
+    - { src:  "{{ CONTROL_CERT_DIR}}/kubelet-client.crt.pem",
+        dest: "{{ CERT_FILES_DIR }}/kubelet-client.crt.pem",
+        mode: '0444' }
+
 - name: Symlink kubelet to /usr/bin
   file:
     src:    "{{ K8S_SERVER_BIN_DIR }}/kubelet"
     dest:   "/usr/bin/kubelet"
     state:  link
-
-- name: Create a kubelet environment file
-  template:
-    src: kubelet.j2
-    dest: /etc/kubernetes/kubelet
 
 - name: Create a systemd unit file
   template:
