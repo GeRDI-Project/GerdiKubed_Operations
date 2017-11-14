@@ -7,14 +7,23 @@ Requires=docker.service
 [Service]
 WorkingDirectory=/var/lib/kubelet
 ExecStart=/usr/bin/kubelet \
-	    --v=4 \
+	    --v=2 \
+      --address=0.0.0.0 \
+      --allow-privileged=true \
+      --cgroup-driver=cgroupfs \
+      --cloud-provider="" \
+      --container-runtime="docker" \
+      --healthz_bind_address=0.0.0.0 \
+      --healthz_port=10248 \
       --kubeconfig=/etc/kubernetes/kubeconfig \
-      --address=127.0.0.1 \
-      --hostname-override=127.0.0.1 \
-      --cgroup-driver=systemd \
+      --logtostderr=true \
+      --node-ip={{ ansible_default_ipv4.address }} \
       --pod-manifest-path=/etc/kubernetes/manifests \
+      --port=10250 \
+      --register-node \
       --tls-cert-file={{ CERT_FILES_DIR }}/kubelet.crt.pem \
       --tls-private-key-file={{ KEY_FILES_DIR }}/kubelet.key
+
 Restart=on-failure
 KillMode=process
 

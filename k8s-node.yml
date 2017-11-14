@@ -1,9 +1,10 @@
 - name: Initialize kubernetes nodes
   hosts: kubernetes-nodes
-  remote_user: gerdi
-  become: true
+  remote_user: root
   roles:
     - common
     - docker
     - k8s-binaries
     - network_ovn
+    - kubelet
+    - kube-proxy
