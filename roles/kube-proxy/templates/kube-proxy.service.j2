@@ -6,7 +6,7 @@ After=network.target
 # TODO: Create kubeconfig with authorization information
 [Service]
 ExecStart=/usr/bin/kube-proxy \
-      --v=4 \
+      --{{ K8S_GLOBAL_LOG_LEVEL }} \
       --master=https://{{ MASTER_IP }}:6643
 Restart=on-failure
 LimitNOFILE=65536

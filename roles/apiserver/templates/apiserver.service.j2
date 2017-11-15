@@ -28,7 +28,7 @@ ExecStart=/usr/bin/apiserver \
       --tls-cert-file={{ CERT_FILES_DIR }}/apiserver.crt.pem \
       --tls-private-key-file={{ KEY_FILES_DIR }}/apiserver.key \
       --token-auth-file={{ AUTH_FILES_DIR }}/known_tokens.csv \
-      --v=4 \
+      --{{ K8S_GLOBAL_LOG_LEVEL }} \
 
 Restart=on-failure
 Type=notify

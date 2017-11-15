@@ -7,7 +7,7 @@ Requires=docker.service
 [Service]
 WorkingDirectory=/var/lib/kubelet
 ExecStart=/usr/bin/kubelet \
-	    --v=2 \
+	    --{{ K8S_GLOBAL_LOG_LEVEL }} \
       --address=0.0.0.0 \
       --allow-privileged=true \
       --cgroup-driver=cgroupfs \

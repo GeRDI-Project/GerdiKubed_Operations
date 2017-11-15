@@ -6,7 +6,7 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 # TODO: Sync with json file
 [Service]
 ExecStart=/usr/bin/scheduler \
-      --v=4 \
+      --{{ K8S_GLOBAL_LOG_LEVEL }} \
       --master=https://{{ MASTER_IP }}:6643
 Restart=on-failure
 LimitNOFILE=65536

@@ -5,7 +5,7 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 # TODO: Sync with json file
 [Service]
 ExecStart=/usr/bin/controller-manager \
-      --v=4 \
+      --{{ K8S_GLOBAL_LOG_LEVEL }} \
       --master=https://{{ MASTER_IP }}:6643 \
       --cluster-cidr={{ CLUSTER_IP_SUBNET }}
 
