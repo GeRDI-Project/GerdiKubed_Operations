@@ -7,7 +7,6 @@ After=etcd.service
 # TODO Sync with json-template
 # TODO review Admission control
 # TODO review allow-privileged=true (needed by ntd)
-# TODO review logging settings (tostderr -> journalctl and level)
 [Service]
 ExecStart=/usr/bin/apiserver \
       --allow-privileged=true \
@@ -28,7 +27,7 @@ ExecStart=/usr/bin/apiserver \
       --tls-cert-file={{ CERT_FILES_DIR }}/apiserver.crt.pem \
       --tls-private-key-file={{ KEY_FILES_DIR }}/apiserver.key \
       --token-auth-file={{ AUTH_FILES_DIR }}/known_tokens.csv \
-      --{{ K8S_GLOBAL_LOG_LEVEL }} \
+      --{{ K8S_GLOBAL_LOG_LEVEL }}
 
 Restart=on-failure
 Type=notify
