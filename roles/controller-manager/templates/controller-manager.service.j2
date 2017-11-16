@@ -6,9 +6,9 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 [Service]
 ExecStart=/usr/bin/controller-manager \
       --{{ K8S_GLOBAL_LOG_LEVEL }} \
-      --master=https://{{ MASTER_IP }}:6643 \
+      --logtostderr \
+      --kubeconfig=/etc/kubernetes/kubeconfig \
       --cluster-cidr={{ CLUSTER_IP_SUBNET }}
-
 Restart=on-failure
 LimitNOFILE=65536
 
