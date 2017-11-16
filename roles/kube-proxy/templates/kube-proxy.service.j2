@@ -7,7 +7,7 @@ After=network.target
 [Service]
 ExecStart=/usr/bin/kube-proxy \
       --{{ K8S_GLOBAL_LOG_LEVEL }} \
-      --master=https://{{ MASTER_IP }}:6643
+      --kubeconfig=/etc/kubernetes/kubeconfig
 Restart=on-failure
 LimitNOFILE=65536
 
