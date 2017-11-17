@@ -21,8 +21,8 @@ ExecStart=/usr/bin/kubelet \
       --pod-manifest-path=/etc/kubernetes/manifests \
       --port=10250 \
       --register-node \
-      --tls-cert-file={{ CERT_FILES_DIR }}/kubelet.crt.pem \
-      --tls-private-key-file={{ KEY_FILES_DIR }}/kubelet.key
+      --tls-cert-file={{ K8S_CERT_FILES_DIR }}/kubelet.crt.pem \
+      --tls-private-key-file={{ K8S_KEY_FILES_DIR }}/kubelet.key
 
 Restart=on-failure
 KillMode=process

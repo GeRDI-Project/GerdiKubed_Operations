@@ -13,8 +13,8 @@
         "command": [
           "/hyperkube",
           "controller-manager",
-          "--cluster-cidr={{ CLUSTER_IP_SUBNET }}",
-          "--master={{ MASTER_IP }}"
+          "--cluster-cidr={{ K8S_CLUSTER_IP_SUBNET }}",
+          "--master={{ K8S_MASTER_IP }}"
         ],
         "volumeMounts": [
           {

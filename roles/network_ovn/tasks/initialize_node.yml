@@ -6,20 +6,20 @@
     - ovn-host
 
 - name: Set the k8s API server address in the Open vSwitch database
-  shell: ovs-vsctl set Open_vSwitch . external_ids:k8s-api-server="{{MASTER_IP}}:8080"
+  shell: ovs-vsctl set Open_vSwitch . external_ids:k8s-api-server="{{K8S_MASTER_IP}}:8080"
 
 - name: Secure connection to k8s API server
   shell: ovs-vsctl set Open_vSwitch . external_ids:{{item}}
   with_items:
-    - k8s-api-server="https://{{MASTER_IP}}"
-    - k8s-ca-certificate="{{ CERT_FILES_DIR }}/ca.crt.pem"
-    - k8s-api-token="{{API_TOKEN}}"
+    - k8s-api-server="https://{{K8S_MASTER_IP}}"
+    - k8s-ca-certificate="{{ K8S_CERT_FILES_DIR }}/ca.crt.pem"
+    - k8s-api-token="{{OVN_API_TOKEN}}"
 
 - name: Actually inizitalize node
   shell: |
     ovn-k8s-overlay minion-init \
-      --cluster-ip-subnet={{ CLUSTER_IP_SUBNET }} \
-      --minion-switch-subnet={{MINION_SWITCH_SUBNET}}\
+      --cluster-ip-subnet={{ K8S_CLUSTER_IP_SUBNET }} \
+      --minion-switch-subnet={{OVN_MINION_SWITCH_SUBNET}} \
       --node-name={{ ansible_hostname }}
 
 - name: Determine Gateway for North-South Interface
@@ -29,7 +29,7 @@
 - name: Setup Gateway
   shell: |
     ovn-k8s-overlay gateway-init \
-    --cluster-ip-subnet={{ CLUSTER_IP_SUBNET }} \
+    --cluster-ip-subnet={{ K8S_CLUSTER_IP_SUBNET }} \
     --physical-interface ens4 \
     --physical-ip {{ ansible_ens4.ipv4.address }} \
     --node-name={{ ansible_hostname }}\

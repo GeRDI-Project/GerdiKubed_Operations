@@ -39,22 +39,22 @@
       filename: "ca"
       sign:     False
       type:     "ca"
-    - cname:    "{{ MASTER_IP }}"
+    - cname:    "{{ K8S_MASTER_IP }}"
       filename: "etcd"
       alt_names:
         - type: "DNS"
           name: "etcd.gerdi"
         - type: "DNS"
-          name: "{{ MASTER_IP }}"
+          name: "{{ K8S_MASTER_IP }}"
         - type: "IP"
-          name: "{{ MASTER_IP }}"
+          name: "{{ K8S_MASTER_IP }}"
       sign:     True
       type:     "server"
     - cname:    "Etcd Client"
       filename: "etcd-client"
       sign:     True
       type:     "client"
-    - cname:    "{{ MASTER_IP }}"
+    - cname:    "{{ K8S_MASTER_IP }}"
       filename: "kubelet"
       sign:     True
       type:     "server"
@@ -62,14 +62,14 @@
       filename: "kubelet-client"
       sign:     True
       type:     "client"
-    - cname:    "{{ MASTER_IP }}"
+    - cname:    "{{ K8S_MASTER_IP }}"
       filename: "apiserver"
       alt_names:
         - type: "DNS"
           name: "apiserver.gerdi"
         - type: "DNS"
-          name: "{{ MASTER_IP }}"
+          name: "{{ K8S_MASTER_IP }}"
         - type: "IP"
-          name: "{{ MASTER_IP }}"
+          name: "{{ K8S_MASTER_IP }}"
       sign:     True
       type:     "server"

@@ -1,0 +1,61 @@
+# Global configuration
+# Change the following values:
+K8S_CLUSTER_NAME: "<cluster_name>"
+K8S_VERSION: "vx.y.z"
+K8S_GLOBAL_LOG_LEVEL: "v=2"
+K8S_MASTER_IP: "<w.x.y.z>"
+K8S_MASTER_IP: "<w.x.y.z>"
+# Base dir on all machines (except CONTROL_MACHINE)
+K8S_BASE_DIR: /opt/k8s
+# Directories in which the k8s binaries reside
+K8S_K8S_DIR: "{{ K8S_BASE_DIR }}/kubernetes"
+K8S_SERVER_BIN_DIR: "{{ K8S_K8S_DIR }}/server/kubernetes/server/bin"
+
+# Intercluster addresses, authorization and authentication information
+K8S_KUBE_CONFIG: "{{ K8S_BASE_DIR }}/etc/kubeconfig"
+K8S_DOWNLOAD_URL: "https://github.com/kubernetes/kubernetes/releases/download/{{K8S_VERSION}}/kubernetes.tar.gz"
+
+# role: cert-infrastructure
+CONTROL_USER:       "<some_user>"
+CONTROL_MACHINE:    "127.0.0.1"
+CONTROL_BASE_DIR:   "<some_dir>"
+CONTROL_CERT_DIR:   "{{ CONTROL_BASE_DIR }}/certs"
+CONTROL_KEY_DIR:    "{{ CONTROL_BASE_DIR }}/keys"
+CONTROL_CONFIG_DIR: "{{ CONTROL_BASE_DIR }}/configs"
+CONTROL_CSR_DIR:    "{{ CONTROL_BASE_DIR }}/csrs"
+CONTROL_CA_DIR:     "{{ CONTROL_BASE_DIR }}/ca"
+
+# roles: apiserver, k8s-binaries, common, kubelet, etcd, network_ovn
+K8S_CERT_FILES_DIR: "{{ K8S_BASE_DIR }}/certs"
+K8S_KEY_FILES_DIR: "{{ K8S_BASE_DIR }}/keys"
+K8S_AUTH_FILES_DIR: "{{ K8S_BASE_DIR }}/tokens"
+
+# roles: apiserver, network_ovn, controller-manager
+K8S_CLUSTER_IP_SUBNET: 10.0.0.0/16
+
+# role: network_ovn
+OVN_API_TOKEN: "xyz"
+OVN_ENCAP_TYPE: geneve
+OVN_K8S_DIR: "{{ K8S_BASE_DIR }}/ovn-kubernetes"
+OVN_MASTER_SWITCH_SUBNET: 10.0.1.0/24
+OVN_MINION_SWITCH_SUBNET: 192.168.2.0/24
+
+# role: etcd
+ETCD_VERSION: v3.0.17
+ETCD_DOWNLOAD_URL: "https://github.com/coreos/etcd/releases/download/{{ ETCD_VERSION }}/etcd-{{ ETCD_VERSION }}-linux-amd64.tar.gz"
+ETCD_DIR: "{{ K8S_BASE_DIR }}/etcd-{{ ETCD_VERSION }}-linux-amd64"
+
+# role: apiserver
+# Only one, but also at least one of these should be set to True.
+APISERVER_AS_POD: False
+APISERVER_AS_SERVICE: True
+
+# role: scheduler
+# Only one, but also at least one of these should be set to True.
+SCHEDULER_AS_POD: False
+SCHEDULER_AS_SERVICE: True
+
+# role: controller-manager
+# Only one, but also at least one of these should be set to True.
+CONTROLLER_MANAGER_AS_POD: False
+CONTROLLER_MANAGER_AS_SERVICE: True

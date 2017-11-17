@@ -22,9 +22,9 @@
     mode: "{{ item.mode }}"
   with_items:
     - { path: "{{ K8S_BASE_DIR    }}", mode: '0755' }
-    - { path: "{{ CERT_FILES_DIR  }}", mode: '0755' }
-    - { path: "{{ AUTH_FILES_DIR  }}", mode: '0755' }
-    - { path: "{{ KEY_FILES_DIR  }}", mode: '0700' }
+    - { path: "{{ K8S_CERT_FILES_DIR  }}", mode: '0755' }
+    - { path: "{{ K8S_AUTH_FILES_DIR  }}", mode: '0755' }
+    - { path: "{{ K8S_KEY_FILES_DIR  }}", mode: '0700' }
     - { path: "/etc/kubernetes/manifests", mode: '0755' }
 
   #- name: get variables
@@ -33,14 +33,14 @@
 - name: Install certs
   copy:
     src:  "{{ CONTROL_CERT_DIR }}/ca.crt.pem"
-    dest: "{{ CERT_FILES_DIR }}/ca.crt.pem"
+    dest: "{{ K8S_CERT_FILES_DIR }}/ca.crt.pem"
 
 - name: set hostname for master
   hostname:
-    name: "{{ CLUSTER_NAME}}-mstr-{{hostname_suffix}}"
+    name: "{{ K8S_CLUSTER_NAME}}-mstr-{{hostname_suffix}}"
   when: inventory_hostname in groups['kubernetes-masters']
 
 - name: set hostname for node
   hostname:
-    name: "{{ CLUSTER_NAME}}-nd-{{hostname_suffix}}"
+    name: "{{ K8S_CLUSTER_NAME}}-nd-{{hostname_suffix}}"
   when: inventory_hostname in groups['kubernetes-nodes']
