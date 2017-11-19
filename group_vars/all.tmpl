@@ -4,7 +4,7 @@ K8S_CLUSTER_NAME: "<cluster_name>"
 K8S_VERSION: "vx.y.z"
 K8S_GLOBAL_LOG_LEVEL: "v=2"
 K8S_MASTER_IP: "<w.x.y.z>"
-K8S_MASTER_IP: "<w.x.y.z>"
+
 # Base dir on all machines (except CONTROL_MACHINE)
 K8S_BASE_DIR: /opt/k8s
 # Directories in which the k8s binaries reside
@@ -34,7 +34,7 @@ K8S_AUTH_FILES_DIR: "{{ K8S_BASE_DIR }}/tokens"
 K8S_CLUSTER_IP_SUBNET: 10.0.0.0/16
 
 # role: network_ovn
-OVN_API_TOKEN: "xyz"
+OVN_API_TOKEN: "someValue"
 OVN_ENCAP_TYPE: geneve
 OVN_K8S_DIR: "{{ K8S_BASE_DIR }}/ovn-kubernetes"
 OVN_MASTER_SWITCH_SUBNET: 10.0.1.0/24
