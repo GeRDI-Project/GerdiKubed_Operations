@@ -1,23 +1,4 @@
 ---
-- name: Install server key and cert
-  copy:
-    src:  "{{ item.src  }}"
-    dest: "{{ item.dest }}"
-    mode: "{{ item.mode }}"
-  with_items:
-    - { src:  "{{ CONTROL_KEY_DIR}}/kubelet.key",
-        dest: "{{ K8S_KEY_FILES_DIR }}/kubelet.key",
-        mode: '0400' }
-    - { src:  "{{ CONTROL_CERT_DIR}}/kubelet.crt.pem",
-        dest: "{{ K8S_CERT_FILES_DIR }}/kubelet.crt.pem",
-        mode: '0444' }
-    - { src:  "{{ CONTROL_KEY_DIR}}/kubelet-client.key",
-        dest: "{{ K8S_KEY_FILES_DIR }}/kubelet-client.key",
-        mode: '0400' }
-    - { src:  "{{ CONTROL_CERT_DIR}}/kubelet-client.crt.pem",
-        dest: "{{ K8S_CERT_FILES_DIR }}/kubelet-client.crt.pem",
-        mode: '0444' }
-
 - name: Symlink kubelet to /usr/bin
   file:
     src:    "{{ K8S_SERVER_BIN_DIR }}/kubelet"

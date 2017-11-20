@@ -1,23 +1,4 @@
 ---
-- name: Install server key and cert
-  copy:
-    src:  "{{ item.src  }}"
-    dest: "{{ item.dest }}"
-    mode: "{{ item.mode }}"
-  with_items:
-    - { src:  "{{ CONTROL_KEY_DIR}}/etcd.key",
-        dest: "{{ K8S_KEY_FILES_DIR }}/etcd.key",
-        mode: '0400' }
-    - { src:  "{{ CONTROL_CERT_DIR}}/etcd.crt.pem",
-        dest: "{{ K8S_CERT_FILES_DIR }}/etcd.crt.pem",
-        mode: '0444' }
-    - { src:  "{{ CONTROL_KEY_DIR}}/etcd-client.key",
-        dest: "{{ K8S_KEY_FILES_DIR }}/etcd-client.key",
-        mode: '0400' }
-    - { src:  "{{ CONTROL_CERT_DIR}}/etcd-client.crt.pem",
-        dest: "{{ K8S_CERT_FILES_DIR }}/etcd-client.crt.pem",
-        mode: '0444' }
-
 - name: Get etcd Binaries
   unarchive:
     src:  "{{ ETCD_DOWNLOAD_URL }}"

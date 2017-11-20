@@ -1,5 +1,5 @@
 #!/bin/bash
-export ETCDCTL_CERT_FILE={{ K8S_CERT_FILES_DIR }}/etcd-client.crt.pem
-export ETCDCTL_KEY_FILE={{ K8S_KEY_FILES_DIR }}/etcd-client.key
+export ETCDCTL_CERT_FILE={{ K8S_CERT_FILES_DIR }}/admin.crt.pem
+export ETCDCTL_KEY_FILE={{ K8S_KEY_FILES_DIR }}/admin.key
 export ETCDCTL_CA_FILE={{ K8S_CERT_FILES_DIR }}/ca.crt.pem
 export ETCDCTL_PEERS=https://{{ K8S_MASTER_IP }}:2379

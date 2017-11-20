@@ -21,6 +21,16 @@
     state: absent
     regexp: "^/dev/sda1"
 
+- name: set hostname for master
+  hostname:
+    name: "{{ K8S_CLUSTER_NAME}}-mstr-{{hostname_suffix}}"
+  when: inventory_hostname in groups['kubernetes-masters']
+
+- name: set hostname for node
+  hostname:
+    name: "{{ K8S_CLUSTER_NAME}}-nd-{{hostname_suffix}}"
+  when: inventory_hostname in groups['kubernetes-nodes']
+
 - name: Create k8s directories
   file:
     path: "{{ item.path }}"
@@ -36,17 +46,28 @@
   #- name: get variables
   #debug: var=hostvars[inventory_hostname]
 
-- name: Install certs
+- name: Retrieve current hostname
+  shell: hostname
+  register: hostname
+
+- name: Install server key and cert
   copy:
-    src:  "{{ CONTROL_CERT_DIR }}/ca.crt.pem"
-    dest: "{{ K8S_CERT_FILES_DIR }}/ca.crt.pem"
-
-- name: set hostname for master
-  hostname:
-    name: "{{ K8S_CLUSTER_NAME}}-mstr-{{hostname_suffix}}"
-  when: inventory_hostname in groups['kubernetes-masters']
-
-- name: set hostname for node
-  hostname:
-    name: "{{ K8S_CLUSTER_NAME}}-nd-{{hostname_suffix}}"
-  when: inventory_hostname in groups['kubernetes-nodes']
+    src:  "{{ item.src  }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+  with_items:
+    - { src:  "{{ CONTROL_KEY_DIR}}/{{ hostname.stdout }}.key",
+        dest: "{{ K8S_KEY_FILES_DIR }}/{{ hostname.stdout }}.key",
+        mode: '0400' }
+    - { src:  "{{ CONTROL_CERT_DIR}}/{{ hostname.stdout }}.crt.pem",
+        dest: "{{ K8S_CERT_FILES_DIR }}/{{ hostname.stdout }}.crt.pem",
+        mode: '0444' }
+    - { src:  "{{ CONTROL_CERT_DIR}}/ca.crt.pem",
+        dest: "{{ K8S_CERT_FILES_DIR }}/ca.crt.pem",
+        mode: '0444' }
+    - { src:  "{{ CONTROL_CERT_DIR}}/admin.crt.pem",
+        dest: "{{ K8S_CERT_FILES_DIR }}/admin.crt.pem",
+        mode: '0444' }
+    - { src:  "{{ CONTROL_CERT_DIR}}/admin.key",
+        dest: "{{ K8S_CERT_FILES_DIR }}/admin.key",
+        mode: '0400' }

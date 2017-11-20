@@ -14,18 +14,18 @@ ExecStart=/usr/bin/apiserver \
       --bind-address={{ K8S_MASTER_IP }} \
       --client-ca-file={{ K8S_CERT_FILES_DIR }}/ca.crt.pem \
       --etcd-cafile={{ K8S_CERT_FILES_DIR }}/ca.crt.pem \
-      --etcd-certfile={{ K8S_CERT_FILES_DIR }}/etcd-client.crt.pem \
-      --etcd-keyfile={{ K8S_KEY_FILES_DIR }}/etcd-client.key \
+      --etcd-certfile={{ K8S_CERT_FILES_DIR }}/admin.crt.pem \
+      --etcd-keyfile={{ K8S_KEY_FILES_DIR }}/admin.key \
       --etcd-servers=https://{{ K8S_MASTER_IP }}:2379 \
       --kubelet-certificate-authority={{ K8S_CERT_FILES_DIR }}/ca.crt.pem \
-      --kubelet-client-certificate={{ K8S_CERT_FILES_DIR }}/kubelet-client.crt.pem \
-      --kubelet-client-key={{ K8S_KEY_FILES_DIR }}/kubelet-client.key \
+      --kubelet-client-certificate={{ K8S_CERT_FILES_DIR }}/admin.crt.pem \
+      --kubelet-client-key={{ K8S_KEY_FILES_DIR }}/admin.key \
       --log-dir=/var/log/ \
       --requestheader-client-ca-file={{ K8S_CERT_FILES_DIR }}/ca.crt.pem \
       --service-cluster-ip-range={{ K8S_CLUSTER_IP_SUBNET }} \
       --tls-ca-file={{ K8S_CERT_FILES_DIR }}/ca.crt.pem \
-      --tls-cert-file={{ K8S_CERT_FILES_DIR }}/apiserver.crt.pem \
-      --tls-private-key-file={{ K8S_KEY_FILES_DIR }}/apiserver.key \
+      --tls-cert-file={{ K8S_CERT_FILES_DIR }}/{{ hostname.stdout }}.crt.pem \
+      --tls-private-key-file={{ K8S_KEY_FILES_DIR }}/{{ hostname.stdout }}.key \
       --token-auth-file={{ K8S_AUTH_FILES_DIR }}/known_tokens.csv \
       --{{ K8S_GLOBAL_LOG_LEVEL }}
 

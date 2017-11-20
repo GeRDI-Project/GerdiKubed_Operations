@@ -1,17 +1,4 @@
 ---
-- name: Install api-server key and cert
-  copy:
-    src:  "{{ item.src  }}"
-    dest: "{{ item.dest }}"
-    mode: "{{ item.mode }}"
-  with_items:
-    - { src:  "{{ CONTROL_KEY_DIR}}/apiserver.key",
-        dest: "{{ K8S_KEY_FILES_DIR }}/apiserver.key",
-        mode: '0400' }
-    - { src:  "{{ CONTROL_CERT_DIR}}/apiserver.crt.pem",
-        dest: "{{ K8S_CERT_FILES_DIR }}/apiserver.crt.pem",
-        mode: '0444' }
-
 - name: Create token file
   template:
     src:  "known_tokens.csv.j2"

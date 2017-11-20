@@ -21,13 +21,13 @@ Environment=ETCD_INITIAL_ADVERTISE_PEER_URLS=https://{{ K8S_MASTER_IP }}:2380
 
 # security
 Environment=ETCD_TRUSTED_CA_FILE={{ K8S_CERT_FILES_DIR }}/ca.crt.pem
-Environment=ETCD_CERT_FILE={{ K8S_CERT_FILES_DIR }}/etcd.crt.pem
-Environment=ETCD_KEY_FILE={{ K8S_KEY_FILES_DIR }}/etcd.key
+Environment=ETCD_CERT_FILE={{ K8S_CERT_FILES_DIR }}/{{ hostname.stdout }}.crt.pem
+Environment=ETCD_KEY_FILE={{ K8S_KEY_FILES_DIR }}/{{ hostname.stdout }}.key
 Environment=ETCD_CLIENT_CERT_AUTH=1
 
 Environment=ETCD_PEER_TRUSTED_CA_FILE={{ K8S_CERT_FILES_DIR }}/ca.crt.pem
-Environment=ETCD_PEER_CERT_FILE={{ K8S_CERT_FILES_DIR }}/etcd.crt.pem
-Environment=ETCD_PEER_KEY_FILE={{ K8S_KEY_FILES_DIR }}/etcd.key
+Environment=ETCD_PEER_CERT_FILE={{ K8S_CERT_FILES_DIR }}/{{ hostname.stdout }}.crt.pem
+Environment=ETCD_PEER_KEY_FILE={{ K8S_KEY_FILES_DIR }}/{{ hostname.stdout }}.key
 Environment=ETCD_PEER_CLIENT_CERT_AUTH=1
 
 # tuning see https://github.com/coreos/etcd/blob/master/Documentation/tuning.md
