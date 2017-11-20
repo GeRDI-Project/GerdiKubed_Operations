@@ -16,7 +16,7 @@ cp group_var/all.tmpl group_var/all
 vi group_var/all
 
 # Edit inventory file-template
-cp production.tmp production
+cp production.tmpl production
 vi production
 
 # setup certificates:
