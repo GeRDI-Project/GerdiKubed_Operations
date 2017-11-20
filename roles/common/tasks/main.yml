@@ -68,6 +68,6 @@
     - { src:  "{{ CONTROL_CERT_DIR}}/admin.crt.pem",
         dest: "{{ K8S_CERT_FILES_DIR }}/admin.crt.pem",
         mode: '0444' }
-    - { src:  "{{ CONTROL_CERT_DIR}}/admin.key",
-        dest: "{{ K8S_CERT_FILES_DIR }}/admin.key",
+    - { src:  "{{ CONTROL_KEY_DIR}}/admin.key",
+        dest: "{{ K8S_KEY_FILES_DIR }}/admin.key",
         mode: '0400' }
