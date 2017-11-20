@@ -57,7 +57,6 @@ This role creates a ca ready infrastructure on a trusted host the localhost shou
 
 To get it working you'll have to set the following variables in group\_var/all:
 * CONTROL\_MACHINE:    Trusted machine on which certificates are issued and ca's private key resides (set "127.0.0.1" for localhost)
-* CONTROL\_USER:  Name of a user on the CONTROL\_Machine. The user should exist, ansible should be able to ssh with this user to the CONTROL\_MACHINE (even localhost) and the user should have suffient permission to create and fill CONTROL\_BASE\_DIR.
 * CONTROL\_BASE\_DIR: Directory in which certficate infrastructure is persisted.
 
 These subdirs shouldn't be altered in group\_vars/all template (they are here for documentation purpose.
