@@ -1,0 +1,57 @@
+{
+  "kind": "Pod",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "kube-controller-manager"
+  },
+  "spec": {
+    "hostNetwork": true,
+    "containers": [
+      {
+        "name": "kube-controller-manager",
+        "image": "gcr.io/google-containers/hyperkube:{{ K8S_VERSION }}",
+        "command": [
+          "/hyperkube",
+          "controller-manager",
+          "--cluster-cidr={{ K8S_CLUSTER_IP_SUBNET }}",
+          "--master={{ K8S_MASTER_IP }}"
+        ],
+        "volumeMounts": [
+          {
+            "name": "k8s-base-dir",
+            "mountPath": "{{ K8S_BASE_DIR }}",
+            "readOnly": true
+          },
+          {
+            "name": "logdir",
+            "mountPath": "/var/log"
+          }
+        ],
+        "livenessProbe": {
+          "httpGet": {
+            "scheme": "HTTP",
+            "host": "127.0.0.1",
+            "port": 10252,
+            "path": "/healthz"
+          },
+          "initialDelaySeconds": 15,
+          "timeoutSeconds": 15
+        }
+      }
+    ],
+    "volumes": [
+      {
+        "name": "k8s-base-dir",
+        "hostPath": {
+          "path": "{{ K8S_BASE_DIR }}"
+        }
+      },
+      {
+        "name": "logdir",
+        "hostPath": {
+          "path": "/var/log"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,29 @@
+- name: Download and Unpack k8s release
+  unarchive:
+    src: "{{ K8S_DOWNLOAD_URL }}"
+    dest: "{{ K8S_BASE_DIR }}"
+    copy: no
+    creates: "{{ K8S_K8S_DIR }}/LICENSES"
+
+- name: Download k8s binaries
+  shell: "export KUBERNETES_SKIP_CONFIRM=yes; bash {{ K8S_K8S_DIR }}/cluster/get-kube-binaries.sh"
+  args:
+    creates: "{{ K8S_K8S_DIR }}/client/kubernetes-client-linux-amd64.tar.gz"
+
+- name: Unpack server binaries
+  unarchive:
+    src:  "{{ K8S_K8S_DIR }}/server/kubernetes-server-linux-amd64.tar.gz"
+    dest: "{{ K8S_K8S_DIR }}/server"
+    copy: no
+    creates: "{{ K8S_K8S_DIR }}/server/kubernetes/server/bin/kubectl"
+
+- name: Create kubectl symlink
+  file:
+    src: "{{ K8S_SERVER_BIN_DIR }}/kubectl"
+    dest: "/usr/bin/kubectl"
+    state: link
+
+- name: Create kubeconfig file
+  template:
+    src:  "kubeconfig.j2"
+    dest: "/etc/kubernetes/kubeconfig"

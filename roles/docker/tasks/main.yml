@@ -1,3 +1,4 @@
+# based on https://docs.docker.com/engine/installation/linux/docker-ce/debian/
 - name: purge any older docker server
   apt:
     pkg={{ item }}
@@ -39,9 +40,16 @@
   apt:
     update_cache: yes
 
-# TODO after testing this should not be latest but present with docher-ce=<tested_version>
+# TODO after testing this should not be latest but present with docker-ce=<tested_version>
 - name: install docker
   apt:
       name: docker-ce
       state: latest
       install_recommends: yes
+
+- name: Configure docker
+  template:
+    src:  "daemon.json.j2"
+    dest: "/etc/docker/daemon.json"
+  notify:
+    - restart docker

@@ -1,0 +1,5 @@
+---
+- name: restart controller-manager
+  service:
+    name: controller-manager
+    state: restarted

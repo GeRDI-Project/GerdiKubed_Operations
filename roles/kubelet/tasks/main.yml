@@ -1,0 +1,21 @@
+---
+- name: Symlink kubelet to /usr/bin
+  file:
+    src:    "{{ K8S_SERVER_BIN_DIR }}/kubelet"
+    dest:   "/usr/bin/kubelet"
+    state:  link
+
+- name: Create a systemd unit file
+  template:
+    src: kubelet.service.j2
+    dest: /etc/systemd/system/kubelet.service
+  notify:
+    - reload daemon
+    - restart kubelet
+
+- name: Register kubelet to systemd
+  systemd:
+    state: started
+    name: kubelet
+    enabled: yes
+    daemon-reload: yes

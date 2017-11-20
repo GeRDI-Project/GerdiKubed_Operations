@@ -1,0 +1,56 @@
+---
+- name: Get etcd Binaries
+  unarchive:
+    src:  "{{ ETCD_DOWNLOAD_URL }}"
+    dest: "{{ K8S_BASE_DIR }}"
+    copy: no
+    creates: "{{ ETCD_DIR }}/etcd"
+
+- name: Install etcd and etcdctl
+  file:
+    src:  "{{ ETCD_DIR }}/{{ item }}"
+    dest: "/usr/bin/{{ item }}"
+    state: link
+  with_items:
+    - etcd
+    - etcdctl
+
+- name: Create persistence directory for etcd
+  file:
+    path: "/var/lib/etcd"
+    state: directory
+
+- name: Create a systemd unit file
+  template:
+    src:  etcd.service.j2
+    dest: /etc/systemd/system/etcd.service
+  notify:
+    - reload daemon
+    - restart etcd
+
+- name: Register etcd to systemd
+  systemd:
+    state: started
+    name: etcd
+    enabled: yes
+    daemon-reload: yes
+
+- name: Create etcdctl helper script for debugging purposes
+  template:
+    src:  "etcdctl_env.sh.j2"
+    dest: "/usr/bin/etcdctl_env"
+    mode: "0500"
+
+# We pipe through cat to set rc to 0, otherwise task fails (not elegant, but effective)
+- name: Check whether helper script must be registered
+  shell: grep "/usr/bin/etcdctl_env" /root/.profile | cat
+  register: helperIsInstalled
+
+
+- name: Include helper script into profile file
+  lineinfile:
+    path: "/root/.profile"
+    line: ". /usr/bin/etcdctl_env"
+    state: present
+    insertafter: EOF
+  when: helperIsInstalled.stdout == ""

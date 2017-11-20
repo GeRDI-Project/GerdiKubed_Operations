@@ -1,0 +1,16 @@
+[Unit]
+Description=Kubernetes Scheduler Plugin
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+
+# TODO: Create kubeconfig with authorization information
+# TODO: Sync with json file
+[Service]
+ExecStart=/usr/bin/scheduler \
+      --{{ K8S_GLOBAL_LOG_LEVEL }} \
+      --logtostderr \
+      --kubeconfig=/etc/kubernetes/kubeconfig
+Restart=on-failure
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

@@ -1,5 +1,5 @@
 echo "Checking important files and folders!"
-for file in kubernetes-nodes.yml kubernetes-master.yml README.md .editorconfig
+for file in k8s-node.yml k8s-master.yml README.md .editorconfig
 do
     if [ ! -f "$file" ]
     then

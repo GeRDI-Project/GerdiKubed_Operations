@@ -1,0 +1,5 @@
+---
+- name: Create api-server manifest and give it kubelet
+  template:
+    src:  "apiserver.json.j2"
+    dest: "/etc/kubernetes/manifests/apiserver.json"

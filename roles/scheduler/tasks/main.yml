@@ -1,0 +1,8 @@
+---
+- name: Start scheduler as a pod
+  import_tasks: schedulerAsPod.yml
+  when: SCHEDULER_AS_POD
+
+- name: Start scheduler as a service
+  import_tasks: schedulerAsService.yml
+  when: SCHEDULER_AS_SERVICE
