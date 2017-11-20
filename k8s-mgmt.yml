@@ -1,5 +1,4 @@
 - name: Initialize k8s management machine
   hosts: kubernetes-management
-  remote_user: di72jiv
   roles:
     - cert-infrastructure
