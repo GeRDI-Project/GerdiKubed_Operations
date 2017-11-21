@@ -7,8 +7,9 @@
   with_items:
       - apt-transport-https
       - ca-certificates
-      - python-openssl
       - iproute2
+      - python-dbus
+      - python-openssl
 
 # TODO Take care of it in image
 - name: Turn swapoff
