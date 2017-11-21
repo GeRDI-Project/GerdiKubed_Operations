@@ -1,0 +1,4 @@
+- name: Initialize k8s management machine
+  hosts: kubernetes-management
+  roles:
+    - cert-infrastructure

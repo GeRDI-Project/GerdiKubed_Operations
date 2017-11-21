@@ -1,0 +1,79 @@
+---
+# create canonical place for certs and keys on control machine
+- name: Create directory structure for certs and keys on control machine
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: "{{ item.mode }}"
+  with_items:
+    - { path: "{{CONTROL_BASE_DIR}}"  , mode: '0700' }
+    - { path: "{{CONTROL_CERT_DIR}}"  , mode: '0700' }
+    - { path: "{{CONTROL_KEY_DIR}}"   , mode: '0700' }
+    - { path: "{{CONTROL_CONFIG_DIR}}", mode: '0700' }
+    - { path: "{{CONTROL_CSR_DIR}}"   , mode: '0700' }
+    - { path: "{{CONTROL_CA_DIR}}"    , mode: '0700' }
+
+- name: Initialize ca administration files
+  file:
+    path: "{{ CONTROL_CA_DIR }}/{{ item }}"
+    state: touch
+  with_items:
+    - serial.txt
+    - index.txt
+
+- name: Check if serial numbers must be initialized
+  stat:
+    path: "{{ CONTROL_CA_DIR }}/serial.txt"
+  register: serial
+
+- name: Initialize serial numbers
+  shell: "echo '01' > {{ CONTROL_CA_DIR }}/serial.txt"
+  when: serial.stat.size == 0
+
+
+# create keys and certs and sign them
+- name: Create keys and certs and sign them
+  include_tasks: createKeysAndCertsAndSignThem.yml
+  vars:
+    filename:   "{{ item.filename }}"
+    cname:      "{{ item.cname }}"
+    sign:       "{{ item.sign }}"
+    type:       "{{ item.type }}"
+    alt_names:  "{{ item.alt_names | default(None) }}"
+  with_items:
+    - cname:    "CA-Certificate"
+      filename: "ca"
+      sign:     False
+      type:     "ca"
+    - cname:    "Administrator"
+      filename: "admin"
+      sign:     True
+      type:     "client"
+
+- name: Create server keys and certs for master instances and sign them
+  include_tasks: createKeysAndCertsAndSignThem.yml
+  vars:
+    filename: "{{ K8S_CLUSTER_NAME }}-mstr-{{ item.0 }}"
+    cname: "{{ K8S_CLUSTER_NAME }}-mstr-{{ item.0 }}.{{ K8S_DOMAIN_NAMESPACE }}"
+    sign: True
+    type: server
+    alt_names:
+      - type: "DNS"
+        name: "{{ K8S_CLUSTER_NAME }}-mstr-{{ item.0 }}.{{ K8S_DOMAIN_NAMESPACE }}"
+      - type: "IP"
+        name: "{{ item.1 }}"
+  with_indexed_items: "{{ groups['kubernetes-masters'] }}"
+
+- name: Create server keys and certs for node instances and sign them
+  include_tasks: createKeysAndCertsAndSignThem.yml
+  vars:
+    filename: "{{ K8S_CLUSTER_NAME }}-nd-{{ item.0 }}"
+    cname: "{{ K8S_CLUSTER_NAME }}-nd-{{ item.0 }}.{{ K8S_DOMAIN_NAMESPACE }}"
+    sign: True
+    type: server
+    alt_names:
+      - type: "DNS"
+        name: "{{ K8S_CLUSTER_NAME }}-nd-{{ item.0 }}.{{ K8S_DOMAIN_NAMESPACE }}"
+      - type: "IP"
+        name: "{{ item.1 }}"
+  with_indexed_items: "{{ groups['kubernetes-nodes'] }}"

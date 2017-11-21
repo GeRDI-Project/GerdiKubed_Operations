@@ -1,0 +1,8 @@
+---
+- name: Start controller-manager as a pod
+  import_tasks: controllerManagerAsPod.yml
+  when: CONTROLLER_MANAGER_AS_POD
+
+- name: Start controller-manager as a service
+  import_tasks: controllerManagerAsService.yml
+  when: CONTROLLER_MANAGER_AS_SERVICE

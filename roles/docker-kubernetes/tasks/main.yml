@@ -13,7 +13,7 @@
   ignore_errors: True
 
 # FIXME: this step does not work
-- name: Creating network bridge cbr0 for per-node CIDR ranges 
+- name: Creating network bridge cbr0 for per-node CIDR ranges
   nmcli:
     conn_name: cbr0
     type: bridge
@@ -49,4 +49,3 @@
     #    value: 1
     #    state: present
     #    reload: True
-

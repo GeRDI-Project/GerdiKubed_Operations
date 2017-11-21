@@ -1,0 +1,68 @@
+- name: "Check if key, cert and csr exists for {{ filename }}"
+  stat:
+    path: "{{ checkitem }}"
+  register: check
+  with_items:
+    - "{{ CONTROL_KEY_DIR }}/{{ filename }}.key"
+    - "{{ CONTROL_CERT_DIR }}/{{ filename }}.crt.pem"
+    - "{{ CONTROL_CSR_DIR }}/{{ filename }}.csr.pem"
+  loop_control:
+    loop_var: checkitem
+
+- name: "Create openssl.cnf file for {{ filename }}"
+  template:
+    src:  "openssl.cnf.j2"
+    dest: "{{CONTROL_CONFIG_DIR}}/{{ filename }}.openssl.cnf"
+
+- name: "Create selfsigned cert with    key for {{ filename }}"
+  shell: |
+    openssl req \
+      -nodes \
+      -new \
+      -x509 \
+      -config {{ CONTROL_CONFIG_DIR }}/{{ filename }}.openssl.cnf \
+      -out {{ CONTROL_CERT_DIR }}/{{ filename }}.crt.pem \
+      -extensions v3_ca
+  when: check.results[0].stat.exists == False and check.results[1].stat.exists == False and sign == False
+
+- name: "Create selfsigned cert without key for {{ filename }}"
+  shell: |
+    openssl req \
+      -new \
+      -x509 \
+      -key {{ CONTROL_KEY_DIR }}/{{ filename }}.key \
+      -config {{ CONTROL_CONFIG_DIR }}/{{ filename }}.openssl.cnf \
+      -out {{ CONTROL_CERT_DIR }}/{{ filename }}.crt.pem \
+      -extensions v3_ca
+  when: check.results[0].stat.exists == True and check.results[1].stat.exists == False and sign == False
+
+- name: "Create csr with    key for {{ filename }}"
+  shell: |
+    openssl req \
+      -nodes \
+      -new \
+      -config {{ CONTROL_CONFIG_DIR }}/{{ filename }}.openssl.cnf \
+      -out {{ CONTROL_CSR_DIR }}/{{ filename }}.csr.pem \
+      -extensions v3_req
+  when: check.results[0].stat.exists == False and check.results[2].stat.exists == False and sign == True
+
+- name: "Create csr without key for {{ filename }}"
+  shell: |
+    openssl req \
+      -new \
+      -key {{ CONTROL_KEY_DIR }}/{{ filename }}.key \
+      -config {{ CONTROL_CONFIG_DIR }}/{{ filename }}.openssl.cnf \
+      -out {{ CONTROL_CSR_DIR }}/{{ filename }}.csr.pem \
+      -extensions v3_req
+  when: check.results[0].stat.exists == True and check.results[2].stat.exists == False and sign == True
+
+- name: "Create signed cert for {{ filename }}"
+  shell: |
+    openssl ca \
+    -config {{ CONTROL_CONFIG_DIR }}/{{ filename }}.openssl.cnf \
+    -in {{ CONTROL_CSR_DIR }}/{{ filename }}.csr.pem \
+    -out {{ CONTROL_CERT_DIR }}/{{ filename }}.crt.pem \
+    -policy signing_policy \
+    -extensions signing_req \
+    -batch
+  when: check.results[1].stat.exists == False and sign == True

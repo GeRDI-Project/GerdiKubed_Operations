@@ -1,0 +1,15 @@
+[Unit]
+Description=Kubernetes Kube-Proxy Server
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+After=network.target
+
+# TODO: Create kubeconfig with authorization information
+[Service]
+ExecStart=/usr/bin/kube-proxy \
+      --{{ K8S_GLOBAL_LOG_LEVEL }} \
+      --kubeconfig=/etc/kubernetes/kubeconfig
+Restart=on-failure
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

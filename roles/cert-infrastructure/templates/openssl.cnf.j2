@@ -1,0 +1,74 @@
+#
+# OpenSSL configuration file for {{ filename }}.
+#
+
+[ ca ]
+default_ca                      = CA_default
+
+[ CA_default ]
+serial                          = {{ CONTROL_CA_DIR }}/serial.txt
+database                        = {{ CONTROL_CA_DIR }}/index.txt
+new_certs_dir                   = {{ CONTROL_CERT_DIR }}
+certificate                     = {{ CONTROL_CERT_DIR }}/ca.crt.pem
+private_key                     = {{ CONTROL_KEY_DIR }}/ca.key
+default_days                    = 5000
+default_md                      = sha256
+preserve                        = no
+email_in_dn                     = no
+unique_subject                  = no
+copy_extensions                 = copy
+
+[ signing_policy ]
+countryName                     = match
+stateOrProvinceName             = match
+organizationName                = match
+organizationalUnitName          = optional
+commonName                      = supplied
+emailAddress                    = optional
+
+[ signing_req ]
+authorityKeyIdentifier          = keyid:always,issuer
+
+[ req ]
+prompt                          = no
+default_bits                    = 2048
+default_keyfile                 = {{ CONTROL_KEY_DIR }}/{{ filename }}.key
+default_md                      = sha256
+string_mask                     = nombstr
+distinguished_name              = req_distinguished_name
+req_extensions                  = v3_req
+
+[ req_distinguished_name ]
+# Default values for the above, for consistency and less typing.
+# Variable name                    Value
+#------------------------------    ------------------------------
+C                               = DE
+ST                              = Bayern
+L                               = Garching b. Muenchen
+O                               = GeRDI
+OU                              = GeRDI-Kubernetes
+CN                              = {{ cname }}
+
+[ v3_ca ]
+basicConstraints                = critical, CA:TRUE
+subjectKeyIdentifier            = hash
+authorityKeyIdentifier          = keyid:always,issuer:always
+keyUsage                        = keyCertSign, cRLSign
+
+[ v3_req ]
+subjectKeyIdentifier            = hash
+basicConstraints                = CA:FALSE
+keyUsage                        = digitalSignature, keyEncipherment
+{% if type == "client" %}
+extendedKeyUsage                = clientAuth
+{% elif type == "server" %}
+extendedKeyUsage                = serverAuth
+{% endif %}
+{% if alt_names != "" %}
+subjectAltName                  = @alt_names
+
+[alt_names]
+{% for alt_name in alt_names %}
+{{ alt_name.type }}.{{ loop.index }}                            = {{ alt_name.name }}
+{% endfor %}
+{% endif %}

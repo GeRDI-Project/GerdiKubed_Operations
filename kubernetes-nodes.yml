@@ -1,8 +1,0 @@
-- name: Initialize kubernetes nodes
-  hosts: kubernetes-nodes
-  remote_user: gerdi
-  become: true
-  roles:
-    - common
-    #- docker
-    - docker-kubernetes

@@ -1,0 +1,14 @@
+- name: Initialize kubernetes nodes
+  hosts: kubernetes-masters
+  remote_user: root
+  roles:
+    - common
+    - docker
+    - network_ovn
+    - etcd
+    - k8s-binaries
+    - kubelet
+    - kube-proxy
+    - apiserver
+    - scheduler
+    - controller-manager

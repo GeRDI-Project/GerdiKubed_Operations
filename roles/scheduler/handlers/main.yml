@@ -1,0 +1,5 @@
+---
+- name: restart scheduler
+  service:
+    name: scheduler
+    state: restarted
