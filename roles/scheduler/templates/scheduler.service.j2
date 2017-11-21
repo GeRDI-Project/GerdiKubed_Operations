@@ -8,7 +8,7 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 ExecStart=/usr/bin/scheduler \
       --{{ K8S_GLOBAL_LOG_LEVEL }} \
       --logtostderr \
-      --kubeconfig=/etc/kubernetes/kubeconfig
+      --kubeconfig={{ K8S_KUBECONFIG }}
 Restart=on-failure
 LimitNOFILE=65536
 
