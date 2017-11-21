@@ -35,10 +35,10 @@ ansible-playbook -i production k8s-nodes.yml -K
 
 * Debian 9.1 or higher on the remote machines (you can use the recipe (TODO: add link) to create a VM image against which these scripts have been tested).
 * Running sshd on the remote machines and on the control machine (preferrably localhost)
-* Pub key in .ssh/authorized_keys in roots's home on the remote machines
+* Pub key in .ssh/authorized\_keys in roots's home on the remote machines
 * Python > 2.6
 * Ansible >= 2.4.1.0 (on the control machine, only linux distros are supported!)
-* Package iproute2 installed (if you forget and playbooks fail, rerun them)
+* On nodes: iproute2 (if you forget and k8s-nodes.yml fail, rerun them)
 * at least two network interface for k8s-nodes
 * There needs to be one interface named ens3 that holds an IP adress und which the services are reachable. This must not be the ovn-management interface. Sometime the name of the interface should somehow be dynamically determined - now it is hardcoded in two roles (kubelet and network\_ovn)
 
