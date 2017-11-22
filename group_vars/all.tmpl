@@ -39,14 +39,21 @@ K8S_KEY_FILES_DIR: "{{ K8S_BASE_DIR }}/keys"
 K8S_AUTH_FILES_DIR: "{{ K8S_BASE_DIR }}/tokens"
 
 # roles: apiserver, network_ovn, controller-manager
-K8S_CLUSTER_IP_SUBNET: 10.0.0.0/16
+# this is an example:
+# We will have 255 class-c nets for the same number of nodes
+# 10.220.hostname_suffix.0/24 IPs for each nodes
+# 10.221.0.0/16 IPs service ports
+K8S_CLUSTER_IP_PRE:    "10.220"
+K8S_CLUSTER_IP_SUBNET: "{{ K8S_CLUSTER_IP_PRE }}.0.0/16"
+K8S_SERVICE_IP_SUBNET: "10.221.0.0/16"
 
 # role: network_ovn
 OVN_API_TOKEN: "someValue"
 OVN_ENCAP_TYPE: geneve
 OVN_K8S_DIR: "{{ K8S_BASE_DIR }}/ovn-kubernetes"
-OVN_MASTER_SWITCH_SUBNET: 10.0.1.0/24
-OVN_MINION_SWITCH_SUBNET: 192.168.2.0/24
+# this is an example
+# each master will have 10.222.hostname_suffix.0/24 at its disposal
+OVN_MASTER_SUBNET_PRE: 10.222
 
 # role: etcd
 ETCD_VERSION: v3.0.17

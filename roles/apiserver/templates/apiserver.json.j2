@@ -14,7 +14,7 @@
           "/hyperkube",
           "apiserver",
           "--address={{ K8S_MASTER_IP }}",
-          "--service-cluster-ip-range={{ K8S_CLUSTER_IP_SUBNET }}",
+          "--service-cluster-ip-range={{ K8S_SERVICE_IP_SUBNET }}",
           "--etcd-servers=https://{{ K8S_MASTER_IP }}:2379",
           "--etcd-cafile={{ K8S_CERT_FILES_DIR }}/ca.crt.pem",
           "--etcd-certfile={{ K8S_CERT_FILES_DIR }}/admin.crt.pem",
