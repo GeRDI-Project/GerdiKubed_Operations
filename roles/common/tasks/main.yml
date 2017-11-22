@@ -6,6 +6,7 @@
       state: latest
   with_items:
       - apt-transport-https
+      - bash-completion
       - ca-certificates
       - iproute2
       - python-dbus
