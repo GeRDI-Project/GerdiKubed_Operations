@@ -4,6 +4,7 @@
   roles:
     - common
     - docker
+    - cni
     - k8s-binaries
     - network_ovn
     - kubelet

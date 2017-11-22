@@ -1,0 +1,12 @@
+---
+- name: Create {{ CNI_DIR }}
+  file:
+    path: "{{ CNI_DIR }}"
+    state: directory
+
+- name: Fetch cni binaries
+  unarchive:
+    src:  "{{ CNI_DOWNLOAD_URL }}"
+    dest: "{{ CNI_DIR }}"
+    copy: no
+    creates: "{{ CNI_DIR }}/cnitool"
