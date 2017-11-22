@@ -6,6 +6,6 @@
     - docker
     - cni
     - k8s-binaries
-    - network_ovn
     - kubelet
     - kube-proxy
+    - network_ovn

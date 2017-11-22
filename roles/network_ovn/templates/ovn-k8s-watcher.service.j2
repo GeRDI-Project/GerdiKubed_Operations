@@ -1,0 +1,15 @@
+[Unit]
+Description=Open virtual net kubernetes watcher
+Documentation=https://github.com/openvswitch/ovn-kubernetes/README.md
+After=openvswitch-switch
+
+[Service]
+ExecStart=/usr/local/bin/ovn-k8s-watcher \
+  --overlay \
+  --pidfile \
+  --log-file \
+  -vfile:info \
+  -vconsole:emer
+
+[Install]
+WantedBy=default.target

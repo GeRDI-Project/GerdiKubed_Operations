@@ -1,0 +1,9 @@
+#!/bin/bash
+ip link set ens4 down
+
+ovn-k8s-overlay gateway-init \
+  --cluster-ip-subnet={{ K8S_CLUSTER_IP_SUBNET }} \
+  --physical-interface ens4 \
+  --physical-ip {{ ansible_ens4.ipv4.address }} \
+  --node-name={{ hostname.stdout }} \
+  --default-gw {{ nb_gateway.stdout }}

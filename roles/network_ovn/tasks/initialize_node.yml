@@ -5,8 +5,10 @@
   with_items:
     - ovn-host
 
-- name: Set the k8s API server address in the Open vSwitch database
-  shell: ovs-vsctl set Open_vSwitch . external_ids:k8s-api-server="{{K8S_MASTER_IP}}:8080"
+- name: Create OVN configuration
+  template:
+    src: ovn_k8s.conf.j2
+    dest: /etc/openvswitch/ovn_k8s.conf
 
 - name: Secure connection to k8s API server
   shell: ovs-vsctl set Open_vSwitch . external_ids:{{item}}
@@ -26,12 +28,24 @@
   shell: ip route show | grep default | grep ens4 | awk '{ print $3 }'
   register: nb_gateway
 
+- name: Install ovn-startup (gateway) as a service
+  template:
+    src: ovn-startup.service.j2
+    dest: /etc/systemd/system/ovn-startup.service
+  notify:
+    - reload daemon
+
+- name: Install ovn-startup script
+  template:
+    src:  ovn-startup.sh.j2
+    dest: "{{ OVN_K8S_DIR }}/ovn-startup.sh"
+    mode: 0755
+  when: ansible_ens4.ipv4 is defined
+
+- name: Enable ovn-startup script
+  systemd:
+    name: ovn-startup
+    enabled: yes
+
 - name: Setup Gateway
-  shell: |
-    ovn-k8s-overlay gateway-init \
-    --cluster-ip-subnet={{ K8S_CLUSTER_IP_SUBNET }} \
-    --physical-interface ens4 \
-    --physical-ip {{ ansible_ens4.ipv4.address }} \
-    --node-name={{ ansible_hostname }}\
-    --default-gw {{ nb_gateway.stdout }}
-  when: nb_gateway.stdout | ipaddr
+  command: "{{ OVN_K8S_DIR }}/ovn-startup.sh"
