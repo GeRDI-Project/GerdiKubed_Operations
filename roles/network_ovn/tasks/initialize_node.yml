@@ -49,3 +49,10 @@
 
 - name: Setup Gateway
   command: "{{ OVN_K8S_DIR }}/ovn-startup.sh"
+
+- name: Restart ovn-watcher on master
+  systemd:
+    name: ovn-k8s-watcher
+    state: restarted
+  delegate_to: "{{ item }}"
+  with_items: "{{ groups['kubernetes-masters'] }}"

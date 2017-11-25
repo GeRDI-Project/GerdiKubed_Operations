@@ -8,8 +8,11 @@
       - apt-transport-https
       - bash-completion
       - ca-certificates
+      - curl
       - iproute2
+      - libnm-glib-dev
       - python-dbus
+      - python-networkmanager
       - python-openssl
 
 # TODO Take care of it in image
