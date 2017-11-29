@@ -5,6 +5,12 @@
     state: latest
   with_items:
     - conntrack
+    - conntrackd
+
+- name: Flush iptables rules
+  iptables:
+    table: nat
+    flush: yes
 
 - name: Symlink kube-proxy to /usr/bin
   file:
@@ -26,3 +32,8 @@
     name: kube-proxy
     enabled: yes
     daemon-reload: yes
+
+- name: Allow forwarding from extern IPs to NodeIPs
+  iptables:
+    chain: FORWARD
+    policy: ACCEPT
