@@ -5,6 +5,11 @@
   with_items:
     - ovn-central
 
+- name: open tcp ports for ovn databases
+  shell: |
+    ovn-nbctl set-connection ptcp:6641 ; \
+    ovn-sbctl set-connection ptcp:6642
+
 - name: Set the k8s api server address in the Open vSwitch database
   shell: ovs-vsctl set Open_vSwitch . external_ids:k8s-api-server="127.0.0.1:8080"
 
