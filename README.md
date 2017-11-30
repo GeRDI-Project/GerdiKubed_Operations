@@ -33,7 +33,7 @@ ansible-playbook -i production k8s-nodes.yml -K
 
 # Requirements
 
-* Debian 9.1 or higher on the remote machines (you can use the recipe (TODO: add link) to create a VM image against which these scripts have been tested).
+* Debian 9.1 or higher on the remote machines (you can use the [recipe](CreateVMImage.md) to create a VM image against which these scripts have been tested).
 * Running sshd on the remote machines and on the control machine (preferrably localhost)
 * Pub key in .ssh/authorized\_keys in roots's home on the remote machines
 * Python > 2.6
@@ -107,7 +107,7 @@ Kube-proxy will run a s systemd-service on all nodes.
 
 ### network\_ovn
 
-OVN/OVS is one of the possible k8s network driver (TODO link k8s network model here). All additional network driver should be named alongside the pattern network\_*.
+OVN/OVS is one of the possible k8s network driver (see [k8s network model](https://kubernetes.io/docs/concepts/cluster-administration/networking/#kubernetes-model). All additional network driver should be named alongside the pattern network\_*.
 
 ### scheduler
 
