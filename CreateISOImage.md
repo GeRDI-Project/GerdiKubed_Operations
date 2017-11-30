@@ -21,7 +21,7 @@ sudo apt-get install \
     rsync
 
 mkdir $BUILDDIR
-#TODO
+#TODO in SAI-242
 #W: Cannot check Release signature; keyring file not available /usr/share/keyrings/debian-archive-keyring.gpg
 sudo debootstrap --variant=minbase \
     --arch amd64 \
@@ -76,7 +76,6 @@ mkdir -p $BUILDDIR/image/{live,isolinux}
     cp chroot/boot/initrd.img-* image/live/initrd1
 )
 
-# TODO do without isolinux?
 echo "UI menu.c32
 
 prompt 1

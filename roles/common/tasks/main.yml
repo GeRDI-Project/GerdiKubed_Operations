@@ -15,7 +15,7 @@
       - python-networkmanager
       - python-openssl
 
-# TODO Take care of it in image
+# TODO Take care of it in image (see SAI-242)
 - name: Turn swapoff
   shell: swapoff -a
 

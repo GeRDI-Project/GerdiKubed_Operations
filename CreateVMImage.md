@@ -31,7 +31,7 @@ sudo qemu-img create -f qcow2 $BUILDDIR/$IMAGE $SIZE
 
 sudo qemu-nbd -c /dev/nbd0 $BUILDDIR/$IMAGE
 
-#TODO parted?
+#TODO parted? SAI-242
 sudo sfdisk /dev/nbd0 <<EOF
 ,2097152,82
 ;
@@ -55,8 +55,8 @@ mount -t proc none /proc
 mount -t sysfs none /sys
 
 # openssh-server + python + iprout2 to be ansible ready (python has to be > 3 as of the time writing)
-# TODO: replace grub2 with lightweight isolinux
-# TODO: no init script in /sbin unless systemd-sysv is installed?
+# TODO: replace grub2 with lightweight isolinux SAI-242
+# TODO: no init script in /sbin unless systemd-sysv is installed? SAI-242
 apt-get install -y \
     --no-install-recommends \
     linux-image-amd64 \
@@ -81,7 +81,7 @@ cat > /etc/fstab <<EOF
 EOF
 
 mkdir /root/.ssh
-#TODO: Not nice: Hard coding ssh-keys, but works sofar ;)
+#TODO: Not nice: Hard coding ssh-keys, but works sofar ;) SAI-242
 cat > /root/.ssh/authorized_keys <<EOF
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9olNhMkCbQPJ2vcjIFwNSB8IW/BwuA6fm8Hu1GsPFPsvMYGxibOZ0lXQNu5tyUfv7dQaq3hS4p2jCWp1ldFB64+GjiuFNuJSijER/p28VUCxF7FIslNLUTXWdNIHttZaZ1ugrKZwdkUbdOmsDQ8OBOuRlSAjMmuGQxstrnwfKYddnvbguUU4C3smAC/AEVst9yPLu2QwrRAe2R8Dg0TvMckkzQVompft/jSoIwC2GCkx4ZkDrPOZiXqy241Tt1LaEjuj1Kz/iKw065XGwChfIgEdKGa8sS1t3cv/wwLaGBz26ujJ0OrcRvwlGOkPTLZ9vz4BPyet3U7dYHLZNwkdB tobi@Joschka
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDFFtpcNHDgsysmAHibEnJzRD2NvL0RAdgwZ7x3fcykLuEoF7D6G+YgYETzBZFg61ZtwzPQJWDUq4f7+lklZmZzUtFqbLMBwkDN9CAIWbK3BVtO4umzXmN8oyTNmRKIV0lyDM6WMe4w/6eKG/W6zXXujCMG4UE/SWTOdUOWD7eaTEUt1X46XvWfZOyWXodizxFZwE0MD35Z45zJQ9wC5oU1fvgrB9SCGPyI0w9PgdTLrqAOrVJNNSzCfszzXCG9TSNw72zGh3dsHnWnJ5Ru2dJEK6qUi7eW/k2qfEKbHOH7eY7tXahLuYzvaZ7ixdCtlyApaZkkKFkLZ80o9x8wRmhj di72jiv@di72jiv-Latitude-E7270
@@ -105,7 +105,7 @@ systemctl enable systemd-resolved.service
 
 # Shrink image (zero bytes are non-dirty, host will not see them as "claimed" by guest)
 # see https://serverfault.com/questions/329287/free-up-not-used-space-on-a-qcow2-image-file-on-kvm-qemu
-# TODO: There might be a more elegant solution, since this consumes a lot of time...
+# TODO: There might be a more elegant solution, since this consumes a lot of time... SAI-242
 # Saves ~ 300MB of image size. If this is the way to go, we should tune it further
 # (delete unnecessary files befor dd'ing)
 dd if=/dev/zero of=/tmp/somefile

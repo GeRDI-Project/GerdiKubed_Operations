@@ -2,7 +2,6 @@
 Description=Kubernetes Controller Manager
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 
-# TODO: Sync with json file
 [Service]
 ExecStart=/usr/bin/controller-manager \
       --{{ K8S_GLOBAL_LOG_LEVEL }} \
