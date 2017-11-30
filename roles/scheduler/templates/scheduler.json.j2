@@ -13,7 +13,9 @@
         "command": [
           "/hyperkube",
           "scheduler",
-          "--master={{ K8S_MASTER_IP }}:8080"
+          "--{{ K8S_GLOBAL_LOG_LEVEL }} ",
+          "--logtostderr ",
+          "--kubeconfig={{ K8S_KUBECONFIG }}"
         ],
         "volumeMounts": [
           {
