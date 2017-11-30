@@ -4,7 +4,7 @@ Pin-Priority: 700
 
 Package: *
 Pin: release o=debian,a=unstable
-Pin-Priority: -1 
+Pin-Priority: -1
 
 Package: ovn-central
 Pin: release o=debian,a=unstable
