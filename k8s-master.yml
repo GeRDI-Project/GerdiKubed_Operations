@@ -3,7 +3,6 @@
   remote_user: root
   roles:
     - common
-    - network_ovn
     - etcd
     - k8s-binaries
     # docker, kubelet and kube-proxy are only installed on the master
@@ -17,3 +16,4 @@
     - apiserver
     - scheduler
     - controller-manager
+    - network_ovn
