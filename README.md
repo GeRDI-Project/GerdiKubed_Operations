@@ -28,7 +28,7 @@ ansible-playbook -i production k8s-mgmt.yml
 ansible-playbook -i production k8s-master.yml
 
 # setup nodes
-ansible-playbook -i production k8s-nodes.yml -K
+ansible-playbook -i production k8s-node.yml
 ```
 
 # Requirements
