@@ -21,7 +21,7 @@ ExecStart=/usr/bin/kubelet \
       --healthz_port=10248 \
       --kubeconfig={{ K8S_KUBECONFIG }} \
       --logtostderr=true \
-      --node-ip={{ ansible_ens3.ipv4.address }} \
+      --node-ip={{ iface1.ipv4 }} \
       --pod-manifest-path=/etc/kubernetes/manifests \
       --port=10250 \
       --register-node \

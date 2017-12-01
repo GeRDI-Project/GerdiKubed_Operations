@@ -24,10 +24,6 @@
       --minion-switch-subnet={{ K8S_CLUSTER_IP_PRE }}.{{ hostname_suffix }}.0/24 \
       --node-name={{ hostname.stdout }}
 
-- name: Determine Gateway for North-South Interface
-  shell: ip route show | grep default | grep ens4 | awk '{ print $3 }'
-  register: nb_gateway
-
 - name: Install ovn-startup (gateway) as a service
   template:
     src: ovn-startup.service.j2
@@ -40,7 +36,6 @@
     src:  ovn-startup.sh.j2
     dest: "{{ OVN_K8S_DIR }}/ovn-startup.sh"
     mode: 0755
-  when: ansible_ens4.ipv4 is defined
 
 - name: Enable ovn-startup script
   systemd:

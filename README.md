@@ -38,9 +38,7 @@ ansible-playbook -i production k8s-node.yml
 * Pub key in .ssh/authorized\_keys in roots's home on the remote machines
 * Python > 2.6
 * Ansible >= 2.4.1.0 (on the control machine, only linux distros are supported!)
-* On nodes: iproute2 (if you forget and k8s-nodes.yml fail, rerun them)
 * at least two network interface for k8s-nodes
-* There needs to be one interface named ens3 that holds an IP adress und which the services are reachable. This must not be the ovn-management interface. Sometime the name of the interface should somehow be dynamically determined - now it is hardcoded in two roles (kubelet and network\_ovn)
 
 # Documentation
 

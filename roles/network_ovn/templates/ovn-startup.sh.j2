@@ -1,9 +1,9 @@
 #!/bin/bash
-ip link set ens4 down
+ip link set {{ iface2.name }} down
 
 ovn-k8s-overlay gateway-init \
   --cluster-ip-subnet={{ K8S_CLUSTER_IP_SUBNET }} \
-  --physical-interface ens4 \
-  --physical-ip {{ ansible_ens4.ipv4.address }} \
+  --physical-interface {{ iface2.name }} \
+  --physical-ip {{ iface2.ipv4 }} \
   --node-name={{ hostname.stdout }} \
-  --default-gw {{ nb_gateway.stdout }}
+  --default-gw {{ iface2.gw }}
