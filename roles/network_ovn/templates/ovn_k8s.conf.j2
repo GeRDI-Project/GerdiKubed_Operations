@@ -1,0 +1,15 @@
+[default]
+mtu=1400
+conntrack_zone=64000
+ovn_mode=overlay
+log_path=/var/log/openvswitch/ovn-k8s-cni-overlay.log
+unix_socket=/var/run/openvswitch/ovnnb_db.sock
+cni_conf_path={{ CNI_CONF_DIR }}
+cni_link_path={{ CNI_DIR }}
+cni_plugin=ovn-k8s-cni-overlay
+private_key=/etc/openvswitch/ovncontroller-privkey.pem
+certificate=/etc/openvswitch/ovncontroller-cert.pem
+ca_cert={{ K8S_CERT_FILES_DIR }}/ca.crt.pem
+k8s_ca_certificate={{ K8S_CERT_FILES_DIR }}/ca.crt.pem
+rundir=
+logdir=

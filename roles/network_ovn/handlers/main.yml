@@ -1,0 +1,5 @@
+---
+- name: restart ovn-k8s-watcher
+  service:
+    name: ovn-k8s-watcher
+    state: restarted

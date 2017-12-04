@@ -11,12 +11,17 @@ ExecStart=/usr/bin/kubelet \
       --allow-privileged=true \
       --cgroup-driver=cgroupfs \
       --cloud-provider="" \
+{% if inventory_hostname in groups['kubernetes-nodes'] %}
+      --cni-conf-dir={{ CNI_CONF_DIR }} \
+      --cni-bin-dir={{ CNI_DIR }} \
+      --network-plugin=cni \
+{% endif %}
       --container-runtime="docker" \
       --healthz_bind_address=0.0.0.0 \
       --healthz_port=10248 \
-      --kubeconfig=/etc/kubernetes/kubeconfig \
+      --kubeconfig={{ K8S_KUBECONFIG }} \
       --logtostderr=true \
-      --node-ip={{ ansible_default_ipv4.address }} \
+      --node-ip={{ iface1.ipv4 }} \
       --pod-manifest-path=/etc/kubernetes/manifests \
       --port=10250 \
       --register-node \

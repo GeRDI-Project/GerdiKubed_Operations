@@ -3,11 +3,12 @@ Description=Kubernetes Kube-Proxy Server
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 After=network.target
 
-# TODO: Create kubeconfig with authorization information
 [Service]
 ExecStart=/usr/bin/kube-proxy \
       --{{ K8S_GLOBAL_LOG_LEVEL }} \
-      --kubeconfig=/etc/kubernetes/kubeconfig
+      --kubeconfig={{ K8S_KUBECONFIG }} \
+      --cluster-cidr={{ K8S_CLUSTER_IP_SUBNET }} \
+      --proxy-mode="iptables"
 Restart=on-failure
 LimitNOFILE=65536
 

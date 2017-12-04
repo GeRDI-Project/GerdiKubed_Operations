@@ -1,17 +1,21 @@
 ---
 # Common tasks on every host
-- name: Install requirements for adding new deb-repo packages & interactive ansible
+- name: Install additional requirements
   apt:
       pkg: "{{ item }}"
       state: latest
   with_items:
       - apt-transport-https
+      - bash-completion
       - ca-certificates
-      - python3-dbus
-      - python-openssl
+      - curl
       - iproute2
+      - libnm-glib-dev
+      - python-dbus
+      - python-networkmanager
+      - python-openssl
 
-# TODO Take care of it in image
+# TODO Take care of it in image (see SAI-242)
 - name: Turn swapoff
   shell: swapoff -a
 
@@ -43,8 +47,34 @@
     - { path: "{{ K8S_KEY_FILES_DIR  }}", mode: '0700' }
     - { path: "/etc/kubernetes/manifests", mode: '0755' }
 
-  #- name: get variables
-  #debug: var=hostvars[inventory_hostname]
+- name: Install script to determine interfaces, ips and gws
+  copy:
+    src: printIface.sh
+    dest: /root/printIface.sh
+
+- name: Retrieve information for first interface
+  shell: bash /root/printIface.sh 1
+  register: firstInterface
+
+- name: Set facts for first interface
+  set_fact:
+    iface1:
+      name: "{{ firstInterface.stdout.split(' ')[0] }}"
+      ipv4: "{{ firstInterface.stdout.split(' ')[1] }}"
+      gw: "{{ firstInterface.stdout.split(' ')[2] }}"
+
+- name: Retrieve information for second interface
+  shell: bash /root/printIface.sh 2
+  register: secondInterface
+  when: inventory_hostname in groups['kubernetes-nodes']
+
+- name: Set facts for second interface
+  set_fact:
+    iface2:
+      name: "{{ secondInterface.stdout.split(' ')[0] }}"
+      ipv4: "{{ secondInterface.stdout.split(' ')[1] }}"
+      gw: "{{ secondInterface.stdout.split(' ')[2] }}"
+  when: inventory_hostname in groups['kubernetes-nodes']
 
 - name: Retrieve current hostname
   shell: hostname

@@ -1,21 +1,42 @@
-- name: install common ovs and ovn packages
+- name: Add unstable for newer ovn-version
+  apt_repository:
+    repo: deb http://debian.mirror.lrz.de/debian unstable main
+    state: present
+
+- name: Install package pinning for newer ovn-version
+  copy:
+    src: ovnovs.pref
+    dest: /etc/apt/preferences.d/ovnovs.pref
+
+- name: Install ovn dependencies
   package:
-    name={{ item }}
-    state=present
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
   with_items:
     - git
-    - openvswitch-switch
-    - openvswitch-common
-    - ovn-common
     - python-pip
     - virtualenv
+    - openvswitch-switch
+
+- name: Install ovn controller systemd unit file
+  template:
+    src: ovn-controller.service.j2
+    dest: /etc/systemd/system/ovn-controller.service
+
+- name: Reload systemd daemon and start ovn controller
+  systemd:
+    state: started
+    name: ovn-controller
+    enabled: yes
+    daemon-reload: yes
 
 - name: Set db entries on both masters and nodes
   shell: ovs-vsctl set Open_vSwitch . external_ids:{{item}}
   with_items:
     - ovn-remote="tcp:{{ K8S_MASTER_IP }}:6642"
     - ovn-nb="tcp:{{ K8S_MASTER_IP }}:6641"
-    - ovn-encap-ip={{ ansible_default_ipv4.address }}
+    - ovn-encap-ip="{{ iface1.ipv4 }}"
     - ovn-encap-type="{{ OVN_ENCAP_TYPE }}"
 
 # TODO: version should sometime be specified to guarantee that it works

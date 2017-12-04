@@ -26,4 +26,29 @@
 - name: Create kubeconfig file
   template:
     src:  "kubeconfig.j2"
-    dest: "/etc/kubernetes/kubeconfig"
+    dest: "{{ K8S_KUBECONFIG }}"
+
+# We pipe through cat to set rc to 0, otherwise task fails (not elegant, but effective)
+- name: Check whether helper script must be registered
+  shell: grep "{{ K8S_KUBECONFIG }}" /root/.profile | cat
+  register: k8s_kubeconfig_present
+
+- name: Include KUBECONFIG variable in root's profile
+  lineinfile:
+    path: "/root/.profile"
+    line: "export KUBECONFIG={{ K8S_KUBECONFIG }}"
+    state: present
+    insertafter: EOF
+  when: k8s_kubeconfig_present.stdout == ""
+
+- name: Check if kubectl autocompletion is already installed
+  shell: grep "source <(kubectl completion bash)" /root/.profile | cat
+  register: k8s_kubectl_autocompletion
+
+- name: Install bash autocompletion for kubectl
+  lineinfile:
+    path: "/root/.profile"
+    line: "source <(kubectl completion bash)"
+    state: present
+    insertafter: EOF
+  when: k8s_kubectl_autocompletion.stdout == ""

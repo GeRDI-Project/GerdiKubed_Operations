@@ -4,9 +4,8 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 After=network.target
 After=etcd.service
 
-# TODO Sync with json-template
-# TODO review Admission control
-# TODO review allow-privileged=true (needed by ntd)
+# TODO review Admission control SAI-307
+# TODO review allow-privileged=true (needed by ntd) SAI-307
 [Service]
 ExecStart=/usr/bin/apiserver \
       --allow-privileged=true \
@@ -17,12 +16,15 @@ ExecStart=/usr/bin/apiserver \
       --etcd-certfile={{ K8S_CERT_FILES_DIR }}/admin.crt.pem \
       --etcd-keyfile={{ K8S_KEY_FILES_DIR }}/admin.key \
       --etcd-servers=https://{{ K8S_MASTER_IP }}:2379 \
+      --insecure-bind-address=127.0.0.1 \
+      --insecure-port=8080 \
       --kubelet-certificate-authority={{ K8S_CERT_FILES_DIR }}/ca.crt.pem \
       --kubelet-client-certificate={{ K8S_CERT_FILES_DIR }}/admin.crt.pem \
       --kubelet-client-key={{ K8S_KEY_FILES_DIR }}/admin.key \
       --log-dir=/var/log/ \
       --requestheader-client-ca-file={{ K8S_CERT_FILES_DIR }}/ca.crt.pem \
-      --service-cluster-ip-range={{ K8S_CLUSTER_IP_SUBNET }} \
+      --service-cluster-ip-range={{ K8S_SERVICE_IP_SUBNET }} \
+      --secure-port=443 \
       --tls-ca-file={{ K8S_CERT_FILES_DIR }}/ca.crt.pem \
       --tls-cert-file={{ K8S_CERT_FILES_DIR }}/{{ hostname.stdout }}.crt.pem \
       --tls-private-key-file={{ K8S_KEY_FILES_DIR }}/{{ hostname.stdout }}.key \

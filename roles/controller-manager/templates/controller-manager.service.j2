@@ -2,12 +2,11 @@
 Description=Kubernetes Controller Manager
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 
-# TODO: Sync with json file
 [Service]
 ExecStart=/usr/bin/controller-manager \
       --{{ K8S_GLOBAL_LOG_LEVEL }} \
       --logtostderr \
-      --kubeconfig=/etc/kubernetes/kubeconfig \
+      --kubeconfig={{ K8S_KUBECONFIG }} \
       --cluster-cidr={{ K8S_CLUSTER_IP_SUBNET }}
 Restart=on-failure
 LimitNOFILE=65536

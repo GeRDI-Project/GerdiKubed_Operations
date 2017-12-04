@@ -5,17 +5,32 @@
   with_items:
     - ovn-central
 
+- name: open tcp ports for ovn databases
+  shell: |
+    ovn-nbctl set-connection ptcp:6641 ; \
+    ovn-sbctl set-connection ptcp:6642
+
 - name: Set the k8s api server address in the Open vSwitch database
   shell: ovs-vsctl set Open_vSwitch . external_ids:k8s-api-server="127.0.0.1:8080"
 
 - name: Actually initialize master
-  shell: "ovn-k8s-overlay master-init --cluster-ip-subnet={{K8S_CLUSTER_IP_SUBNET}} --master-switch-subnet={{ OVN_MASTER_SWITCH_SUBNET}} --node-name={{ ansible_hostname }}"
+  shell: |
+    ovn-k8s-overlay master-init \
+      --cluster-ip-subnet={{K8S_CLUSTER_IP_SUBNET}} \
+      --master-switch-subnet={{ OVN_MASTER_SUBNET_PRE }}.{{ hostname_suffix }}.0/24 \
+      --node-name={{ hostname.stdout }}
 
-- name: Check if watcher already runs
-  stat:
-    path: /var/run/openvswitch/ovn-k8s-watcher.pid
-  register: checkWatcher
+- name: Install ovn-k8s-watcher as a service
+  template:
+    src: ovn-k8s-watcher.service.j2
+    dest: /etc/systemd/system/ovn-k8s-watcher.service
+  notify:
+    - reload daemon
+    - restart ovn-k8s-watcher
 
-- name: Run Watcher on master
-  shell: "ovn-k8s-watcher --overlay --pidfile --log-file -vfile:info -vconsole:emer --detach"
-  when: checkWatcher.stat.exists == False
+- name: Register ovn-k8s-watcher to systemd
+  systemd:
+    state: started
+    name: ovn-k8s-watcher
+    enabled: yes
+    daemon-reload: yes
