@@ -27,12 +27,12 @@
 
 - name: set hostname for master
   hostname:
-    name: "{{ K8S_CLUSTER_NAME}}-mstr-{{hostname_suffix}}"
+    name: "{{ K8S_CLUSTER_NAME}}-mstr-{{hostname_suffix}}.{{ K8S_DOMAIN_NAMESPACE }}"
   when: inventory_hostname in groups['kubernetes-masters']
 
 - name: set hostname for node
   hostname:
-    name: "{{ K8S_CLUSTER_NAME}}-nd-{{hostname_suffix}}"
+    name: "{{ K8S_CLUSTER_NAME}}-nd-{{hostname_suffix}}.{{ K8S_DOMAIN_NAMESPACE }}"
   when: inventory_hostname in groups['kubernetes-nodes']
 
 - name: Create k8s directories
