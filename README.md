@@ -37,7 +37,7 @@ ansible-playbook -i production k8s-node.yml
 * Running sshd on the remote machines and on the control machine (preferrably localhost)
 * Pub key in .ssh/authorized\_keys in roots's home on the remote machines
 * Python > 2.6
-* Ansible >= 2.4.1.0 (on the control machine, only linux distros are supported!)
+* Ansible >= 2.4.2.0 (on the control machine, only linux distros are supported!)
 * at least two network interface for k8s-nodes
 
 # Documentation
