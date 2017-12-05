@@ -1,0 +1,17 @@
+[kubernetes-nodes]
+# add all nodes, pattern:
+# HOSTNAME          User              Variable
+# host1.example.com ansible_user=root hostname_suffix=<previous++>
+# Do not forget to increase hostname_suffix with every node instance
+# Although it should be possible (untested) to use IPs instead of a
+# hostname, it is not encouraged.
+
+[kubernetes-masters]
+# add all masters, pattern :
+# mst1.example.com ansible_user=root hostname_suffix=<previous++>
+# Do not forget to increase hostname_suffix with every master instance
+# Although it should be possible (untested) to use IPs instead of a
+# hostname, it is not encouraged.
+
+[kubernetes-management]
+localhost         ansible_user=<your_local_user>
