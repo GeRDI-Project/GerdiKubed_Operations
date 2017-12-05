@@ -31,8 +31,8 @@
           "--service-cluster-ip-range={{ K8S_SERVICE_IP_SUBNET }} ",
           "--secure-port=443 ",
           "--tls-ca-file={{ K8S_CERT_FILES_DIR }}/ca.crt.pem ",
-          "--tls-cert-file={{ K8S_CERT_FILES_DIR }}/{{ hostname.stdout }}.crt.pem ",
-          "--tls-private-key-file={{ K8S_KEY_FILES_DIR }}/{{ hostname.stdout }}.key ",
+          "--tls-cert-file={{ K8S_CERT_FILES_DIR }}/{{ inventory_hostname }}.crt.pem ",
+          "--tls-private-key-file={{ K8S_KEY_FILES_DIR }}/{{ inventory_hostname }}.key ",
           "--token-auth-file={{ K8S_AUTH_FILES_DIR }}/known_tokens.csv ",
           "--{{ K8S_GLOBAL_LOG_LEVEL }}"
         ],

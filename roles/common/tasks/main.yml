@@ -15,6 +15,10 @@
       - python-networkmanager
       - python-openssl
 
+- name: Set hostname to {{ inventory_hostname }}
+  hostname:
+    name: "{{ inventory_hostname }}"
+
 # TODO Take care of it in image (see SAI-242)
 - name: Turn swapoff
   shell: swapoff -a
@@ -24,16 +28,6 @@
     path: /etc/fstab
     state: absent
     regexp: "^/dev/sda1"
-
-- name: set hostname for master
-  hostname:
-    name: "{{ K8S_CLUSTER_NAME}}-mstr-{{hostname_suffix}}.{{ K8S_DOMAIN_NAMESPACE }}"
-  when: inventory_hostname in groups['kubernetes-masters']
-
-- name: set hostname for node
-  hostname:
-    name: "{{ K8S_CLUSTER_NAME}}-nd-{{hostname_suffix}}.{{ K8S_DOMAIN_NAMESPACE }}"
-  when: inventory_hostname in groups['kubernetes-nodes']
 
 - name: Create k8s directories
   file:
@@ -76,21 +70,17 @@
       gw: "{{ secondInterface.stdout.split(' ')[2] }}"
   when: inventory_hostname in groups['kubernetes-nodes']
 
-- name: Retrieve current hostname
-  shell: hostname
-  register: hostname
-
 - name: Install server key and cert
   copy:
     src:  "{{ item.src  }}"
     dest: "{{ item.dest }}"
     mode: "{{ item.mode }}"
   with_items:
-    - { src:  "{{ CONTROL_KEY_DIR}}/{{ hostname.stdout }}.key",
-        dest: "{{ K8S_KEY_FILES_DIR }}/{{ hostname.stdout }}.key",
+    - { src:  "{{ CONTROL_KEY_DIR}}/{{ inventory_hostname}}.key",
+        dest: "{{ K8S_KEY_FILES_DIR }}/{{ inventory_hostname }}.key",
         mode: '0400' }
-    - { src:  "{{ CONTROL_CERT_DIR}}/{{ hostname.stdout }}.crt.pem",
-        dest: "{{ K8S_CERT_FILES_DIR }}/{{ hostname.stdout }}.crt.pem",
+    - { src:  "{{ CONTROL_CERT_DIR}}/{{ inventory_hostname }}.crt.pem",
+        dest: "{{ K8S_CERT_FILES_DIR }}/{{ inventory_hostname }}.crt.pem",
         mode: '0444' }
     - { src:  "{{ CONTROL_CERT_DIR}}/ca.crt.pem",
         dest: "{{ K8S_CERT_FILES_DIR }}/ca.crt.pem",

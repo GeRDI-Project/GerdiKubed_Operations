@@ -22,7 +22,7 @@
     ovn-k8s-overlay minion-init \
       --cluster-ip-subnet={{ K8S_CLUSTER_IP_SUBNET }} \
       --minion-switch-subnet={{ K8S_CLUSTER_IP_PRE }}.{{ hostname_suffix }}.0/24 \
-      --node-name={{ hostname.stdout }}
+      --node-name={{ inventory_hostname }}
 
 - name: Install ovn-startup (gateway) as a service
   template:

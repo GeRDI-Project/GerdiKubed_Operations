@@ -5,5 +5,5 @@ ovn-k8s-overlay gateway-init \
   --cluster-ip-subnet={{ K8S_CLUSTER_IP_SUBNET }} \
   --physical-interface {{ iface2.name }} \
   --physical-ip {{ iface2.ipv4 }} \
-  --node-name={{ hostname.stdout }} \
+  --node-name={{ inventory_hostname }} \
   --default-gw {{ iface2.gw }}

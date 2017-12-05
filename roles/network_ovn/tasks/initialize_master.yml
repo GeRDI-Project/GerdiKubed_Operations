@@ -18,7 +18,7 @@
     ovn-k8s-overlay master-init \
       --cluster-ip-subnet={{K8S_CLUSTER_IP_SUBNET}} \
       --master-switch-subnet={{ OVN_MASTER_SUBNET_PRE }}.{{ hostname_suffix }}.0/24 \
-      --node-name={{ hostname.stdout }}
+      --node-name={{ inventory_hostname }}
 
 - name: Install ovn-k8s-watcher as a service
   template:
