@@ -30,17 +30,21 @@
     dest: /etc/systemd/system/ovn-startup.service
   notify:
     - reload daemon
+  when: secondInterface.rc != 100
 
 - name: Install ovn-startup script
   template:
     src:  ovn-startup.sh.j2
     dest: "{{ OVN_K8S_DIR }}/ovn-startup.sh"
     mode: 0755
+  when: secondInterface.rc != 100
 
 - name: Enable ovn-startup script
   systemd:
     name: ovn-startup
     enabled: yes
+  when: secondInterface.rc == 100
 
 - name: Setup Gateway
   command: "{{ OVN_K8S_DIR }}/ovn-startup.sh"
+  when: secondInterface.rc != 100

@@ -9,6 +9,7 @@
       - bash-completion
       - ca-certificates
       - curl
+      - ipcalc
       - iproute2
       - libnm-glib-dev
       - python-dbus
@@ -54,12 +55,13 @@
   set_fact:
     iface1:
       name: "{{ firstInterface.stdout.split(' ')[0] }}"
-      ipv4: "{{ firstInterface.stdout.split(' ')[1] }}"
-      gw: "{{ firstInterface.stdout.split(' ')[2] }}"
+      ipv4: "{{ firstInterface.stdout.split(' ')[3] }}"
+      gw: "{{ firstInterface.stdout.split(' ')[4] }}"
 
 - name: Retrieve information for second interface
   shell: bash /root/printIface.sh 2
   register: secondInterface
+  ignore_errors: yes
   when: inventory_hostname in groups['kubernetes-nodes']
 
 - name: Set facts for second interface
@@ -68,7 +70,7 @@
       name: "{{ secondInterface.stdout.split(' ')[0] }}"
       ipv4: "{{ secondInterface.stdout.split(' ')[1] }}"
       gw: "{{ secondInterface.stdout.split(' ')[2] }}"
-  when: inventory_hostname in groups['kubernetes-nodes']
+  when: inventory_hostname in groups['kubernetes-nodes'] and secondInterface.rc != 100
 
 - name: Install server key and cert
   copy:

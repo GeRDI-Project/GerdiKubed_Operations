@@ -8,13 +8,13 @@ WantedBy=multi-user.target
 [Service]
 # basic config
 Environment=ETCD_DATA_DIR=/var/lib/etcd
-Environment=ETCD_NAME={{ K8S_CLUSTER_NAME }}etcd{{ hostname_suffix }}
+Environment=ETCD_NAME={{ inventory_hostname }}
 Environment=ETCD_LISTEN_PEER_URLS=https://{{ K8S_MASTER_IP }}:2380
 Environment=ETCD_LISTEN_CLIENT_URLS=https://{{ K8S_MASTER_IP }}:2379
 Environment=ETCD_ADVERTISE_CLIENT_URLS=https://{{ K8S_MASTER_IP }}:2379
 
 # initial cluster configuration
-Environment=ETCD_INITIAL_CLUSTER={{ K8S_CLUSTER_NAME }}etcd{{ hostname_suffix }}=https://{{ K8S_MASTER_IP }}:2380
+Environment=ETCD_INITIAL_CLUSTER={{ inventory_hostname }}:2380
 Environment=ETCD_INITIAL_CLUSTER_TOKEN=your-unique-token
 Environment=ETCD_INITIAL_CLUSTER_STATE=new
 Environment=ETCD_INITIAL_ADVERTISE_PEER_URLS=https://{{ K8S_MASTER_IP }}:2380
