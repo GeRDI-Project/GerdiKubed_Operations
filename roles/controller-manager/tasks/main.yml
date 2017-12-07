@@ -1,4 +1,10 @@
 ---
+- name: Copy ca-key
+  copy:
+    src:  "{{ CONTROL_KEY_DIR }}/ca.key"
+    dest: "{{ K8S_KEY_FILES_DIR }}/ca.key"
+    mode: 0400
+
 - name: Start controller-manager as a pod
   import_tasks: controllerManagerAsPod.yml
   when: CONTROLLER_MANAGER_AS_POD
