@@ -1,4 +1,7 @@
 ---
+- name: Label master machines
+  shell: kubectl label nodes {{ inventory_hostname }} role=master --overwrite
+
 - name: Create addons dir
   file:
     path: /etc/kubernetes/addons

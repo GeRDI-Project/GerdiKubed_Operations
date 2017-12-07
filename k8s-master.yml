@@ -5,8 +5,6 @@
     - common
     - etcd
     - k8s-binaries
-    # docker, kubelet and kube-proxy are only installed on the master
-    # if one of the following services need it to be run as a pod.
     - docker
     - cni
     - kubelet

@@ -30,6 +30,8 @@ spec:
     - mountPath: /var/log
       name: varlog
       readOnly: false
+  nodeSelector:
+    role: master
   volumes:
   - hostPath:
       path: /etc/kubernetes/
