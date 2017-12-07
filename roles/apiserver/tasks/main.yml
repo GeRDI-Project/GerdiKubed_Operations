@@ -4,6 +4,12 @@
     src:  "known_tokens.csv.j2"
     dest: "{{ K8S_AUTH_FILES_DIR }}/known_tokens.csv"
 
+- name: Install public key
+  copy:
+    src:  "{{ CONTROL_KEY_DIR }}/{{ inventory_hostname }}.pub"
+    dest: "{{ K8S_KEY_FILES_DIR }}/{{ inventory_hostname }}.pub"
+    mode: "0444"
+
 - name: Start apiserver as a pod
   import_tasks: apiserverAsPod.yml
   when: APISERVER_AS_POD

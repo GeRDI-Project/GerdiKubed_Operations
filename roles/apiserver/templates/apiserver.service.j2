@@ -23,6 +23,7 @@ ExecStart=/usr/bin/apiserver \
       --kubelet-client-key={{ K8S_KEY_FILES_DIR }}/admin.key \
       --log-dir=/var/log/ \
       --requestheader-client-ca-file={{ K8S_CERT_FILES_DIR }}/ca.crt.pem \
+      --service-account-key-file={{ K8S_KEY_FILES_DIR}}/{{ inventory_name }}.pub \
       --service-cluster-ip-range={{ K8S_SERVICE_IP_SUBNET }} \
       --secure-port=443 \
       --tls-ca-file={{ K8S_CERT_FILES_DIR }}/ca.crt.pem \
