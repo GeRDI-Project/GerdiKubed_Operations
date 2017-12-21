@@ -67,9 +67,9 @@
     -batch
   when: check.results[1].stat.exists == False and sign == True
 
-- name: "Create pub-key for {{ filenmae }}":
+- name: "Create pub-key for {{ filename }}"
   shell: |
     openssl rsa \
-    -in {{ CONTROL_KEY_DIR }}/{{ filename }}.key
-    -pubout
-    -out {{ CONTROL_KEY_DIR }}/{{ filename }}.pub
+    -in {{ CONTROL_KEY_DIR }}/{{ filename }}.key \
+    -pubout \
+    -out {{ CONTROL_KEY_DIR }}/{{ filename }}.pub \
