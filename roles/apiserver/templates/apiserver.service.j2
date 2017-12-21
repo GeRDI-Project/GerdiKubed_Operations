@@ -8,6 +8,7 @@ After=etcd.service
 # TODO review allow-privileged=true (needed by ntd) SAI-307
 [Service]
 ExecStart=/usr/bin/apiserver \
+      --admission-control=AlwaysAdmit \
       --allow-privileged=true \
       --anonymous-auth=false \
       --bind-address={{ K8S_MASTER_IP }} \
@@ -23,7 +24,7 @@ ExecStart=/usr/bin/apiserver \
       --kubelet-client-key={{ K8S_KEY_FILES_DIR }}/admin.key \
       --log-dir=/var/log/ \
       --requestheader-client-ca-file={{ K8S_CERT_FILES_DIR }}/ca.crt.pem \
-      --service-account-key-file={{ K8S_KEY_FILES_DIR}}/{{ inventory_name }}.pub \
+      --service-account-key-file={{ K8S_KEY_FILES_DIR}}/{{ inventory_hostname }}.pub \
       --service-cluster-ip-range={{ K8S_SERVICE_IP_SUBNET }} \
       --secure-port=443 \
       --tls-ca-file={{ K8S_CERT_FILES_DIR }}/ca.crt.pem \
