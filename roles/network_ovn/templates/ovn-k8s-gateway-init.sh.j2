@@ -1,0 +1,25 @@
+#!/bin/bash
+
+ovs-vsctl add-br br{{ iface2.name }}
+# The bridge needs to have the same hw-address as the original link!
+ovs-vsctl set bridge br{{ iface2.name }} other-config:hwaddr=\"{{ iface2.hw }}\"
+ovs-vsctl add-port br{{ iface2.name }} {{ iface2.name }}
+
+ip addr flush dev {{ iface2.name }}
+
+# We cannot dhclient since this will mess up the routes!
+mask=$(echo {{ iface2.nw }} | awk -F '/' '{ print $2 }')
+ip addr add {{ iface2.ipv4 }}/$mask dev br{{ iface2.name }}
+ip link set dev br{{ iface2.name }} up
+
+/root/repairRoute.sh
+
+ip rule add from {{ K8S_CLUSTER_IP_SUBNET }} table rt2
+
+ovn-k8s-overlay gateway-init \
+  --cluster-ip-subnet={{ K8S_CLUSTER_IP_SUBNET }} \
+  --bridge-interface br{{ iface2.name }} \
+  --physical-ip {{ iface2.ipv4 }} \
+  --node-name={{ inventory_hostname }} \
+  --default-gw {{ iface2.gw }} \
+  --rampout-ip-subnets="{{ SUBNET_IP_PRE }}.{{ hostname_suffix }}.0/24"

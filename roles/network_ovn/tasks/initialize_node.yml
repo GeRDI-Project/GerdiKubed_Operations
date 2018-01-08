@@ -24,27 +24,42 @@
       --minion-switch-subnet={{ SUBNET_IP_PRE }}.{{ hostname_suffix }}.0/24 \
       --node-name={{ inventory_hostname }}
 
-- name: Install ovn-startup (gateway) as a service
+- name: Install ovn-k8s-gateway-init as a service
   template:
-    src: ovn-startup.service.j2
-    dest: /etc/systemd/system/ovn-startup.service
-  notify:
-    - reload daemon
+    src: ovn-k8s-gateway-init.service.j2
+    dest: /etc/systemd/system/ovn-k8s-gateway-init.service
   when: secondInterface.rc != 100
 
-- name: Install ovn-startup script
+- name: Install ovn-k8s-gateway-init script
   template:
-    src:  ovn-startup.sh.j2
-    dest: "{{ OVN_K8S_DIR }}/ovn-startup.sh"
+    src:  ovn-k8s-gateway-init.sh.j2
+    dest: "{{ OVN_K8S_DIR }}/ovn-k8s-gateway-init.sh"
     mode: 0755
   when: secondInterface.rc != 100
 
-- name: Enable ovn-startup script
+- name: Register ovn-k8s-gateway-init to systemd and start it
   systemd:
-    name: ovn-startup
+    name: ovn-k8s-gateway-init.service
     enabled: yes
+    daemon-reload: yes
   when: secondInterface.rc == 100
 
-- name: Setup Gateway
-  command: "{{ OVN_K8S_DIR }}/ovn-startup.sh"
+- name: Install ovn-k8s-gateway-helper as a service
+  template:
+    src: ovn-k8s-gateway-helper.service.j2
+    dest: /etc/systemd/system/ovn-k8s-gateway-helper.service
   when: secondInterface.rc != 100
+
+- name: Register ovn-k8s-gateway-helper to systemd
+  systemd:
+    name: ovn-k8s-gateway-helper.service
+    enabled: yes
+    daemon-reload: yes
+
+- name: Start ovn-k8s-gateway
+  service:
+    name: "{{ item }}"
+    state: started
+  with_items:
+    - ovn-k8s-gateway-init.service
+    - ovn-k8s-gateway-helper.service

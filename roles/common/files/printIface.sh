@@ -7,10 +7,13 @@ do
   then
     ip=$(ip a | grep inet | grep $iface | awk '{ print $2 }' | awk -F '/' '{ print $1 }')
     gw=$(ip route | grep default | grep $iface | awk '{ print $3 }')
-    nw=$(ipcalc $(ip a | grep inet | grep $iface | awk '{ print $2 }' | awk -F '/' '{ print $1 }' | tr '\n' ' ') | grep 'Network:' | awk '{ print $2 }')
-    min=$(ipcalc $(ip a | grep inet | grep $iface | awk '{ print $2 }' | awk -F '/' '{ print $1 }' | tr '\n' ' ') | grep 'HostMin:' | awk '{ print $2 }')
-    max=$(ipcalc $(ip a | grep inet | grep $iface | awk '{ print $2 }' | awk -F '/' '{ print $1 }' | tr '\n' ' ') | grep 'HostMax:' | awk '{ print $2 }')
-    output="$iface $ip $gw $nw $min $max"
+    if [ -z $gw ];
+    then
+      gw=10.155.215.254
+    fi
+    nw=$(ipcalc $(ip a | grep inet | grep $iface | awk '{ print $2 }' | tr '\n' ' ') | grep 'Network:' | awk '{ print $2 }')
+    hw=$(ip link | grep -A1 $iface | grep link/ether | awk '{ print $2 }' )
+    output="$iface $ip $gw $nw $hw"
     echo $output | tr '\n' ' '
     echo
     exit 0
