@@ -1,0 +1,4 @@
+# role: apiserver
+# Only one, but also at least one of these should be set to True.
+APISERVER_AS_POD: False
+APISERVER_AS_SERVICE: True

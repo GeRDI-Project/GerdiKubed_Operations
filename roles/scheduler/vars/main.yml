@@ -1,0 +1,4 @@
+# role: scheduler
+# Only one, but also at least one of these should be set to True.
+SCHEDULER_AS_POD: False
+SCHEDULER_AS_SERVICE: True

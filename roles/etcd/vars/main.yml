@@ -1,0 +1,4 @@
+# role: etcd
+ETCD_VERSION: v3.0.17
+ETCD_DOWNLOAD_URL: "https://github.com/coreos/etcd/releases/download/{{ ETCD_VERSION }}/etcd-{{ ETCD_VERSION }}-linux-amd64.tar.gz"
+ETCD_DIR: "{{ K8S_BASE_DIR }}/etcd-{{ ETCD_VERSION }}-linux-amd64"
