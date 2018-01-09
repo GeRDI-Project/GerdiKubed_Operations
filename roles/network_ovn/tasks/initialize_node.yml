@@ -43,8 +43,10 @@
     enabled: yes
     daemon-reload: yes
   notify:
-    - restart ovn-k8s-gateway-init
+    - start ovn-k8s-gateway-init
   when: secondInterface.rc == 100
+
+
 
 #- name: Install ovn-k8s-gateway-helper as a service
 #  template:
