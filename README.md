@@ -34,11 +34,11 @@ ansible-playbook -i production k8s-node.yml
 # Requirements
 
 * Debian 9.1 or higher on the remote machines (you can use the [recipe](CreateVMImage.md) to create a VM image against which these scripts have been tested).
-* Running sshd on the remote machines and on the control machine (preferrably localhost)
+* Running sshd on the remote machines and on the control machine (preferrably localhost) and the package python-dnspython
 * Pub key in .ssh/authorized\_keys in roots's home on the remote machines
 * Python > 2.6
 * Ansible >= 2.4.2.0 (on the control machine, only linux distros are supported!)
-* at least two network interface for k8s-nodes
+* at least two network interface for k8s-nodes and master
 * All nodes must have valid DNS-Records (configured in production). IP-Addresses are no longer be supported.
 
 # Documentation
