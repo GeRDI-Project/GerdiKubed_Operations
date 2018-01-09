@@ -1,0 +1,23 @@
+---
+- name: Label master machines
+  shell: kubectl label nodes {{ inventory_hostname }} role=master --overwrite
+
+- name: Create addons dir
+  file:
+    path: /etc/kubernetes/addons
+    state: directory
+
+- name: Create a yml-file to deploy kube-addon-manager
+  template:
+    src: "kube-addon-manager.yml.j2"
+    dest: "{{ K8S_BASE_DIR }}/kube-addon-manager.yml"
+
+- name: Create kube-addon-manager
+  shell: kubectl apply -f "{{ K8S_BASE_DIR }}/kube-addon-manager.yml"
+
+- name: Create manifests for all addons
+  template:
+    src:  "{{ item }}.yml.j2"
+    dest: "/etc/kubernetes/addons/{{ item }}.yml"
+  with_items:
+    - "kube-dns"

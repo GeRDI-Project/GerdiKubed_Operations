@@ -9,11 +9,17 @@
       - bash-completion
       - ca-certificates
       - curl
+      - ipcalc
       - iproute2
       - libnm-glib-dev
       - python-dbus
+      - python-dnspython
       - python-networkmanager
       - python-openssl
+
+- name: Set hostname to {{ inventory_hostname }}
+  hostname:
+    name: "{{ inventory_hostname }}"
 
 # TODO Take care of it in image (see SAI-242)
 - name: Turn swapoff
@@ -24,16 +30,6 @@
     path: /etc/fstab
     state: absent
     regexp: "^/dev/sda1"
-
-- name: set hostname for master
-  hostname:
-    name: "{{ K8S_CLUSTER_NAME}}-mstr-{{hostname_suffix}}"
-  when: inventory_hostname in groups['kubernetes-masters']
-
-- name: set hostname for node
-  hostname:
-    name: "{{ K8S_CLUSTER_NAME}}-nd-{{hostname_suffix}}"
-  when: inventory_hostname in groups['kubernetes-nodes']
 
 - name: Create k8s directories
   file:
@@ -62,11 +58,13 @@
       name: "{{ firstInterface.stdout.split(' ')[0] }}"
       ipv4: "{{ firstInterface.stdout.split(' ')[1] }}"
       gw: "{{ firstInterface.stdout.split(' ')[2] }}"
+      nw: "{{ firstInterface.stdout.split(' ')[3] }}"
+      hw: "{{ firstInterface.stdout.split(' ')[4] }}"
 
 - name: Retrieve information for second interface
   shell: bash /root/printIface.sh 2
   register: secondInterface
-  when: inventory_hostname in groups['kubernetes-nodes']
+  ignore_errors: yes
 
 - name: Set facts for second interface
   set_fact:
@@ -74,11 +72,9 @@
       name: "{{ secondInterface.stdout.split(' ')[0] }}"
       ipv4: "{{ secondInterface.stdout.split(' ')[1] }}"
       gw: "{{ secondInterface.stdout.split(' ')[2] }}"
-  when: inventory_hostname in groups['kubernetes-nodes']
-
-- name: Retrieve current hostname
-  shell: hostname
-  register: hostname
+      nw: "{{ secondInterface.stdout.split(' ')[3] }}"
+      hw: "{{ secondInterface.stdout.split(' ')[4] }}"
+  when: secondInterface.rc != 100
 
 - name: Install server key and cert
   copy:
@@ -86,11 +82,11 @@
     dest: "{{ item.dest }}"
     mode: "{{ item.mode }}"
   with_items:
-    - { src:  "{{ CONTROL_KEY_DIR}}/{{ hostname.stdout }}.key",
-        dest: "{{ K8S_KEY_FILES_DIR }}/{{ hostname.stdout }}.key",
+    - { src:  "{{ CONTROL_KEY_DIR}}/{{ inventory_hostname}}.key",
+        dest: "{{ K8S_KEY_FILES_DIR }}/{{ inventory_hostname }}.key",
         mode: '0400' }
-    - { src:  "{{ CONTROL_CERT_DIR}}/{{ hostname.stdout }}.crt.pem",
-        dest: "{{ K8S_CERT_FILES_DIR }}/{{ hostname.stdout }}.crt.pem",
+    - { src:  "{{ CONTROL_CERT_DIR}}/{{ inventory_hostname }}.crt.pem",
+        dest: "{{ K8S_CERT_FILES_DIR }}/{{ inventory_hostname }}.crt.pem",
         mode: '0444' }
     - { src:  "{{ CONTROL_CERT_DIR}}/ca.crt.pem",
         dest: "{{ K8S_CERT_FILES_DIR }}/ca.crt.pem",

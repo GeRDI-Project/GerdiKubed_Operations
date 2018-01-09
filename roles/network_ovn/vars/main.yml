@@ -1,0 +1,3 @@
+# role: network_ovn#
+OVN_ENCAP_TYPE: geneve
+OVN_K8S_DIR: "{{ K8S_BASE_DIR }}/ovn-kubernetes"

@@ -1,18 +1,15 @@
 [kubernetes-nodes]
 # add all nodes, pattern:
-# <IP>            User              Variable
-# xyz.xyz.xyz.xyz ansible_user=root hostname_suffix=<previous++>
-# Example
-# 1.2.3.4         ansible_user=root hostname_suffix=0
+# HOSTNAME          User              Variable
+# host1.example.com ansible_user=root hostname_suffix=<previous++>
 # Do not forget to increase hostname_suffix with every node instance
+# Please use FQDNs for the hosts, IP addresses are not supported anymore
 
 [kubernetes-masters]
-# add all masters, pattern:
-# <IP>            User              Variable
-# xyz.xyz.xyz.xyz ansible_user=root hostname_suffix=<previous++>
-# Example
-# 1.2.3.4         ansible_user=root hostname_suffix=0
+# add all masters, pattern :
+# mst1.example.com ansible_user=root hostname_suffix=<previous++>
 # Do not forget to increase hostname_suffix with every master instance
+# Please use FQDNs for the hosts, IP addresses are not supported anymore
 
 [kubernetes-management]
 localhost         ansible_user=<your_local_user>

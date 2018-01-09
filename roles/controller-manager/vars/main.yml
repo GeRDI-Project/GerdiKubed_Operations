@@ -1,0 +1,4 @@
+# role: controller-manager
+# Only one, but also at least one of these should be set to True.
+CONTROLLER_MANAGER_AS_POD: False
+CONTROLLER_MANAGER_AS_SERVICE: True

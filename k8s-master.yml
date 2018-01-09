@@ -5,15 +5,12 @@
     - common
     - etcd
     - k8s-binaries
-    # docker, kubelet and kube-proxy are only installed on the master
-    # if one of the following services need it to be run as a pod.
-    - { role: docker,
-        when: "APISERVER_AS_POD or SCHEDULER_AS_POD or CONTROLLER_MANAGER_AS_POD" }
-    - { role: kubelet,
-        when: "APISERVER_AS_POD or SCHEDULER_AS_POD or CONTROLLER_MANAGER_AS_POD" }
-    - { role: kube-proxy,
-        when: "APISERVER_AS_POD or SCHEDULER_AS_POD or CONTROLLER_MANAGER_AS_POD" }
+    - docker
+    - cni
+    - kubelet
+    - kube-proxy
     - apiserver
     - scheduler
     - controller-manager
     - network_ovn
+    - k8s-addons

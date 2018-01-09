@@ -15,9 +15,9 @@
     update_cache: yes
   with_items:
     - git
+    - openvswitch-switch
     - python-pip
     - virtualenv
-    - openvswitch-switch
 
 - name: Install ovn controller systemd unit file
   template:

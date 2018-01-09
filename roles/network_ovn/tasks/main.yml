@@ -11,4 +11,3 @@
 
 - name: Initialize k8s node
   import_tasks: initialize_node.yml
-  when: inventory_hostname in groups['kubernetes-nodes']

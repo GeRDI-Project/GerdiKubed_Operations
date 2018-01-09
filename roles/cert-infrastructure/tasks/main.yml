@@ -50,30 +50,20 @@
       sign:     True
       type:     "client"
 
-- name: Create server keys and certs for master instances and sign them
+- name: Create server keys and certs and sign them
   include_tasks: createKeysAndCertsAndSignThem.yml
   vars:
-    filename: "{{ K8S_CLUSTER_NAME }}-mstr-{{ item.0 }}"
-    cname: "{{ K8S_CLUSTER_NAME }}-mstr-{{ item.0 }}.{{ K8S_DOMAIN_NAMESPACE }}"
+    filename: "{{ item }}"
+    cname: "{{ item }}"
     sign: True
     type: server
     alt_names:
       - type: "DNS"
-        name: "{{ K8S_CLUSTER_NAME }}-mstr-{{ item.0 }}.{{ K8S_DOMAIN_NAMESPACE }}"
+        name: "{{ item }}"
       - type: "IP"
-        name: "{{ item.1 }}"
-  with_indexed_items: "{{ groups['kubernetes-masters'] }}"
-
-- name: Create server keys and certs for node instances and sign them
-  include_tasks: createKeysAndCertsAndSignThem.yml
-  vars:
-    filename: "{{ K8S_CLUSTER_NAME }}-nd-{{ item.0 }}"
-    cname: "{{ K8S_CLUSTER_NAME }}-nd-{{ item.0 }}.{{ K8S_DOMAIN_NAMESPACE }}"
-    sign: True
-    type: server
-    alt_names:
-      - type: "DNS"
-        name: "{{ K8S_CLUSTER_NAME }}-nd-{{ item.0 }}.{{ K8S_DOMAIN_NAMESPACE }}"
+        name: "{{ lookup('dig', item, 'qtype=A') }}"
       - type: "IP"
-        name: "{{ item.1 }}"
-  with_indexed_items: "{{ groups['kubernetes-nodes'] }}"
+        name: "{{ K8S_SERVICE_IP_PRE }}.0.1"
+  with_items:
+    - "{{ groups['kubernetes-masters'] }}"
+    - "{{ groups['kubernetes-nodes'] }}"
