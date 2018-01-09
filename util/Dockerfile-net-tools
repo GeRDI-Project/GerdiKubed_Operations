@@ -1,8 +1,8 @@
 FROM debian:latest
 ENTRYPOINT ["sh"]
 RUN apt update && apt upgrade -y \
-	curl \
-	net-tools \
-	traceroute \
+  curl \
+  net-tools \
+  traceroute \
   dnsutils \
   vim \
