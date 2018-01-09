@@ -11,6 +11,7 @@ ExecStart=/usr/bin/kubelet \
       --allow-privileged=true \
       --cgroup-driver=cgroupfs \
       --cloud-provider="" \
+      --cluster-dns={{ K8S_DNS_IP }} \
       --cni-conf-dir={{ CNI_CONF_DIR }} \
       --cni-bin-dir={{ CNI_DIR }} \
       --network-plugin=cni \

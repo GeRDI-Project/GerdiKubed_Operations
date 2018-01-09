@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: network-test
+  labels:
+    app: nettools
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: net-tools
+  template:
+    metadata:
+      labels:
+        app: net-tools
+    spec:
+      containers:
+        - name: net-tools
+          image: net-tools:latest
+          imagePullPolicy: Never
+          stdin: true
+          tty: true

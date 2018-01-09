@@ -39,6 +39,7 @@ ansible-playbook -i production k8s-node.yml
 * Python > 2.6
 * Ansible >= 2.4.2.0 (on the control machine, only linux distros are supported!)
 * at least two network interface for k8s-nodes
+* All nodes must have valid DNS-Records (configured in production). IP-Addresses are no longer be supported.
 
 # Documentation
 

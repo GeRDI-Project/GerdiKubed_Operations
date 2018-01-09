@@ -13,7 +13,7 @@
         "command": [
           "/hyperkube",
           "apiserver",
-          "--admission-control=AlwaysAdmit",
+          "--admission-control=AlwaysAdmit,ServiceAccount",
           "--allow-privileged=true ",
           "--anonymous-auth=false ",
           "--bind-address={{ K8S_MASTER_IP }} ",

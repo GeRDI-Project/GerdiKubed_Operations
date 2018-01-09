@@ -8,7 +8,7 @@ After=etcd.service
 # TODO review allow-privileged=true (needed by ntd) SAI-307
 [Service]
 ExecStart=/usr/bin/apiserver \
-      --admission-control=AlwaysAdmit \
+      --admission-control=AlwaysAdmit,ServiceAccount \
       --allow-privileged=true \
       --anonymous-auth=false \
       --bind-address={{ K8S_MASTER_IP }} \
