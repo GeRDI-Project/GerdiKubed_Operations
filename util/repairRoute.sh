@@ -21,7 +21,10 @@ grep -q $table /etc/iproute2/rt_tables \
 
 # Add routes to table $table
 ip route show table $table | grep -q $nw \
-  || ip route add $nw dev br$if src $ip table $table
+  || ip route add $nw dev $if src $ip table $table
 
 ip route show table $table | grep -q default \
-  || ip route add default via $gw dev br$if table $table
+  || ip route add default via $gw dev $if table $table
+
+ip rule show | grep -q $ip \
+  || ip rule add from $ip lookup rt2
