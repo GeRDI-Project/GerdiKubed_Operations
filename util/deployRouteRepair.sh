@@ -1,75 +1,92 @@
 #!/bin/bash
 #
 # ABOUT:
-# This script deploys a repair on a machine with two default routes (which
-# leads to the state that one interface is not operational). One of the routes
-# (called "internal") will be deleted from the default routing table and
-# configured with a dedicated routing table which applies to the internal
-# network.
+# This script deploys a repair on a machine with two NICs attached to
+# different networks (two default routes lead to an unoperational iface).
+# One of the routes (called "internal") will be deleted from the default
+# routing table and the routes will be configured in a dedicated routing
+# table.
 #
 # ARGUMENTS:
 # The first argument is the ip address over which ssh is possible since it
-# is the first of two configured default routes ($addressToRepairWith).
+# is the first of two configured default routes ($IP_CONN).
 # This argument is required.
 #
-# The second argument is the ip address which routes should be configured with
+# The second argument is an ip address which will only be used by OVN
+#
+# The third argument is the ip address which routes should be configured with
 # a dedicated routing table ($internalAddress). Might be the same as the first
 # argument. This argument is required.
 #
-# The third, fourth and fith argument are the gateway, network and interface
-# ($gw, $nw, $if) used for the internal connection.
-# Arguments three to five are optional, these are the default values:
-# gw=10.155.215.255
-# nw=10.155.208.0/21
-# if=ens4
-#
-# DETAILS:
-# This script does the following:
-# * Connect via ssh with addressToRepairWith to the machine.
-# * Installs a script repairRoute.sh which
-#   ** deletes the routes of $internalAddress from the default routing table
-#   ** installs an additional routing table
-#   ** adds the aforedeleted routing information to that table
-# * Replaces the strings __IP__, __GW__, __NW__ and __IF__ with the values of
-#   $internalAddress, $gw, $nw and $if
-# * Installs iproute2 package to have the utilities needed by repairRoute.sh.
-# * Registers the script to systemd, since the changes will be flushed on reboot.
-# * Reboots the machine. If the machine is up again the repair should have
-#   taken place.
-# Check with
-#   ip route && ip route table rt2
+# The following variables are hardcoded and must be changed in the script
+# DEV_EXT (default: ens3) This is used to grep out the rules remaining in the
+#         default routing table.
+# GW_INT  (default: 10.155.215.254) Gateway of the internal network
+# MASK_INT (default: 21) Network mask for internal network
+# NW_INT  (default: 10.155.208.0/$MASK_INT) Internal network range
+# ROUTING_TABLE_INT (default: 180485) Number of the dedicated routing table
 #
 # USAGE:
 # repairRoute.sh must be in the same directory then run:
-# ./deployRouteRepair.sh 141.40.254.131 10.155.208.23
+# ./deployRouteRepair.sh 141.40.254.131 10.155.208.4 10.155.208.71
 
 ################################################################################
 # ARGUMENT HANDLING
 ################################################################################
-[[ $# < 2 ]] && exit "Number of arguments given not correct!"
-addressToRepairWith=$1
-internalAddress=$2
-[ ! -z $3 ] && gw=$3
-[ -z $3 ] && gw=10.155.215.254
-[ ! -z $4 ] && nw=$4
-[ -z $4 ] && nw="10.155.208.0/21"
-[ ! -z $5 ] && if=$5
-[ -z $5 ] && if="ens4"
+[[ $# != 3 ]] && exit "Number of arguments given not correct!"
+IP_CONN=$1
+IP_OVN=$2
+IP_INT=$3
 
-echo -n "Connecting via $addressToRepairWith to repair route for"
-echo " $if ($internalAddress) with gw $gw and nw $nw"
+DEV_EXT=ens3
+GW_INT=10.155.215.254
+MASK_INT=21
+NW_INT=10.155.208.0/$MASK_INT
+ROUTING_TABLE_INT=180485
 
-echo "Install repairRoute script"
-scp repairRoute.sh root@$addressToRepairWith:repairRoute.sh
-echo "sed values $internalAddress $gw $nw and $if to repairRoute"
-ssh root@$addressToRepairWith "sed -i 's#__IP__#$internalAddress#g;
-                      s#__GW__#$gw#g;
-                      s#__NW__#$nw#g;
-                      s#__IF__#$if#g' /root/repairRoute.sh"
+echo "Prepare scripts and configs for $IP_CONN"
+mkdir -p deploy/$IP_CONN
+for file in sed.src/*
+do
+  sed "
+        s#__DEV_EXT__#$DEV_EXT#g
+        s#__NW_INT__#$NW_INT#g;
+        s#__GW_INT__#$GW_INT#g;
+        s#__IP_INT__#$IP_INT#g;
+        s#__IP_OVN__#$IP_OVN#g;
+        s#__MASK_INT__#$MASK_INT#g;
+        s#__ROUTING_TABLE_INT__#$ROUTING_TABLE_INT#g;
+        " $file  > deploy/$IP_CONN/$(basename $file)
+done;
+
+echo "Install scripts and configs"
+for file in deploy/$IP_CONN/*.network;
+do
+  scp $file root@$IP_CONN:/etc/systemd/network/
+done
+scp deploy/$IP_CONN/repairRoutes.sh \
+  root@$IP_CONN:repairRoutes.sh
+ssh root@$IP_CONN 'chmod +x /root/repairRoutes.sh'
+scp deploy/$IP_CONN/repairRoutes.service \
+  root@$IP_CONN:/etc/systemd/system/repairRoutes.service
+
+
+echo "Remove old systemd network config"
+ssh root@$IP_CONN 'rm /etc/systemd/network/wired.network'
 
 echo "Install dependencies for repairRoute"
-ssh root@$addressToRepairWith 'apt update 2>&1 > /dev/null'
-ssh root@$addressToRepairWith 'apt install iproute2 -y 2>&1 > /dev/null'
+ssh root@$IP_CONN 'apt update 2>&1 > /dev/null'
+ssh root@$IP_CONN 'apt install iproute2 -y 2>&1 > /dev/null'
 
-echo "Run repaireRoute"
-ssh -f root@$addressToRepairWith 'nohup bash -c "sleep 10; /root/repairRoute.sh 2>&1 > /root/repairRoute.log" &'
+echo "Install repairRoutes as systemd startup script"
+ssh root@$IP_CONN 'systemctl enable repairRoutes.service'
+ssh root@$IP_CONN 'systemctl daemon-reload'
+
+echo "Configure sshd to listen only on internal addr"
+ssh root@$IP_CONN "sed -i '
+	      s/#ListenAddress.*/ListenAddress $IP_INT/
+        s/#AddressFamily.*/AddressFamily inet/;
+       ' /etc/ssh/sshd_config"
+
+echo "Reboot"
+ssh root@$IP_CONN 'reboot'

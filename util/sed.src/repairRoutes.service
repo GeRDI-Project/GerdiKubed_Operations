@@ -1,0 +1,10 @@
+[Unit]
+Description=Repair routes on multi NIC setup
+After=network.target
+
+[Service]
+ExecStart=/root/repairRoutes.sh
+Type=oneshot
+
+[Install]
+WantedBy=multi-user.target

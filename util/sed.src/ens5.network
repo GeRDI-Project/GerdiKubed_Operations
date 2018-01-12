@@ -1,0 +1,17 @@
+[Match]
+Name=ens5
+
+[Network]
+DHCP=no
+
+[Address]
+Address=__IP_INT__/__MASK_INT__
+
+[Route]
+Gateway=__GW_INT__
+Table=__ROUTING_TABLE_INT__
+
+[Route]
+Gateway=__GW_INT__/__MASK_INT__
+Destination=__NW_INT__
+Table=__ROUTING_TABLE_INT__
