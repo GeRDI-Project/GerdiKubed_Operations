@@ -3,7 +3,7 @@
 ip route | grep -v __DEV_EXT__ | \
 while read line
 do
-	ip route delete $line
+  ip route delete $line
 done
 
 # Add routingpolicies

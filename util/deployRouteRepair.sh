@@ -86,7 +86,7 @@ echo "Configure sshd to listen only on internal addr"
 ssh root@$IP_CONN "sed -i '
 	      s/#ListenAddress.*/ListenAddress $IP_INT/
         s/#AddressFamily.*/AddressFamily inet/;
-       ' /etc/ssh/sshd_config"
+        ' /etc/ssh/sshd_config"
 
 echo "Reboot"
 ssh root@$IP_CONN 'reboot'
