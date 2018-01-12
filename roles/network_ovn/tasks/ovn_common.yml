@@ -9,8 +9,8 @@
     dest: /etc/apt/preferences.d/ovnovs.pref
 
 - name: Install ovn dependencies
-  package:
-    name: "{{ item }}"
+  apt:
+    pkg: "{{ item }}"
     state: present
     update_cache: yes
   with_items:
