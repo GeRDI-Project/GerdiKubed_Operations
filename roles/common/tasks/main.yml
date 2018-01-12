@@ -31,6 +31,12 @@
     state: absent
     regexp: "^/dev/sda1"
 
+- name: Disable systemd-resolved
+  systemd:
+    state: stopped
+    name: systemd-resolved
+    enabled: no
+
 - name: Create k8s directories
   file:
     path: "{{ item.path }}"
