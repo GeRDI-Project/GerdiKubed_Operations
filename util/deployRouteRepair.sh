@@ -19,8 +19,9 @@
 # argument. This argument is required.
 #
 # The following variables are hardcoded and must be changed in the script
-# DEV_EXT (default: ens3) This is used to grep out the rules remaining in the
+# DEV_INT (default: ens5) This is used to grep out the rules remaining in the
 #         default routing table.
+# DEV_OVN (default: ens4) see DEV_INT
 # GW_INT  (default: 10.155.215.254) Gateway of the internal network
 # MASK_INT (default: 21) Network mask for internal network
 # NW_INT  (default: 10.155.208.0/$MASK_INT) Internal network range
@@ -38,7 +39,8 @@ IP_CONN=$1
 IP_OVN=$2
 IP_INT=$3
 
-DEV_EXT=ens3
+DEV_OVN=ens4
+DEV_INT=ens5
 GW_INT=10.155.215.254
 MASK_INT=21
 NW_INT=10.155.208.0/$MASK_INT
@@ -49,7 +51,8 @@ mkdir -p deploy/$IP_CONN
 for file in sed.src/*
 do
   sed "
-        s#__DEV_EXT__#$DEV_EXT#g
+        s#__DEV_INT__#$DEV_INT#g
+        s#__DEV_OVN__#$DEV_OVN#g
         s#__NW_INT__#$NW_INT#g;
         s#__GW_INT__#$GW_INT#g;
         s#__IP_INT__#$IP_INT#g;

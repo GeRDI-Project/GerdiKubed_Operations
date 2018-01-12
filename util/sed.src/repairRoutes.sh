@@ -1,6 +1,6 @@
 #!/bin/bash
 # Delete all routes in default routing table not using __DEV_EXT__
-ip route | grep -v __DEV_EXT__ | \
+ip route | egrep '__DEV_INT__|__DEV_OVN__' | \
 while read line
 do
   ip route delete $line
