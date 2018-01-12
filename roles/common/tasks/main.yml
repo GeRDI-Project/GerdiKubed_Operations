@@ -82,6 +82,20 @@
       hw: "{{ secondInterface.stdout.split(' ')[4] }}"
   when: secondInterface.rc != 100
 
+- name: Retrieve information for third interface
+  shell: bash /root/printIface.sh 3
+  register: thirdInterface
+
+- name: Set facts for third interface
+  set_fact:
+    iface3:
+      name: "{{ thirdInterface.stdout.split(' ')[0] }}"
+      ipv4: "{{ thirdInterface.stdout.split(' ')[1] }}"
+      gw: "{{ thirdInterface.stdout.split(' ')[2] }}"
+      nw: "{{ thirdInterface.stdout.split(' ')[3] }}"
+      hw: "{{ thirdInterface.stdout.split(' ')[4] }}"
+
+
 - name: Install server key and cert
   copy:
     src:  "{{ item.src  }}"
