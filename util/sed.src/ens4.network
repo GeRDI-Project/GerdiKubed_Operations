@@ -5,4 +5,4 @@ Name=ens4
 DHCP=no
 
 [Address]
-Address=__IP_OVN__/__MASK_INT
+Address=__IP_OVN__/__MASK_INT__
