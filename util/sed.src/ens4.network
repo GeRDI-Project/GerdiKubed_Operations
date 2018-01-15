@@ -1,0 +1,8 @@
+[Match]
+Name=ens4
+
+[Network]
+DHCP=no
+
+[Address]
+Address=__IP_OVN__/__MASK_INT__

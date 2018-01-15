@@ -5,6 +5,7 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 [Service]
 # TODO Sync with json
 ExecStart=/usr/bin/controller-manager \
+      --address={{ iface3.ipv4 }} \
       --cluster-cidr={{ K8S_CLUSTER_IP_SUBNET }} \
       --cluster-name={{ K8S_CLUSTER_NAME }} \
       --cluster-signing-cert-file={{ K8S_CERT_FILES_DIR }}/ca.crt.pem \

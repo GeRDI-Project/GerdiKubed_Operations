@@ -7,7 +7,7 @@ Requires=docker.service
 [Service]
 ExecStart=/usr/bin/kubelet \
       --{{ K8S_GLOBAL_LOG_LEVEL }} \
-      --address=0.0.0.0 \
+      --address={{ iface3.ipv4 }} \
       --allow-privileged=true \
       --cgroup-driver=cgroupfs \
       --cloud-provider="" \
@@ -16,7 +16,7 @@ ExecStart=/usr/bin/kubelet \
       --cni-bin-dir={{ CNI_DIR }} \
       --network-plugin=cni \
       --container-runtime="docker" \
-      --healthz_bind_address=0.0.0.0 \
+      --healthz_bind_address={{ iface3.ipv4 }} \
       --healthz_port=10248 \
       --kubeconfig={{ K8S_KUBECONFIG }} \
       --logtostderr=true \
