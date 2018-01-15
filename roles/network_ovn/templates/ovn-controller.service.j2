@@ -1,9 +1,0 @@
-[Unit]
-Description=Open virtual net controller
-After=openvswitch-switch.service
-
-[Service]
-ExecStart=/usr/share/openvswitch/scripts/ovn-ctl start_controller
-
-[Install]
-WantedBy=default.target
