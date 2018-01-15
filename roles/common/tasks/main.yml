@@ -11,10 +11,8 @@
       - curl
       - ipcalc
       - iproute2
-      - libnm-glib-dev
       - python-dbus
       - python-dnspython
-      - python-networkmanager
       - python-openssl
 
 - name: Set hostname to {{ inventory_hostname }}
