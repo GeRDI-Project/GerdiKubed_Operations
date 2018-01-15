@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# This file is part of the GeRDI software suite
+# Author Tobias Weber <weber@lrz.de>
+# License: https://www.apache.org/licenses/LICENSE-2.0
+# Absolutely no warranty given!
+
+echo "Deploying nightly builds at $(date)" >> /root/nibi.log
+kubectl delete -f {{ K8S_BASE_DIR }}/nibi/k8s-deployment/root.yml
+kubectl create -f {{ K8S_BASE_DIR }}/nibi/k8s-deployment/root.yml
