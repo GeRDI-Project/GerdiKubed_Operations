@@ -4,11 +4,6 @@
     name: ovn-k8s-init
     state: started
 
-- name: restart ovn-k8s-watcher
-  service:
-    name: ovn-k8s-watcher
-    state: restarted
-
 - name: start ovn-k8s-watcher
   service:
     name: ovn-k8s-watcher
