@@ -17,45 +17,21 @@
     - k8s-ca-certificate={{ K8S_CERT_FILES_DIR }}/ca.crt.pem
     - k8s-api-token={{ OVN_API_TOKEN }}
 
-- name: Actually inizitalize node
-  shell: |
-    ovn-k8s-overlay minion-init \
-      --cluster-ip-subnet={{ K8S_CLUSTER_IP_SUBNET }} \
-      --minion-switch-subnet={{ SUBNET_IP_PRE }}.{{ hostname_suffix }}.0/24 \
-      --node-name={{ inventory_hostname }}
-
-- name: Install ovn-k8s-gateway-init as a service
+- name: Install ovn-k8s-init as a service
   template:
-    src: ovn-k8s-gateway-init.service.j2
-    dest: /etc/systemd/system/ovn-k8s-gateway-init.service
-  when: secondInterface.rc != 100
+    src: ovn-k8s-init.service.j2
+    dest: /etc/systemd/system/ovn-k8s-init.service
 
-- name: Install ovn-k8s-gateway-init script
+- name: Install ovn-k8s-init script
   template:
-    src:  ovn-k8s-gateway-init.sh.j2
-    dest: "{{ OVN_K8S_DIR }}/ovn-k8s-gateway-init.sh"
+    src:  ovn-k8s-init.sh.j2
+    dest: "{{ OVN_K8S_DIR }}/ovn-k8s-init.sh"
     mode: 0755
   notify:
-    - start ovn-k8s-gateway-init
-  when: secondInterface.rc != 100
+    - start ovn-k8s-init
 
-- name: Register ovn-k8s-gateway-init to systemd and start it
+- name: Register ovn-k8s-init to systemd and start it
   systemd:
-    name: ovn-k8s-gateway-init.service
+    name: ovn-k8s-init.service
     enabled: yes
     daemon-reload: yes
-  when: secondInterface.rc == 100
-
-
-
-#- name: Install ovn-k8s-gateway-helper as a service
-#  template:
-#    src: ovn-k8s-gateway-helper.service.j2
-#    dest: /etc/systemd/system/ovn-k8s-gateway-helper.service
-#  when: secondInterface.rc != 100
-#
-#- name: Register ovn-k8s-gateway-helper to systemd
-#  systemd:
-#    name: ovn-k8s-gateway-helper.service
-#    enabled: yes
-#    daemon-reload: yes

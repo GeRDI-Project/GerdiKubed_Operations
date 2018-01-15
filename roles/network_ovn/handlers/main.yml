@@ -9,7 +9,7 @@
     name: ovn-k8s-watcher
     state: started
 
-- name: start ovn-k8s-gateway-init
+- name: start ovn-k8s-init
   service:
-    name: ovn-k8s-gateway-init
+    name: ovn-k8s-init
     state: started

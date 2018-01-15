@@ -1,10 +1,10 @@
 [Unit]
-Description=Open virtual net kubernetes gateway helper
+Description=Open virtual net kubernetes
 Documentation=https://github.com/openvswitch/ovn-kubernetes/README.md
 After=openvswitch-switch.service
 
 [Service]
-ExecStart={{ OVN_K8S_DIR }}/ovn-k8s-gateway-init.sh
+ExecStart={{ OVN_K8S_DIR }}/ovn-k8s-init.sh
 Type=oneshot
 
 [Install]
