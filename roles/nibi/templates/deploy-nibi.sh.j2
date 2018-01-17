@@ -5,8 +5,28 @@
 # License: https://www.apache.org/licenses/LICENSE-2.0
 # Absolutely no warranty given!
 
-echo "Deploying nightly builds at $(date)" >> /root/nibi.log
+LOGFILE=/root/nibi.log
+
+echo "Deploying nightly builds at $(date)" &>> $LOGFILE
 cd {{ K8S_BASE_DIR }}/nibi
-git pull origin nibi
-kubectl delete -f {{ K8S_BASE_DIR }}/nibi/k8s-deployment
-kubectl create -f {{ K8S_BASE_DIR }}/nibi/k8s-deployment
+git pull origin nibi 2>&1 | sed 's/^/  /g' &>> $LOGFILE
+echo "  Deleting old nibi deployment at $(date)" &>> $LOGFILE
+kubectl delete -f {{ K8S_BASE_DIR }}/nibi/k8s-deployment 2>&1 | sed 's/^/  /g' &>> $LOGFILE
+for scs in archive
+do
+  kubectl delete -f {{ K8S_BASE_DIR }}/nibi/k8s-deployment/$scs 2>&1 \
+    | sed 's/^/  /g' &>> $LOGFILE
+done
+
+while kubectl get po 2>&1 | grep -q "Terminating"
+do
+  echo "  Wait for all pods to terminate at $(date), sleep another 10 seconds" &>> $LOGFILE
+  sleep 10
+done
+
+echo "  Redeploy nibi at $(date)" &>> $LOGFILE
+kubectl create -f {{ K8S_BASE_DIR }}/nibi/k8s-deployment 2>&1 | sed 's/^/  /g' &>> $LOGFILE
+for scs in archive
+do
+  kubectl create -f {{ K8S_BASE_DIR }}/nibi/k8s-deployment/$scs 2>&1 | sed 's/^/  /g' &>> $LOGFILE
+done
