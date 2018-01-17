@@ -16,16 +16,19 @@
     hour: 00
     minute: 15
 
-- name: Check whether secret needs to be set
-  shell: kubectl get secret lrz-docker-registry
-  register: lrzRegistrySecretExists
-  ignore_errors: yes
+- name: Set fact for the docker registry credentials
+  set_fact:
+    registry_config: "{{ lookup('file', 'registry_config') | b64encode }}"
+
+- name: Debug
+  debug: var=registry_config
+
+- name: Create Template for lrz-docker-registry-secret.yml
+  template:
+    src: lrz-docker-registry-secret.yml.j2
+    dest: "{{ K8S_BASE_DIR }}/lrz-docker-registry-secret.yml"
+    mode: '0400'
 
 - name: Set secret for docker registry
   shell: |
-    kubectl create secret docker-registry lrz-docker-registry \
-      --docker-server={{ DOCKER_REGISTRY_LRZ }} \
-      --docker-username={{ DOCKER_REGISTRY_LRZ_USERNAME }} \
-      --docker-password={{ lookup('file', "registry_password") }} \
-      --docker-email=weber@lrz.de
-  when: lrzRegistrySecretExists.rc != 0
+    kubectl apply -f {{ K8S_BASE_DIR }}/lrz-docker-registry-secret.yml
