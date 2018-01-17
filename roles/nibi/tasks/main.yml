@@ -16,6 +16,11 @@
     hour: 00
     minute: 15
 
+- name: Check whether secret needs to be set
+  shell: kubectl get secret lrz-docker-registry
+  register: lrzRegistrySecretExists
+  ignore_errors: yes
+
 - name: Set secret for docker registry
   shell: |
     kubectl create secret docker-registry lrz-docker-registry \
@@ -23,4 +28,4 @@
       --docker-username={{ DOCKER_REGISTRY_LRZ_USERNAME }} \
       --docker-password={{ lookup('file', "registry_password") }} \
       --docker-email=weber@lrz.de
-
+  when: lrzRegistrySecretExists.rc != 0
