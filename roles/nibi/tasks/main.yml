@@ -20,9 +20,6 @@
   set_fact:
     registry_config: "{{ lookup('file', 'registry_config') | b64encode }}"
 
-- name: Debug
-  debug: var=registry_config
-
 - name: Create Template for lrz-docker-registry-secret.yml
   template:
     src: lrz-docker-registry-secret.yml.j2
