@@ -6,5 +6,7 @@
 # Absolutely no warranty given!
 
 echo "Deploying nightly builds at $(date)" >> /root/nibi.log
-kubectl delete -f {{ K8S_BASE_DIR }}/nibi/k8s-deployment/root.yml
-kubectl create -f {{ K8S_BASE_DIR }}/nibi/k8s-deployment/root.yml
+cd {{ K8S_BASE_DIR }}/nibi
+git pull origin nibi
+kubectl delete -f {{ K8S_BASE_DIR }}/nibi/k8s-deployment
+kubectl create -f {{ K8S_BASE_DIR }}/nibi/k8s-deployment

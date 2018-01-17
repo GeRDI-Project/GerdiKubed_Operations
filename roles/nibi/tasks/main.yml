@@ -15,3 +15,12 @@
     job: /root/deploy-nibi.sh
     hour: 00
     minute: 15
+
+- name: Set secret for docker registry
+  shell: |
+    kubectl create secret docker-registry lrz-docker-registry \
+      --docker-server={{ DOCKER_REGISTRY_LRZ }} \
+      --docker-username={{ DOCKER_REGISTRY_LRZ_USERNAME }} \
+      --docker-password={{ lookup('file', "registry_password") }} \
+      --docker-email=weber@lrz.de
+
