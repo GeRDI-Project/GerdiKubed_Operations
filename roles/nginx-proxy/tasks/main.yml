@@ -1,0 +1,26 @@
+---
+- name: Install nginx as a proxy
+  apt:
+    pkg: nginx
+    state: latest
+
+- name: Copy cert and key
+  copy:
+    src: "{{ K8S_CLUSTER_NAME }}.ext.{{ K8S_DOMAIN_NAMESPACE }}.{{ item.ext }}"
+    dest: "/etc/ssl/{{ K8S_CLUSTER_NAME }}.ext.{{ K8S_DOMAIN_NAMESPACE }}.{{ item.ext }}"
+    mode: "{{ item.mode }}"
+  with_items:
+    - { ext: "key", mode: "0400" }
+    - { ext: "crt", mode: "0400" }
+
+- name: Copy .htpasswd
+  copy:
+    src: .htpasswd
+    dest: /etc/nginx/.htpasswd
+
+- name: Install server configuration
+  template:
+    src: nginx.conf.j2
+    dest: "/etc/nginx/sites-enabled/{{ K8S_CLUSTER_NAME }}.ext.{{ K8S_DOMAIN_NAMESPACE }}"
+  notify:
+    - restart nginx
