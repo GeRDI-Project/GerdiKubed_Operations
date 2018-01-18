@@ -7,9 +7,9 @@
 
 LOGFILE={{ K8S_BASE_DIR }}/$(date '+%F')_nibi.log
 
-echo "Deploying nightly builds at $(date)" &>> $LOGFILE
+echo "Deploying nightly builds started at $(date)" &>> $LOGFILE
 cd {{ K8S_BASE_DIR }}/nibi
-git pull origin nibi 2>&1 | sed 's/^/  /g' &>> $LOGFILE
+
 cd k8s-deployment
 echo "  Deleting old nibi deployment at $(date)" &>> $LOGFILE
 for dir in $(find . -mindepth 1 -type d)
@@ -24,8 +24,11 @@ do
   sleep 10
 done
 
+echo "  See whether deployment information changed since last run at $(date)" &>> $LOGFILE
+git pull origin nibi 2>&1 | sed 's/^/  /g' &>> $LOGFILE
 echo "  Redeploy nibi at $(date)" &>> $LOGFILE
 for dir in $(find . -mindepth 1 -type d)
 do
   kubectl create -f {{ K8S_BASE_DIR }}/nibi/k8s-deployment/$dir 2>&1 | sed 's/^/  /g' &>> $LOGFILE
 done
+echo "Deploying nightly builds finished at $(date)" &>> $LOGFILE
