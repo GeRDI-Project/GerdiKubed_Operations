@@ -62,7 +62,6 @@
 - name: Retrieve information for second interface
   shell: bash /root/printIface.sh 2
   register: secondInterface
-  ignore_errors: yes
 
 - name: Set facts for second interface
   set_fact:
@@ -72,11 +71,11 @@
       gw: "{{ secondInterface.stdout.split(' ')[2] }}"
       nw: "{{ secondInterface.stdout.split(' ')[3] }}"
       hw: "{{ secondInterface.stdout.split(' ')[4] }}"
-  when: secondInterface.rc != 100
 
 - name: Retrieve information for third interface
   shell: bash /root/printIface.sh 3
   register: thirdInterface
+  ignore_errors: yes
 
 - name: Set facts for third interface
   set_fact:
@@ -86,7 +85,17 @@
       gw: "{{ thirdInterface.stdout.split(' ')[2] }}"
       nw: "{{ thirdInterface.stdout.split(' ')[3] }}"
       hw: "{{ thirdInterface.stdout.split(' ')[4] }}"
+  when: thirdInterface.rc != 100
 
+- name: Set fact for internal address (on first run)
+  set_fact:
+    internalIP: "{{ iface3.ipv4 }}"
+  when: thirdInterface.rc != 100
+
+- name: Set fact for internal address (on second+ run)
+  set_fact:
+    internalIP: "{{ iface2.ipv4 }}"
+  when: thirdInterface.rc == 100
 
 - name: Install server key and cert
   copy:
