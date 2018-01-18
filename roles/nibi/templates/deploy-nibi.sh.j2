@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# This file is part of the GeRDI software suite
+# Author Tobias Weber <weber@lrz.de>
+# License: https://www.apache.org/licenses/LICENSE-2.0
+# Absolutely no warranty given!
+
+LOGFILE={{ K8S_BASE_DIR }}/$(date '+%F')_nibi.log
+
+echo "Deploying nightly builds started at $(date)" &>> $LOGFILE
+cd {{ K8S_BASE_DIR }}/nibi
+
+cd k8s-deployment
+echo "  Deleting old nibi deployment at $(date)" &>> $LOGFILE
+for dir in $(find . -mindepth 1 -type d)
+do
+  kubectl delete -f {{ K8S_BASE_DIR }}/nibi/k8s-deployment/$dir 2>&1 \
+    | sed 's/^/  /g' &>> $LOGFILE
+done
+
+while kubectl get po 2>&1 | grep -q "Terminating"
+do
+  echo "  Wait for all pods to terminate at $(date), sleep another 10 seconds" &>> $LOGFILE
+  sleep 10
+done
+
+echo "  See whether deployment information changed since last run at $(date)" &>> $LOGFILE
+git pull origin nibi 2>&1 | sed 's/^/  /g' &>> $LOGFILE
+echo "  Redeploy nibi at $(date)" &>> $LOGFILE
+for dir in $(find . -mindepth 1 -type d)
+do
+  kubectl create -f {{ K8S_BASE_DIR }}/nibi/k8s-deployment/$dir 2>&1 | sed 's/^/  /g' &>> $LOGFILE
+done
+echo "Deploying nightly builds finished at $(date)" &>> $LOGFILE
