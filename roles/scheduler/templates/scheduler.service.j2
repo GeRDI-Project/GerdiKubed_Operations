@@ -4,7 +4,7 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 
 [Service]
 ExecStart=/usr/bin/scheduler \
-      --address={{ iface3.ipv4 }} \
+      --address=127.0.0.1 \
       --{{ K8S_GLOBAL_LOG_LEVEL }} \
       --logtostderr \
       --kubeconfig={{ K8S_KUBECONFIG }}
