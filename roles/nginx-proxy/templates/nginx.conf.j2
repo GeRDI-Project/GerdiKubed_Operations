@@ -29,4 +29,22 @@ server {
     auth_basic "Restricted";
     auth_basic_user_file /etc/nginx/.htpasswd;
   }
+
+  location /harvest/arcgis {
+    proxy_pass http://10.222.21.11:8080/arcgis/harvest;
+    auth_basic "Restricted";
+    auth_basic_user_file /etc/nginx/.htpasswd;
+  }
+
+  location /harvest/faostat {
+    proxy_pass http://10.222.21.12:8080/faostat/harvest;
+    auth_basic "Restricted";
+    auth_basic_user_file /etc/nginx/.htpasswd;
+  }
+
+  location /harvest/pangaea {
+    proxy_pass http://10.222.21.13:8080/oaipmh/harvest;
+    auth_basic "Restricted";
+    auth_basic_user_file /etc/nginx/.htpasswd;
+  }
 }
