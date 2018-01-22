@@ -12,9 +12,13 @@ cd {{ K8S_BASE_DIR }}/nibi
 
 cd k8s-deployment
 echo "  Deleting old nibi deployment at $(date)" &>> $LOGFILE
-for dir in $(find . -mindepth 1 -type d)
+for file in $(find . -mindepth 2 -type f -name "*.yml")
 do
-  kubectl delete -f {{ K8S_BASE_DIR }}/nibi/k8s-deployment/$dir 2>&1 \
+  if echo $file | egrep -q 'elk.yml$'
+  then
+    continue;
+  fi
+  kubectl delete -f {{ K8S_BASE_DIR }}/nibi/k8s-deployment/$file 2>&1 \
     | sed 's/^/  /g' &>> $LOGFILE
 done
 
