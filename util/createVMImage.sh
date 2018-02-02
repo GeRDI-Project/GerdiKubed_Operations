@@ -214,5 +214,10 @@ done
 ################################################################################
 sudo umount ${MNTDIR}{proc/,sys/,dev/}
 sudo umount $MNTDIR
-rm -r $MNTDIR
+rm -rf $MNTDIR
 sudo qemu-nbd -d /dev/nbd0
+echo
+echo "DONE!"
+echo "Try image:"
+echo "sudo qemu-system-x86_64 -hda $BUILDDIR/$IMAGE -m 1024 -device e1000,netdev=user.0 -netdev user,id=user.0,hostfwd=tcp::5555-:22 &"
+echo "ssh -p 5555 root@localhost"
