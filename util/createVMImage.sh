@@ -177,8 +177,8 @@ sudo DEBIAN_FRONTEND=non-interactive chroot $MNTDIR \
 sudo chroot $MNTDIR apt-get clean
 
 # correct locale and timezone
-sudo sed -i 's/# de_DE.UTF-8/de_DE.UTF-8/
-             s/# en_US.UTF-8/en_US.UTF-8/' \
+sudo sed -i ' s/# de_DE.UTF-8/de_DE.UTF-8/
+              s/# en_US.UTF-8/en_US.UTF-8/' \
   ${MNTDIR}etc/locale.gen
 sudo chroot $MNTDIR locale-gen
 
