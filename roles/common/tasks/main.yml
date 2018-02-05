@@ -131,3 +131,9 @@
     - { src:  "{{ CONTROL_KEY_DIR}}/admin.key",
         dest: "{{ K8S_KEY_FILES_DIR }}/admin.key",
         mode: '0400' }
+
+- name: Set kernel param (max_map_count) higher for elasticsearch
+  sysctl:
+    name: vm.max_map_count
+    value: 262144
+    state: present
