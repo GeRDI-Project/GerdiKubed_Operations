@@ -103,7 +103,10 @@ MNTDIR="$BUILDDIR/mnt/"
 IMAGE=$NAME.qcow2
 
 # check requirements
-for pkg in qemu debootstrap
+for pkg in  qemu \
+            debootstrap \
+            debian-archive-keyring \
+            debian-keyring
 do
   PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $pkg 2>&1 |grep "install ok installed")
   if [ "" == "$PKG_OK" ]
