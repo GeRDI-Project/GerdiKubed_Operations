@@ -32,16 +32,6 @@
   hostname:
     name: "{{ inventory_hostname }}"
 
-# TODO Take care of it in image (see SAI-242)
-- name: Turn swapoff
-  shell: swapoff -a
-
-- name: Permanently turn swap off
-  lineinfile:
-    path: /etc/fstab
-    state: absent
-    regexp: "^/dev/sda1"
-
 - name: Create k8s directories
   file:
     path: "{{ item.path }}"
