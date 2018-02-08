@@ -32,6 +32,7 @@
 - name: Set hostname to {{ inventory_hostname }}
   hostname:
     name: "{{ inventory_hostname }}"
+  when: SET_HOSTNAME
 
 - name: Create k8s directories
   file:
