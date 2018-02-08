@@ -21,6 +21,7 @@ KEYFILE=~/.ssh/id_rsa.pub
   -p curl \
   -p conntrack \
   -p conntrackd \
+  -p dbus \
   -p git \
   -p grub-pc \
   -p ipcalc \
