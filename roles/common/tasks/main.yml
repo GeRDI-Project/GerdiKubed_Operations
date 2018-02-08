@@ -22,6 +22,7 @@
       - bash-completion
       - ca-certificates
       - curl
+      - dbus
       - ipcalc
       - iproute2
       - python-dbus
