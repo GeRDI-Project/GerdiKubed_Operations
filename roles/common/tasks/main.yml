@@ -63,7 +63,7 @@
       ipv4: "{{ internalInterface.stdout.split(' ')[1] }}"
       gw:   "{{ internalInterface.stdout.split(' ')[2] }}"
       nw:   "{{ internalInterface.stdout.split(' ')[3] }}"
-      mask: "{{ internalInterface.stdout.split(' ')[5] }}"
+      mask: "{{ internalInterface.stdout.split(' ')[4] }}"
 
 - name: Retrieve information for third interface
   shell: bash /root/printIface.sh 3
