@@ -59,4 +59,11 @@ server {
     auth_basic "Restricted";
     auth_basic_user_file /etc/nginx/.htpasswd;
   }
+
+  location /harvest/oceantea {
+    proxy_pass http://10.222.21.14:8080/oaipmh/harvest;
+    auth_basic "Restricted";
+    auth_basic_user_file /etc/nginx/.htpasswd;
+  }
+
 }
