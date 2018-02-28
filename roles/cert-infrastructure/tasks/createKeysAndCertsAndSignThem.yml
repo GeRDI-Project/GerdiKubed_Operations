@@ -36,7 +36,8 @@
       -x509 \
       -config {{ CONTROL_CONFIG_DIR }}/{{ filename }}.openssl.cnf \
       -out {{ CONTROL_CERT_DIR }}/{{ filename }}.crt.pem \
-      -extensions v3_ca
+      -extensions v3_ca \
+      -days 8000
   when: check.results[0].stat.exists == False and check.results[1].stat.exists == False and sign == False
 
 - name: "Create selfsigned cert without key for {{ filename }}"
