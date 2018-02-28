@@ -1,7 +1,9 @@
 ########################################
 # Start: Change the values
 ########################################
-K8S_CLUSTER_NAME: "test" # this MUST NOT include UPPERCASE chars!
+K8S_CLUSTER_NAME: "nibi" # this MUST NOT include UPPERCASE chars!
+# K8S_CLUSTER_NAME is deprecated! Do not use it anymore! Use instead:
+K8S_DEPLOYMENT_CONTEXT: "test" # will replace K8S_CLUSTER_NAME sometimes
 K8S_VERSION: "vx.y.z"
 K8S_GLOBAL_LOG_LEVEL: "v=2"
 # Certificates will be created with both DNS-names and IP-Adresses in the alternative names.

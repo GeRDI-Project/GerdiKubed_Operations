@@ -4,3 +4,4 @@
 group_vars/all
 testing
 *.swp
+registry_config
