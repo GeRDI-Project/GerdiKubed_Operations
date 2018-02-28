@@ -25,6 +25,7 @@
       - dbus
       - ipcalc
       - iproute2
+      - netbase
       - python-dbus
       - python-dnspython
       - python-openssl
