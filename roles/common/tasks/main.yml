@@ -26,6 +26,7 @@
       - ipcalc
       - iproute2
       - netbase
+      - nfs-common
       - python-dbus
       - python-dnspython
       - python-openssl
@@ -128,4 +129,4 @@
     src:    "{{ NFS_VOLUME_PATH }}"
     fstype: nfs
     opts:   tcp,rsize=65536,wsize=65536,timeo=600,intr
-    state: present
+    state:  mounted
