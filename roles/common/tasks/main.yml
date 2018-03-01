@@ -59,7 +59,7 @@
 
 - name: Set facts for second interface
   set_fact:
-    internal:
+    iface2:
       name: "{{ internalInterface.stdout.split(' ')[0] }}"
       ipv4: "{{ internalInterface.stdout.split(' ')[1] }}"
       gw:   "{{ internalInterface.stdout.split(' ')[2] }}"
@@ -79,17 +79,17 @@
       gw: "{{ thirdInterface.stdout.split(' ')[2] }}"
       nw: "{{ thirdInterface.stdout.split(' ')[3] }}"
       hw: "{{ thirdInterface.stdout.split(' ')[4] }}"
-  when: thirdInterface.rc != 100
+  when: thirdInterface.rc == 0
 
 - name: Set fact for internal address (on first run)
   set_fact:
     internalIP: "{{ iface3.ipv4 }}"
-  when: thirdInterface.rc != 100
+  when: thirdInterface.rc == 0
 
 - name: Set fact for internal address (on second+ run)
   set_fact:
     internalIP: "{{ iface2.ipv4 }}"
-  when: thirdInterface.rc == 100
+  when: thirdInterface.rc != 0
 
 - name: Install server key and cert
   copy:
