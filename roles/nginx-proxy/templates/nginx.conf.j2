@@ -11,7 +11,7 @@ server {
   ssl_certificate /etc/ssl/{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}.crt;
   ssl_certificate_key /etc/ssl/{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}.key;
 
-  server_name ~^.*{{ K8S_DOMAIN_NAMESPACE }}
+  server_name *.{{ K8S_DOMAIN_NAMESPACE }}$;
 
   access_log /var/log/nginx/nginx.vhost.access.log;
   error_log /var/log/nginx/nginx.vhost.error.log;
