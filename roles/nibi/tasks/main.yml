@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+- name: Install cron
+  apt:
+    pkg: cron
+    state: latest
+
 - name: Pull GeRDI release repository
   git:
     repo: https://code.gerdi-project.de/scm/sys/gerdireleases.git
