@@ -118,3 +118,14 @@
     name: vm.max_map_count
     value: 262144
     state: present
+
+- name: Add rule to use internal interface for nfs
+  shell: ip rule add to {{ lookup('dig', NFS_SERVER_DOMAIN, 'qtype=A') }} table {{ K8S_INTERNAL_ROUTING_TABLE }}
+
+- name: Mount NFS-Volume
+  mount:
+    path:   "{{ NFS_MOUNT_PATH }}"
+    src:    "{{ NFS_VOLUME_PATH }}"
+    fstype: nfs
+    opts:   tcp,rsize=65536,wsize=65536,timeo=600,intr
+    state: present
