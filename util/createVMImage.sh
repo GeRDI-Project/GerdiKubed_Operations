@@ -110,7 +110,7 @@ IMAGE=$NAME.qcow2
 for pkg in qemu \
         debootstrap \
         debian-archive-keyring \
-	debian-keyring \
+        debian-keyring \
         parted
 do
   PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $pkg 2>&1 |grep "install ok installed")
