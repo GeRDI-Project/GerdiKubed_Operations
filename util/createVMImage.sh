@@ -14,9 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-if [ "$EUID" -ne 0 ]; then 
-	echo "Please run using root!"
-	exit
+if [ "$EUID" -ne 0 ]; then
+  echo "Please run using root (sudo)!"
+  exit
 fi
 
 ################################################################################
@@ -108,10 +108,10 @@ IMAGE=$NAME.qcow2
 
 # check requirements
 for pkg in qemu \
-           debootstrap \
-           debian-archive-keyring \
-           debian-keyring \
-           parted
+        debootstrap \
+        debian-archive-keyring \
+	debian-keyring \
+        parted
 do
   PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $pkg 2>&1 |grep "install ok installed")
   if [ "" == "$PKG_OK" ]
