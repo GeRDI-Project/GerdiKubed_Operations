@@ -14,6 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+if [ "$EUID" -ne 0 ]; then 
+	echo "Please run using root!"
+	exit
+fi
 
 ################################################################################
 # DEFAULT PARAMS, HELP-MESSAGE, CHECK PARAMS AND REQUIREMENTS
@@ -106,7 +110,8 @@ IMAGE=$NAME.qcow2
 for pkg in  qemu \
             debootstrap \
             debian-archive-keyring \
-            debian-keyring
+            debian-keyring \
+	    parted
 do
   PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $pkg 2>&1 |grep "install ok installed")
   if [ "" == "$PKG_OK" ]
@@ -146,79 +151,89 @@ fi
 mkdir -p $BUILDDIR
 
 # enable nbd kernel module, partition disk, make fs and mount it
-sudo modprobe nbd
+modprobe nbd max_part=16
 
-sudo qemu-img create -f qcow2 $BUILDDIR/$IMAGE $SIZE
+qemu-img create -f qcow2 $BUILDDIR/$IMAGE $SIZE
 
-sudo qemu-nbd -c /dev/nbd0 $BUILDDIR/$IMAGE
+qemu-nbd -c /dev/nbd0 $BUILDDIR/$IMAGE
 
-sudo sgdisk -og /dev/nbd0
-sudo sgdisk -n 1::+1M   -t 1:ef02 -c 1:"BIOS boot partition"    /dev/nbd0
-sudo sgdisk -n 2::-0    -t 2:8300 -c 2:"Linux root filesystem"  /dev/nbd0
+sgdisk -og \
+	-n 1::+1M -t 1:ef02 -c 1:'BIOS boot partition' \
+        -n 2::-0 -t 2:8300 -c 2:'Linux root filesystem' \
+	/dev/nbd0
 
-sudo mkfs.ext4 -F /dev/nbd0p2
+# Find our partition
+LOOPDEV=$(sudo losetup --find --show /dev/nbd0)
+partprobe ${LOOPDEV}
 
-sudo mkdir -p ${MNTDIR}
-sudo mount /dev/nbd0p2 $MNTDIR
+# Format linux root fs
+mkfs.ext4 -F ${LOOPDEV}p2
+
+# Create mount directory and mount partition to directory
+mkdir -p ${MNTDIR}
+mount ${LOOPDEV}p2 ${MNTDIR}
 
 # install base system
-sudo debootstrap --variant=minbase \
+debootstrap --variant=minbase --arch=amd64 \
     $DEBIAN \
     $MNTDIR \
     $MIRROR
 
 # configure image
 echo "/dev/sda2 / ext4 errors=remount-ro 0 1" \
-  | sudo tee ${MNTDIR}etc/fstab > /dev/null
-for d in dev sys proc; do sudo mount --bind /$d ${MNTDIR}$d; done
+  | tee ${MNTDIR}etc/fstab > /dev/null
+for d in dev sys proc; do mount --bind /$d ${MNTDIR}$d; done
 
-sudo DEBIAN_FRONTEND=non-interactive chroot $MNTDIR \
+# Install additional packages
+DEBIAN_FRONTEND=non-interactive chroot ${MNTDIR} \
     apt-get install -y \
     --no-install-recommends \
     ${PKGS[@]}
 
-sudo chroot $MNTDIR apt-get clean
+# Clean up
+chroot ${MNTDIR} apt-get clean
 
 # correct locale and timezone
-sudo sed -i ' s/# de_DE.UTF-8/de_DE.UTF-8/
+sed -i ' s/# de_DE.UTF-8/de_DE.UTF-8/
               s/# en_US.UTF-8/en_US.UTF-8/' \
   ${MNTDIR}etc/locale.gen
-sudo chroot $MNTDIR locale-gen
-
-sudo cp ${MNTDIR}usr/share/zoneinfo/Europe/Berlin ${MNTDIR}etc/localtime
+chroot ${MNTDIR} locale-gen
+cp ${MNTDIR}usr/share/zoneinfo/Europe/Berlin ${MNTDIR}etc/localtime
 
 # install bootloader
-sudo chroot $MNTDIR grub-install --modules="ext2 part_gpt" /dev/nbd0
-sudo chroot $MNTDIR update-grub
-sudo sed -i 's/nbd0p2/sda2/g' ${MNTDIR}boot/grub/grub.cfg
+chroot ${MNTDIR} grub-install --modules="ext2 part_gpt" /dev/nbd0
+chroot ${MNTDIR} update-grub
+sed -i 's/nbd0p2/sda2/g' ${MNTDIR}boot/grub/grub.cfg
 
 # setup networking
-sudo chroot $MNTDIR systemctl enable systemd-networkd.service
-sudo rm ${MNTDIR}etc/resolv.conf
-sudo chroot $MNTDIR ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
-#sudo sed -i 's/#LLMNR=yes/LLMNR=no/g' ${MNTDIR}etc/systemd/resolved.conf
-sudo chroot $MNTDIR systemctl enable systemd-resolved.service
+chroot ${MNTDIR} systemctl enable systemd-networkd.service
+rm ${MNTDIR}etc/resolv.conf
+chroot ${MNTDIR} ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
+chroot ${MNTDIR} systemctl enable systemd-resolved.service
 echo "[Match]
 Name=en*
 
 [Network]
-DHCP=yes" | sudo tee ${MNTDIR}etc/systemd/network/wired.network > /dev/null
+DHCP=yes" | tee ${MNTDIR}etc/systemd/network/wired.network > /dev/null
 
 # install ssh-keys
-sudo mkdir ${MNTDIR}root/.ssh
+mkdir ${MNTDIR}root/.ssh
 for key in ${KEYS[@]}
 do
   [ -f "$key" ] || (echo "Given param '$key' (-k|--key) is not a file" && continue)
-  cat $key | sudo tee -a ${MNTDIR}root/.ssh/authorized_keys > /dev/null
+  cat $key | tee -a ${MNTDIR}root/.ssh/authorized_keys > /dev/null
 done
 
 ################################################################################
 # TIDY UP
 ################################################################################
-sudo umount ${MNTDIR}{proc/,sys/,dev/}
-sudo umount $MNTDIR
-rm -rf $MNTDIR
-sudo qemu-nbd -d /dev/nbd0
+umount ${MNTDIR}{proc/,sys/,dev/}
+umount ${MNTDIR}
+rm -rf ${MNTDIR}
+sync ${LOOPDEV}
+losetup -d ${LOOPDEV}
+qemu-nbd -d /dev/nbd0
+
 echo
 echo "DONE!"
 echo "Try image:"
