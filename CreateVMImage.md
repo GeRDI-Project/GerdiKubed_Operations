@@ -13,7 +13,7 @@ Based on (all retrieved on 2017-10-19):
 ```bash
 KEYFILE=~/.ssh/id_rsa.pub
 
-./util/createVMImage.sh \
+sudo ./util/createVMImage.sh \
   -k $KEYFILE \
   -p apt-transport-https \
   -p bash-completion \
