@@ -107,11 +107,11 @@ MNTDIR="$BUILDDIR/mnt/"
 IMAGE=$NAME.qcow2
 
 # check requirements
-for pkg in  qemu \
-            debootstrap \
-            debian-archive-keyring \
-            debian-keyring \
-	    parted
+for pkg in qemu \
+           debootstrap \
+           debian-archive-keyring \
+           debian-keyring \
+           parted
 do
   PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $pkg 2>&1 |grep "install ok installed")
   if [ "" == "$PKG_OK" ]
@@ -158,12 +158,12 @@ qemu-img create -f qcow2 $BUILDDIR/$IMAGE $SIZE
 qemu-nbd -c /dev/nbd0 $BUILDDIR/$IMAGE
 
 sgdisk -og \
-	-n 1::+1M -t 1:ef02 -c 1:'BIOS boot partition' \
+        -n 1::+1M -t 1:ef02 -c 1:'BIOS boot partition' \
         -n 2::-0 -t 2:8300 -c 2:'Linux root filesystem' \
-	/dev/nbd0
+        /dev/nbd0
 
 # Find our partition
-LOOPDEV=$(sudo losetup --find --show /dev/nbd0)
+LOOPDEV=$(losetup --find --show /dev/nbd0)
 partprobe ${LOOPDEV}
 
 # Format linux root fs
