@@ -128,5 +128,5 @@
     path:   "{{ NFS_MOUNT_PATH }}"
     src:    "{{ NFS_VOLUME_PATH }}"
     fstype: nfs
-    opts:   tcp,rsize=65536,wsize=65536,timeo=600,intr
+    opts:   tcp,nolock,rsize=65536,wsize=65536,timeo=600,intr
     state:  mounted
