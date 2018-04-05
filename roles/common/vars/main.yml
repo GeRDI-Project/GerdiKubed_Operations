@@ -12,25 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Install cron
-  apt:
-    pkg: cron
-    state: latest
-
-- name: Pull GeRDI release repository
-  git:
-    repo: https://code.gerdi-project.de/scm/sys/gerdireleases.git
-    dest: "{{ K8S_BASE_DIR }}/nibi"
-    version: nibi
-
-- name: Install script that deletes and applies the cluster deployment
-  template:
-    src: deploy-nibi.sh.j2
-    dest: /root/deploy-nibi.sh
-
-- name: Install cron-job to call deploy-nibi
-  cron:
-    name: Deploy nightly build of the GeRDI software suite
-    job: /root/deploy-nibi.sh
-    hour: 00
-    minute: 15
+SET_HOSTNAME: True

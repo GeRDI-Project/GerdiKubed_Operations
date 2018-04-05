@@ -19,8 +19,8 @@
 
 - name: Copy cert and key
   copy:
-    src: "{{ K8S_CLUSTER_NAME }}.ext.{{ K8S_DOMAIN_NAMESPACE }}.{{ item.ext }}"
-    dest: "/etc/ssl/{{ K8S_CLUSTER_NAME }}.ext.{{ K8S_DOMAIN_NAMESPACE }}.{{ item.ext }}"
+    src: "{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}.{{ item.ext }}"
+    dest: "/etc/ssl/{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}.{{ item.ext }}"
     mode: "{{ item.mode }}"
   with_items:
     - { ext: "key", mode: "0400" }
@@ -34,6 +34,6 @@
 - name: Install server configuration
   template:
     src: nginx.conf.j2
-    dest: "/etc/nginx/sites-enabled/{{ K8S_CLUSTER_NAME }}.ext.{{ K8S_DOMAIN_NAMESPACE }}"
+    dest: "/etc/nginx/sites-enabled/{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}"
   notify:
     - restart nginx

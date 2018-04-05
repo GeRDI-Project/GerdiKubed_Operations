@@ -43,7 +43,7 @@
     mode: 0755
   notify:
     - start ovn-k8s-init
-  when: thirdInterface != 100
+  when: thirdInterface == 0
 
 - name: Register ovn-k8s-init to systemd and start it
   systemd:

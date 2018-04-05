@@ -92,6 +92,7 @@ do
       -s|--size)
       SIZE="$2"
       shift # past argument
+      shift # past value
       ;;
       *)    # unknown option
       >&2 echo "Unkown param $key!"

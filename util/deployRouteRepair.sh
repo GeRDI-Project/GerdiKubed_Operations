@@ -61,7 +61,10 @@ NW_INT=10.155.208.0/$MASK_INT
 ROUTING_TABLE_INT=180485
 
 echo "Prepare scripts and configs for $IP_CONN"
+# always start fresh
+rm -rf deploy/$IP_CONN
 mkdir -p deploy/$IP_CONN
+
 for file in sed.src/*
 do
   sed "
@@ -101,7 +104,7 @@ ssh root@$IP_CONN 'systemctl daemon-reload'
 
 echo "Configure sshd to listen only on internal addr"
 ssh root@$IP_CONN "sed -i '
-	      s/#ListenAddress.*/ListenAddress $IP_INT/
+	      s/#ListenAddress 0.0.0.0/ListenAddress $IP_INT/
         s/#AddressFamily.*/AddressFamily inet/;
         ' /etc/ssh/sshd_config"
 
