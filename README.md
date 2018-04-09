@@ -12,8 +12,8 @@ There are three major playbooks in the root of the git-repo (for the others see 
 ```bash
 
 # Edit variable-template (see role documentation for questions):
-cp group_var/all.tmpl group_var/all
-vi group_var/all
+cp group_vars/all.tmpl group_vars/all
+vi group_vars/all
 
 # Edit inventory file-template
 cp production.tmpl production
