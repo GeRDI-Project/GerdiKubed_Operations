@@ -18,6 +18,8 @@ server {
 
   location /api/search {
     add_header "Access-Control-Allow-Origin" "*";
+    add_header "Access-Control-Allow-Methods" "OPTIONS, POST, GET";
+    add_header "Access-Control-Allow-Headers" "Content-Type";
     proxy_pass http://10.222.21.10:9200/gerdi/_search;
   }
 
