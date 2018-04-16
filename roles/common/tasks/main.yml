@@ -22,8 +22,11 @@
       - bash-completion
       - ca-certificates
       - curl
+      - dbus
       - ipcalc
       - iproute2
+      - netbase
+      - nfs-common
       - python-dbus
       - python-dnspython
       - python-openssl
@@ -31,6 +34,7 @@
 - name: Set hostname to {{ inventory_hostname }}
   hostname:
     name: "{{ inventory_hostname }}"
+  when: SET_HOSTNAME
 
 - name: Create k8s directories
   file:
@@ -44,36 +48,24 @@
     - { path: "{{ K8S_KEY_FILES_DIR  }}", mode: '0700' }
     - { path: "/etc/kubernetes/manifests", mode: '0755' }
 
-- name: Install script to determine interfaces, ips and gws
+- name: Install script to determine network configuration on runtime
   copy:
     src: printIface.sh
     dest: /root/printIface.sh
 
-- name: Retrieve information for first interface
-  shell: bash /root/printIface.sh 1
-  register: firstInterface
 
-- name: Set facts for first interface
-  set_fact:
-    iface1:
-      name: "{{ firstInterface.stdout.split(' ')[0] }}"
-      ipv4: "{{ firstInterface.stdout.split(' ')[1] }}"
-      gw: "{{ firstInterface.stdout.split(' ')[2] }}"
-      nw: "{{ firstInterface.stdout.split(' ')[3] }}"
-      hw: "{{ firstInterface.stdout.split(' ')[4] }}"
-
-- name: Retrieve information for second interface
+- name: Retrieve information for internal interface
   shell: bash /root/printIface.sh 2
-  register: secondInterface
+  register: internalInterface
 
 - name: Set facts for second interface
   set_fact:
     iface2:
-      name: "{{ secondInterface.stdout.split(' ')[0] }}"
-      ipv4: "{{ secondInterface.stdout.split(' ')[1] }}"
-      gw: "{{ secondInterface.stdout.split(' ')[2] }}"
-      nw: "{{ secondInterface.stdout.split(' ')[3] }}"
-      hw: "{{ secondInterface.stdout.split(' ')[4] }}"
+      name: "{{ internalInterface.stdout.split(' ')[0] }}"
+      ipv4: "{{ internalInterface.stdout.split(' ')[1] }}"
+      gw:   "{{ internalInterface.stdout.split(' ')[2] }}"
+      nw:   "{{ internalInterface.stdout.split(' ')[3] }}"
+      mask: "{{ internalInterface.stdout.split(' ')[4] }}"
 
 - name: Retrieve information for third interface
   shell: bash /root/printIface.sh 3
@@ -88,17 +80,17 @@
       gw: "{{ thirdInterface.stdout.split(' ')[2] }}"
       nw: "{{ thirdInterface.stdout.split(' ')[3] }}"
       hw: "{{ thirdInterface.stdout.split(' ')[4] }}"
-  when: thirdInterface.rc != 100
+  when: thirdInterface.rc == 0
 
 - name: Set fact for internal address (on first run)
   set_fact:
     internalIP: "{{ iface3.ipv4 }}"
-  when: thirdInterface.rc != 100
+  when: thirdInterface.rc == 0
 
 - name: Set fact for internal address (on second+ run)
   set_fact:
     internalIP: "{{ iface2.ipv4 }}"
-  when: thirdInterface.rc == 100
+  when: thirdInterface.rc != 0
 
 - name: Install server key and cert
   copy:
@@ -127,3 +119,14 @@
     name: vm.max_map_count
     value: 262144
     state: present
+
+- name: Add rule to use internal interface for nfs
+  shell: ip rule add to {{ lookup('dig', NFS_SERVER_DOMAIN, 'qtype=A') }} table {{ K8S_INTERNAL_ROUTING_TABLE }}
+
+- name: Mount NFS-Volume
+  mount:
+    path:   "{{ NFS_MOUNT_PATH }}"
+    src:    "{{ NFS_VOLUME_PATH }}"
+    fstype: nfs
+    opts:   tcp,nolock,rsize=65536,wsize=65536,timeo=600,intr
+    state:  mounted

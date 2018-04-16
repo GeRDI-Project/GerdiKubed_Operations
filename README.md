@@ -2,7 +2,7 @@
 
 This repo has all necessary roles to setup a kubernetes cluster (req. see below).
 
-There are three playbooks in the root of the git-repo:
+There are three major playbooks in the root of the git-repo (for the others see below):
 * k8s-master.yml
 * k8s-nodes.yml
 * k8s-mgmt.yml
@@ -12,8 +12,8 @@ There are three playbooks in the root of the git-repo:
 ```bash
 
 # Edit variable-template (see role documentation for questions):
-cp group_var/all.tmpl group_var/all
-vi group_var/all
+cp group_vars/all.tmpl group_vars/all
+vi group_vars/all
 
 # Edit inventory file-template
 cp production.tmpl production
@@ -39,7 +39,8 @@ ansible-playbook -i production k8s-node.yml
 * Python > 2.6
 * Ansible >= 2.4.2.0 (on the control machine, only linux distros are supported!)
 * at least two network interface for k8s-nodes and master
-* All nodes must have valid DNS-Records (configured in production). IP-Addresses are no longer be supported.
+* All nodes must have valid DNS-Records (configured in production). IP-Addresses are no longer supported.
+  If this condition is not fulfilled the k8s-mgmt.yml-playbook will fail.
 
 # Documentation
 
@@ -117,3 +118,15 @@ You can choose to run the scheduler as a systemd-service (set SCHEDULER\_AS\_SER
 # CI
 
 The repository is now checked by a CI-Task in Bamboo (push to bitbucket)
+
+# Other Playbooks
+
+## k8s-nibi.yml
+
+This playbook makes sure the latest GeRDI version is deployed on a cron basis
+
+This playbook will only work if a file "registry_config" is on the root of the system (needed to seed the registry credentials as a secret to k8s). See [Pull an Image from a Private Registry](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/).
+
+## k8s-proxyworkaround.yml
+
+Right now we don't have a loadbalancer to terminate TLS encryption. This playbook is a workaround in setting up a nginx webserver to redirect URLs to fixed K8s IPs and to terminate TLS.

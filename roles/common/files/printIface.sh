@@ -13,23 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 curNum=0
-for iface in `ip a | grep -v ovs-system | grep 'state UP' | awk -F ':' '{ print $2 }'`
+for link in `ip link | egrep '^[0-9]+:' | awk '{ print $2 }' | tr -d ':'`
 do
+  echo $link | egrep -q '^lo|^docker0|^k8s-' && continue
+  ipv4WithMask=$(ip a list dev $link | egrep 'inet ' | awk '{ print $2 }' | tr -d '\n')
+  [[ -z "$ipv4WithMask" ]] && continue
   let "curNum++"
-  if [ "$curNum" -eq "$1" ]
-  then
-    ip=$(ip a | grep inet | grep $iface | awk '{ print $2 }' | awk -F '/' '{ print $1 }')
-    gw=$(ip route | grep default | grep $iface | awk '{ print $3 }')
-    if [ -z $gw ];
-    then
-      gw=10.155.215.254
-    fi
-    nw=$(ipcalc $(ip a | grep inet | grep $iface | awk '{ print $2 }' | tr '\n' ' ') | grep 'Network:' | awk '{ print $2 }')
-    hw=$(ip link | grep -A1 $iface | grep link/ether | awk '{ print $2 }' )
-    output="$iface $ip $gw $nw $hw"
-    echo $output | tr '\n' ' '
-    echo
-    exit 0
-  fi
+  [ "$curNum" -ne "$1" ] && continue
+  ipv4=$(echo $ipv4WithMask | awk -F '/' '{ print $1 }')
+  gw=$(ipcalc $(ip a | grep inet | grep $link | awk '{ print $2 }' | tr '\n' ' ') | grep 'HostMax:' | awk '{ print $2 }')
+  nw=$(ipcalc $(ip a | grep inet | grep $link | awk '{ print $2 }' | tr '\n' ' ') | grep 'Network:' | awk '{ print $2 }')
+  mask=$(echo $ipv4WithMask | awk -F '/' '{ print $2 }')
+  output="$link $ipv4 $gw $nw $mask"
+  echo $output | tr -d '\n'
+  echo
+  exit 0
 done
-exit 100
+exit 1
