@@ -20,6 +20,13 @@
     - apache2
     - libapache2-mod-shib2
 
+- name: Install server configuration
+  template:
+    src: apache.conf.j2
+    dest: "/etc/apache2/sites-enabled/{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}.conf"
+  notify:
+    - restart apache
+
 - name: Enable necessary apache modules
   apache2_module:
     state: present
@@ -27,6 +34,7 @@
   with_items:
     - headers
     - proxy
+    - proxy_http
     - rewrite
     - shib2
     - ssl
@@ -55,13 +63,6 @@
   copy:
     src: .htpasswd
     dest: /etc/apache2/.htpasswd
-
-- name: Install server configuration
-  template:
-    src: apache.conf.j2
-    dest: "/etc/apache2/sites-enabled/{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}.conf"
-  notify:
-    - restart apache
 
 - name: Install shibboleth configuration
   template:
