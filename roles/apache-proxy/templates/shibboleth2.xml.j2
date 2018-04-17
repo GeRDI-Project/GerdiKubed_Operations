@@ -20,9 +20,10 @@
     -->
 
     <!-- The ApplicationDefaults element is where most of Shibboleth's SAML bits are defined. -->
-    <ApplicationDefaults entityID="https://sp.gerdi.org/shibboleth"
-                         REMOTE_USER="eppn persistent-id targeted-id"
-                         cipherSuites="ECDHE+AESGCM:ECDHE:!aNULL:!eNULL:!LOW:!EXPORT:!RC4:!SHA:!SSLv2">
+    <ApplicationDefaults
+      entityID="https://sp.gerdi.org/shibboleth"
+      REMOTE_USER="eppn persistent-id targeted-id"
+      cipherSuites="ECDHE+AESGCM:ECDHE:!aNULL:!eNULL:!LOW:!EXPORT:!RC4:!SHA:!SSLv2">
 
         <!--
         Controls session lifetimes, address checks, cookie handling, and the protocol handlers.
