@@ -52,14 +52,14 @@
     </Location>
 
     # Metadata unter der entityID-URL:
-    Redirect seeother /shibboleth https://{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}/Shibboleth.sso/Metadata
-
-    <Location /shibboleth-sp>
-        Require all granted
+    <Location /shibboleth>
+      Require all granted
+      ProxyPass !
     </Location>
+    Redirect seeother /shibboleth https://www.{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}/Shibboleth.sso/Metadata
 
     Alias /shibboleth-sp/main.css /usr/share/shibboleth/main.css
-    Alias /shibboleth-sp/logo.jpg /usr/share/shibboleth/logo.jpg
+    #Alias /shibboleth-sp/logo.jpg /usr/share/shibboleth/logo.jpg
 
     # Location to be protected by the SP
     <Location /bookmark>
@@ -71,6 +71,9 @@
     # Support für WAYFless-URLs
     # see https://www.ukfederation.org.uk/library/uploads/Documents/WAYFlessGuidance.pdf
     #
+    <Location /start-session>
+      ProxyPass !
+    </Location>
     RedirectMatch /start-session$ /Shibboleth.sso/Login
     <Location /api/search>
         Header set Access-Control-Allow-Origin "*"
@@ -89,7 +92,7 @@
     RewriteRule ^/(.*) http://nd-0.ext.test.gerdi.org:32000/$1
 
     RewriteCond %{HTTP_HOST} ^tumor.showcase.gerdi.org
-    RewriteRule ^/(.*) http://nd-0.ext.test.gerdi.org:32000/$1
+    RewriteRule ^/(.*) http://nd-0.ext.test.gerdi.org:32001/$1
 
     # Protect harvesters and index
     <Location /api/index>

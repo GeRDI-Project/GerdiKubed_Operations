@@ -80,7 +80,7 @@
         <MetadataProvider type="XML" validate="true"
 		uri="https://www.aai.dfn.de/fileadmin/metadata/dfn-aai-test-metadata.xml"
 		backingFilePath="DFN-AAI-Test-metadata.xml" reloadInterval="7200">
-	      <MetadataFilter type="Signature" certificate="/etc/ssl/certs/dfn-aai.g2.pem"/>
+	      <MetadataFilter type="Signature" certificate="/etc/ssl/dfn-aai.g2.pem"/>
 
 
 
@@ -103,7 +103,7 @@
         <AttributeFilter type="XML" validate="true" path="attribute-policy.xml"/>
 
         <!-- Simple file-based resolver for using a single keypair. -->
-        <CredentialResolver type="File" key="/etc/ssl/certs/sp.gerdi.org.key" certificate="/etc/ssl/certs/sp.gerdi.org.crt.pem"/>
+        <CredentialResolver type="File" key="/etc/ssl/sp.gerdi.org.key" certificate="/etc/ssl/sp.gerdi.org.crt"/>
 
         <!--
         The default settings can be overridden by creating ApplicationOverride elements (see
