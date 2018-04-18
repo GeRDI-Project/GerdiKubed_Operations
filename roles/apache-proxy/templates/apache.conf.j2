@@ -9,6 +9,14 @@
     CustomLog       /var/log/apache2/gerdi_frontend_access.log combined
 
     RewriteEngine   On
+
+    RewriteCond %{HTTP_HOST} ^eree.showcase.gerdi.org
+    RewriteRule ^/(.*) http://www.test.gerdi.org:32000/$1
+
+    RewriteCond %{HTTP_HOST} ^tumor.showcase.gerdi.org
+    RewriteRule ^/(.*) http://www.test.gerdi.org:32001/$1
+
+    RewriteCond %{HTTP_HOST} !^.*\.showcase
     RewriteRule     ^/(.*)  https://%{HTTP_HOST}/$1 [R=301,L]
 </VirtualHost>
 

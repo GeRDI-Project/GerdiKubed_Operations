@@ -20,13 +20,6 @@
     - apache2
     - libapache2-mod-shib2
 
-- name: Install server configuration
-  template:
-    src: apache.conf.j2
-    dest: "/etc/apache2/sites-enabled/{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}.conf"
-  notify:
-    - restart apache
-
 - name: Enable necessary apache modules
   apache2_module:
     state: present
@@ -38,6 +31,14 @@
     - rewrite
     - shib2
     - ssl
+
+- name: Install server configuration
+  template:
+    src: apache.conf.j2
+    dest: "/etc/apache2/sites-enabled/{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}.conf"
+  notify:
+    - restart apache
+
 
 - name: Copy cert and key for apache2
   copy:
