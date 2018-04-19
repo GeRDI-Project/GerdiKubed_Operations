@@ -1,0 +1,144 @@
+<VirtualHost *:80>
+    ServerName      www.{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}
+    ServerAlias     nd-{{ hostname_suffix }}.ext.{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}
+    ServerAlias     eree.showcase.gerdi.org
+    ServerAlias     tumor.showcase.gerdi.org
+    ServerAdmin     weber@lrz.de
+
+    ErrorLog        /var/log/apache2/gerdi_frontend_error.log
+    CustomLog       /var/log/apache2/gerdi_frontend_access.log combined
+
+    RewriteEngine   On
+
+    RewriteCond %{HTTP_HOST} ^eree.showcase.gerdi.org
+    RewriteRule ^/(.*) http://www.test.gerdi.org:32000/$1
+
+    RewriteCond %{HTTP_HOST} ^tumor.showcase.gerdi.org
+    RewriteRule ^/(.*) http://www.test.gerdi.org:32001/$1
+
+    RewriteCond %{HTTP_HOST} !^.*\.showcase
+    RewriteRule     ^/(.*)  https://%{HTTP_HOST}/$1 [R=301,L]
+</VirtualHost>
+
+<VirtualHost *:443>
+    ServerName      www.{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}
+    ServerAlias     nd-{{ hostname_suffix }}.ext.{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}
+    ServerAlias     eree.showcase.gerdi.org
+    ServerAlias     tumor.showcase.gerdi.org
+    ServerAdmin     weber@lrz.de
+
+    ErrorLog        /var/log/apache2/gerdi_frontend_ssl_error.log
+    CustomLog       /var/log/apache2/gerdi_frontend_ssl_access.log combined
+
+    RewriteEngine   On
+    DocumentRoot    /var/www/html
+
+    SSLEngine on
+    SSLCertificateFile /etc/ssl/{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}.crt
+    SSLCertificateKeyFile /etc/ssl/{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}.key
+    SSLCACertificateFile /etc/ssl/{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}.chain
+
+    SSLProtocol All -SSLv2 -SSLv3
+    SSLHonorCipherOrder On
+    SSLCompression off
+    SSLCipherSuite 'EDH+CAMELLIA:EDH+aRSA:EECDH+aRSA+AESGCM:EECDH+aRSA+SHA384:EECDH+aRSA+SHA256:EECDH:+CAMELLIA256:+AES256:+CAMELLIA128:+AES128:+SSLv3:!aNULL:!eNULL:!LOW:!3DES:!MD5:!EXP:!PSK:!DSS:!RC4:!SEED:!ECDSA:CAMELLIA256-SHA:AES256-SHA:CAMELLIA128-SHA:AES128-SHA'
+
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+    UseCanonicalName On
+
+    AddDefaultCharset UTF-8
+
+    ShibCompatValidUser On
+
+    # dieser Alias wird i.d.R. nur benötigt, wenn URL Rewrite o.ä, erfolgt
+    # Alias /Shibboleth.sso /Shibboleth.sso
+    <Location /Shibboleth.sso>
+      SetHandler shib
+      Require all granted
+      ProxyPass !
+    </Location>
+
+    # Metadata unter der entityID-URL:
+    <Location /shibboleth>
+      Require all granted
+      ProxyPass !
+    </Location>
+    Redirect seeother /shibboleth https://www.{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}/Shibboleth.sso/Metadata
+
+    Alias /shibboleth-sp/main.css /usr/share/shibboleth/main.css
+    #Alias /shibboleth-sp/logo.jpg /usr/share/shibboleth/logo.jpg
+
+    # Location to be protected by the SP
+    <Location /bookmark>
+        AuthType shibboleth
+        ShibRequestSetting requireSession true
+        Require valid-user
+    </Location>
+
+    # Support für WAYFless-URLs
+    # see https://www.ukfederation.org.uk/library/uploads/Documents/WAYFlessGuidance.pdf
+    #
+    <Location /start-session>
+      ProxyPass !
+    </Location>
+    RedirectMatch /start-session$ /Shibboleth.sso/Login
+    <Location /api/search>
+        Header set Access-Control-Allow-Origin "*"
+        Header set Access-Control-Allow-Methods "OPTIONS, POST, GET"
+        Header set Access-Control-Allow-Headers "Content-Type"
+    </Location>
+
+    <Location /api/get>
+        Header set Access-Control-Allow-Origin "*"
+        <LimitExcept GET>
+            Require all denied
+        </LimitExcept>
+    </Location>
+
+    RewriteCond %{HTTP_HOST} ^eree.showcase.gerdi.org
+    RewriteRule ^/(.*) http://nd-0.ext.test.gerdi.org:32000/$1
+
+    RewriteCond %{HTTP_HOST} ^tumor.showcase.gerdi.org
+    RewriteRule ^/(.*) http://nd-0.ext.test.gerdi.org:32001/$1
+
+    # Protect harvesters and index
+    <Location /api/index>
+        AuthType        Basic
+        AuthName        "Restricted"
+        AuthUserFile    /etc/apache2/.htpasswd
+        Require         valid-user
+    </Location>
+
+    <Location /harvest/>
+        AuthType        Basic
+        AuthName        "Restricted"
+        AuthUserFile    /etc/apache2/.htpasswd
+        Require         valid-user
+    </Location>
+
+    Redirect seeother /shibboleth https://test.sp.gerdi.org/Shibboleth.sso/Metadata
+
+    # Frontend for presentation purposes
+    # Order matters! First matching ProxyPass directive will do the job
+    ProxyPass         /api/get            http://10.222.21.10:9200/gerdi/_all
+    ProxyPassReverse  /api/get            http://10.222.21.10:9200/gerdi/_all
+    ProxyPass         /api/search         http://10.222.21.10:9200/gerdi/_search
+    ProxyPassReverse  /api/search         http://10.222.21.10:9200/gerdi/_search
+    ProxyPass         /api/index          http://10.222.21.10:9200/gerdi/metadata
+    ProxyPassReverse  /api/index          http://10.222.21.10:9200/gerdi/metadata
+    ProxyPass         /harvest/arcgis     http://10.222.21.11:8080/arcgis/harvest
+    ProxyPassReverse  /harvest/arcgis     http://10.222.21.11:8080/arcgis/harvest
+    ProxyPass         /harvest/faostat    http://10.222.21.12:8080/faostat/harvest
+    ProxyPassReverse  /harvest/faostat    http://10.222.21.12:8080/faostat/harvest
+    ProxyPass         /harvest/pangaea    http://10.222.21.13:8080/oaipmh/harvest
+    ProxyPassReverse  /harvest/pangaea    http://10.222.21.13:8080/oaipmh/harvest
+    ProxyPass         /harvest/oceantea   http://10.222.21.14:8080/oceantea/harvest
+    ProxyPassReverse  /harvest/oceantea   http://10.222.21.14:8080/oceantea/harvest
+    ProxyPass         /harvest/alpendac   http://10.222.21.15:8080/oaipmh/harvest
+    ProxyPassReverse  /harvest/alpendac   http://10.222.21.15:8080/oaipmh/harvest
+    ProxyPass         /harvest/searoundus http://10.222.21.11:8080/searoundus/harvest
+    ProxyPassReverse  /harvest/searoundus http://10.222.21.11:8080/searoundus/harvest
+    ProxyPass         /                   http://10.222.21.9/
+    ProxyPassReverse  /                   http://10.222.21.9/
+</VirtualHost>
