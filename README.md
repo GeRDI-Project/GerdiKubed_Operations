@@ -56,7 +56,7 @@ You can choose to run the apiserver as a systemd-service (set APISERVER\_AS\_SER
 
 This role creates a ca ready infrastructure on a trusted host the localhost should be the default.
 
-To get it working you'll have to set the following variables in group\_var/all:
+To get it working you'll have to set the following variables in group\_vars/all:
 * CONTROL\_MACHINE:    Trusted machine on which certificates are issued and ca's private key resides (set "127.0.0.1" for localhost)
 * CONTROL\_BASE\_DIR: Directory in which certficate infrastructure is persisted.
 
