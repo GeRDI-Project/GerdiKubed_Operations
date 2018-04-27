@@ -17,16 +17,16 @@ GATEWAYS=()
 # Split into private and public IPs
 # Also calculate gateways
 while read -r IP; do
-	# Get the gateway address (for LRZ it's broadcast - 1)
-	GATEWAYS+=$(echo $IP | awk '{print $3}' | awk -F"." '{printf "%d.%d.%d.%d ", $1, $2, $3, $4 - 1}')
-	# Check if IP matches the private IP patterns
- 	TMP=$(echo $IP | awk '{print $1}' | grep -E '10.*|172.16.*|192.168.*')
-	if [ -z "$TMP" ]; then
-		# Public IP
-		PUBLIC_IPS+=("$IP")
-	else
-		# Private IP
-		PRIVATE_IPS+=("$IP")
+  # Get the gateway address (for LRZ it's broadcast - 1)
+  GATEWAYS+=$(echo $IP | awk '{print $3}' | awk -F"." '{printf "%d.%d.%d.%d ", $1, $2, $3, $4 - 1}')
+  # Check if IP matches the private IP patterns
+  TMP=$(echo $IP | awk '{print $1}' | grep -E '10.*|172.16.*|192.168.*')
+  if [ -z "$TMP" ]; then
+    # Public IP
+    PUBLIC_IPS+=("$IP")
+  else
+    # Private IP
+    PRIVATE_IPS+=("$IP")
 	fi
 done <<< "$IP_ARRAY"
 
@@ -37,7 +37,7 @@ done <<< "$IP_ARRAY"
 echo "${#PUBLIC_IPS[@]} Public & ${#PRIVATE_IPS[@]} Private IPs detected."
 
 # Error states
-if [ ${#PRIVATE_IPS[@]} -eq 0 ]; then	
+if [ ${#PRIVATE_IPS[@]} -eq 0 ]; then
 	>&2 echo "No private IPs assigned to node"
 	exit 1
 elif [ ${#PUBLIC_IPS[@]} -eq 0 ]; then
@@ -66,7 +66,7 @@ if [ ${#PRIVATE_IPS[@]} -eq 1 ]; then
 	DEV_NAME=$(echo ${PRIVATE_IPS[0]} | awk '{print $4}')
 	IP_INTERNAL=$(echo ${PRIVATE_IPS[0]} | awk '{print $1}')
 	CIDR=$(echo ${PRIVATE_IPS[0]} | awk '{print $2}')
-	# Taken from https://gist.github.com/kwilczynski/5d37e1cced7e76c7c9ccfdf875ba6c5b 
+	# Taken from https://gist.github.com/kwilczynski/5d37e1cced7e76c7c9ccfdf875ba6c5b
 	# Because this is a beautiful solution
 	TMP=$(( 0xffffffff ^ ((1 << (32 - $(echo ${PRIVATE_IPS[0]} | awk '{print $2}'))) - 1) ))
 	SUBNET_MASK="$(( (TMP >> 24) & 0xff )).$(( (TMP >> 16) & 0xff )).$(( (TMP >> 8) & 0xff )).$(( TMP & 0xff ))"
@@ -95,7 +95,7 @@ if [ ${#PRIVATE_IPS[@]} -eq 1 ]; then
 		echo ''; \
 		echo '[Route]'; \
 		echo 'Gateway='$CURRENT_GATEWAY'/'$CIDR; \
-	       	echo 'Destination='$NETWORK_ADDRESS'/'$CIDR; \
+    echo 'Destination='$NETWORK_ADDRESS'/'$CIDR; \
 		echo 'Table='$ROUTING_TABLE_INT; \
 	} > /etc/systemd/network/$DEV_NAME.network
 elif [ ${#PRIVATE_IPS[@]} -gt 1 ]; then
@@ -115,9 +115,8 @@ elif [ ${#PRIVATE_IPS[@]} -gt 1 ]; then
 				echo '[Network]'; \
 				echo 'DHCP=no'; \
 				echo ''; \
-				echo '[Address]';
+				echo '[Address]'; \
 				echo 'Address='$IP_INTERNAL'/'$CIDR; \
-				
 			} > /etc/systemd/network/$DEV_NAME.network
 			echo "Writting "$DEV_NAME".network"
 		elif [ $COUNTER -eq 1 ]; then
@@ -181,7 +180,7 @@ CIDR=$(echo ${PRIVATE_IPS[1]} | awk '{print $2}')
 	echo ''; \
 	echo 'ip rule add from '$IP_INT' lookup '$ROUTING_TABLE_INT; \
 	echo 'ip rule add to '$NETWORK_ADDRESS'/'$CIDR' lookup '$ROUTING_TABLE_INT; \
-} > /root/repairRoutes.sh 
+} > /root/repairRoutes.sh
 
 chmod +x /root/repairRoutes.sh
 
@@ -202,5 +201,5 @@ rm -f /etc/systemd/network/wired.network
 systemctl enable repairRoutes.service
 systemctl daemon-reload
 
-sed -i 's/#ListenAddress 0.0.0.0/ListenAddress '$IP_INT'/ 
+sed -i 's/#ListenAddress 0.0.0.0/ListenAddress '$IP_INT'/
 	s/#AddressFamily.*/AddressFamily inet/;' /etc/ssh/sshd_config
