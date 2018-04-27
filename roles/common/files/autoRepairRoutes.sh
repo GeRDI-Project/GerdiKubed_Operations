@@ -121,11 +121,10 @@ elif [ ${#PRIVATE_IPS[@]} -gt 1 ]; then
 			echo "Writting "$DEV_NAME".network"
 		elif [ $COUNTER -eq 1 ]; then
 			# Internal interface
-			# Taken from https://gist.github.com/kwilczynski/5d37e1cced7e76c7c9ccfdf875ba6c5b 
+			# Taken from https://gist.github.com/kwilczynski/5d37e1cced7e76c7c9ccfdf875ba6c5b
 			# Because this is a beautiful solution
 			TMP=$(( 0xffffffff ^ ((1 << (32 - $(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $2}'))) - 1) ))
 			SUBNET_MASK="$(( (TMP >> 24) & 0xff )).$(( (TMP >> 16) & 0xff )).$(( (TMP >> 8) & 0xff )).$(( TMP & 0xff ))"
-
 			# Taken from https://stackoverflow.com/questions/15429420/given-the-ip-and-netmask-how-can-i-calculate-the-network-address-using-bash?answertab=active#tab-top
 			# Again, short and to the point
 			IFS=. read -r i1 i2 i3 i4 <<< "$(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $1}')"
