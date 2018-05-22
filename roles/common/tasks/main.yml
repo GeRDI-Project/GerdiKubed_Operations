@@ -120,8 +120,11 @@
     value: 262144
     state: present
 
+# Not persistent over reboot
 - name: Add rule to use internal interface for nfs
-  shell: ip rule add to {{ lookup('dig', NFS_SERVER_DOMAIN, 'qtype=A') }} table {{ K8S_INTERNAL_ROUTING_TABLE }}
+  lineinfile:
+    dest: /root/repairRoutes.sh
+    line: ip rule add to {{ lookup('dig', NFS_SERVER_DOMAIN, 'qtype=A') }} table {{ K8S_INTERNAL_ROUTING_TABLE }}
 
 - name: Mount NFS-Volume
   mount:
