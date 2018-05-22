@@ -12,8 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Initialize kubernetes nodes
-  hosts: kubernetes-nodes
-  remote_user: root
-  roles:
-    - apache-proxy
+- name: restart apache
+  service:
+    name: apache2
+    state: restarted
+
+- name: restart shibd
+  service:
+    name: shibd
+    state: restarted
