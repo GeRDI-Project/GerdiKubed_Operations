@@ -148,7 +148,7 @@ elif [ ${#PRIVATE_IPS[@]} -gt 1 ]; then
       SUBNET_MASK=$(cidr_to_netmask $(echo ${PRIVATE_IPS[$COUNTER]})
       NETWORK_ADDRESS=$(ip_to_netaddr ${PRIVATE_IPS[$COUNTER]} $SUBNET_MASK)
       CURRENT_GATEWAY=$(echo "$GATEWAYS" | awk -v pos="$(($PUBIP_COUNT+2))" '{print $pos}')
-       
+      
       # Setup private interface
       { \
         echo '[Match]'; \
