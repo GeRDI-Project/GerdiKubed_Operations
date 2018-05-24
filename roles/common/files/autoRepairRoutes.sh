@@ -98,8 +98,8 @@ if [ ${#PRIVATE_IPS[@]} -eq 1 ]; then
   DEV_NAME=$(echo ${PRIVATE_IPS[0]} | awk '{print $4}')
   IP_INTERNAL=$(echo ${PRIVATE_IPS[0]} | awk '{print $1}')
   CIDR=$(echo ${PRIVATE_IPS[0]} | awk '{print $2}')
-  SUBNET_MASK=$(cidr_to_netmask $(echo ${PRIVATE_IPS[0]})
-  NETWORK_ADDRESS=$(ip_to_netaddr ${PRIVATE_IPS[0]} $SUBNET_MASK)
+  SUBNET_MASK=$(cidr_to_netmask $(echo ${PRIVATE_IPS[0]} | awk '{print $2;}'))
+  NETWORK_ADDRESS=$(ip_to_netaddr $(echo ${PRIVATE_IPS[0]} | awk '{print $1;}') $(echo $SUBNET_MASK))
   CURRENT_GATEWAY=$(echo "$GATEWAYS" | awk -v pos="$(($PUBIP_COUNT+1))" '{print $pos}')
 
   # Setup private interface
@@ -145,8 +145,8 @@ elif [ ${#PRIVATE_IPS[@]} -gt 1 ]; then
       echo "Writting "$DEV_NAME".network"
     elif [ $COUNTER -eq 1 ]; then
       # Internal interface
-      SUBNET_MASK=$(cidr_to_netmask $(echo ${PRIVATE_IPS[$COUNTER]})
-      NETWORK_ADDRESS=$(ip_to_netaddr ${PRIVATE_IPS[$COUNTER]} $SUBNET_MASK)
+      SUBNET_MASK=$(cidr_to_netmask $(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $2;}'))
+      NETWORK_ADDRESS=$(ip_to_netaddr $(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $1;}') $(echo $SUBNET_MASK))
       CURRENT_GATEWAY=$(echo "$GATEWAYS" | awk -v pos="$(($PUBIP_COUNT+2))" '{print $pos}')
       # Setup private interface
       { \
