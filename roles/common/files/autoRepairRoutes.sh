@@ -20,10 +20,11 @@
 # IPs are stored as IP_ARRAY[0] = IP[[:space:]]CIDR[[:space:]]BROADCAST[[:space:]]DEVICENAME
 #      Example: 141.40.254.115 23 141.40.255.255 ens3
 IFS=$'\n'
-IP_ARRAY=$(ip addr | grep -e "inet[[:space:]]" | grep -v '127.0.0.1' | awk '{print $2" "$4" "$7$8}' | sed 's/\// /g' | sed 's/dynamic//g')
+IP_ARRAY=$(ip addr | grep -e "inet[[:space:]]" | grep -v '127.0.0.1' | grep -E 'ens[0-9]' | awk '{print $2" "$4" "$7$8}' | sed 's/\// /g' | sed 's/dynamic//g')
 unset $IFS
 
 ROUTING_TABLE_INT=$1
+NFS_SERVER_DOMAIN=$2
 
 PUBLIC_IPS=()
 PRIVATE_IPS=()
@@ -74,6 +75,22 @@ for IP in "${PUBLIC_IPS[@]}"; do
   echo "Writting "$DEV_NAME".network"
 done
 
+# Taken from https://gist.github.com/kwilczynski/5d37e1cced7e76c7c9ccfdf875ba6c5b
+# arg $1 = IP
+cidr_to_netmask() {
+  local value=$(( 0xffffffff ^ ((1 << (32 - $1)) - 1) ))
+  echo "$(( (value >> 24) & 0xff )).$(( (value >> 16) & 0xff )).$(( (value >> 8) & 0xff )).$(( value & 0xff ))"
+}
+
+# Taken from https://stackoverflow.com/questions/15429420/given-the-ip-and-netmask-how-can-i-calculate-the-network-address-using-bash?answertab=active#tab-top
+# arg $1 = IP; arg $2 = SUBNET_MASK
+ip_to_netaddr() {
+  IFS=. read -r i1 i2 i3 i4 <<< "$1"
+  IFS=. read -r m1 m2 m3 m4 <<< "$2"
+  echo "$(printf "%d.%d.%d.%d\n" "$((i1 & m1))" "$((i2 & m2))" "$((i3 & m3))" "$((i4 & m4))")"
+  unset $IFS
+}
+
 # Handle different amounts of private interfaces
 if [ ${#PRIVATE_IPS[@]} -eq 1 ]; then
   # One Private interface; Try to route everything (including OVN)
@@ -81,18 +98,10 @@ if [ ${#PRIVATE_IPS[@]} -eq 1 ]; then
   DEV_NAME=$(echo ${PRIVATE_IPS[0]} | awk '{print $4}')
   IP_INTERNAL=$(echo ${PRIVATE_IPS[0]} | awk '{print $1}')
   CIDR=$(echo ${PRIVATE_IPS[0]} | awk '{print $2}')
-  # Taken from https://gist.github.com/kwilczynski/5d37e1cced7e76c7c9ccfdf875ba6c5b
-  # Because this is a beautiful solution
-  TMP=$(( 0xffffffff ^ ((1 << (32 - $(echo ${PRIVATE_IPS[0]} | awk '{print $2}'))) - 1) ))
-  SUBNET_MASK="$(( (TMP >> 24) & 0xff )).$(( (TMP >> 16) & 0xff )).$(( (TMP >> 8) & 0xff )).$(( TMP & 0xff ))"
-
-  # Taken from https://stackoverflow.com/questions/15429420/given-the-ip-and-netmask-how-can-i-calculate-the-network-address-using-bash?answertab=active#tab-top
-  # Again, short and to the point
-  IFS=. read -r i1 i2 i3 i4 <<< "$(echo ${PRIVATE_IPS[0]} | awk '{print $1}')"
-  IFS=. read -r m1 m2 m3 m4 <<< $SUBNET_MASK
-  NETWORK_ADDRESS=$(printf "%d.%d.%d.%d\n" "$((i1 & m1))" "$((i2 & m2))" "$((i3 & m3))" "$((i4 & m4))")
-  unset $IFS
+  SUBNET_MASK=$(cidr_to_netmask $(echo ${PRIVATE_IPS[0]})
+  NETWORK_ADDRESS=$(ip_to_netaddr ${PRIVATE_IPS[0]} $SUBNET_MASK)
   CURRENT_GATEWAY=$(echo "$GATEWAYS" | awk -v pos="$(($PUBIP_COUNT+1))" '{print $pos}')
+
   # Setup private interface
   { \
     echo '[Match]'; \
@@ -134,19 +143,12 @@ elif [ ${#PRIVATE_IPS[@]} -gt 1 ]; then
         echo 'Address='$IP_INTERNAL'/'$CIDR; \
       } > /etc/systemd/network/$DEV_NAME.network
       echo "Writting "$DEV_NAME".network"
-    elif [ $COUNTER -eq 1 ]; then
+    elif [ $COUNTER -eq 1 ]; then 
       # Internal interface
-      # Taken from https://gist.github.com/kwilczynski/5d37e1cced7e76c7c9ccfdf875ba6c5b
-      # Because this is a beautiful solution
-      TMP=$(( 0xffffffff ^ ((1 << (32 - $(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $2}'))) - 1) ))
-      SUBNET_MASK="$(( (TMP >> 24) & 0xff )).$(( (TMP >> 16) & 0xff )).$(( (TMP >> 8) & 0xff )).$(( TMP & 0xff ))"
-      # Taken from https://stackoverflow.com/questions/15429420/given-the-ip-and-netmask-how-can-i-calculate-the-network-address-using-bash?answertab=active#tab-top
-      # Again, short and to the point
-      IFS=. read -r i1 i2 i3 i4 <<< "$(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $1}')"
-      IFS=. read -r m1 m2 m3 m4 <<< $SUBNET_MASK
-      NETWORK_ADDRESS=$(printf "%d.%d.%d.%d\n" "$((i1 & m1))" "$((i2 & m2))" "$((i3 & m3))" "$((i4 & m4))")
-      unset $IFS
+      SUBNET_MASK=$(cidr_to_netmask $(echo ${PRIVATE_IPS[$COUNTER]})
+      NETWORK_ADDRESS=$(ip_to_netaddr ${PRIVATE_IPS[$COUNTER]} $SUBNET_MASK)
       CURRENT_GATEWAY=$(echo "$GATEWAYS" | awk -v pos="$(($PUBIP_COUNT+2))" '{print $pos}')
+       
       # Setup private interface
       { \
         echo '[Match]'; \
@@ -194,6 +196,7 @@ CIDR=$(echo ${PRIVATE_IPS[1]} | awk '{print $2}')
   echo ''; \
   echo 'ip rule add from '$IP_INT' lookup '$ROUTING_TABLE_INT; \
   echo 'ip rule add to '$NETWORK_ADDRESS'/'$CIDR' lookup '$ROUTING_TABLE_INT; \
+  echo 'ip rule add to '$NFS_SERVER_DOMAIN' table '$ROUTING_TABLE_INT; \
 } > /root/repairRoutes.sh
 
 chmod +x /root/repairRoutes.sh
