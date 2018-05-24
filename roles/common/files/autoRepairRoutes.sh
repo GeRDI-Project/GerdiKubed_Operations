@@ -143,12 +143,11 @@ elif [ ${#PRIVATE_IPS[@]} -gt 1 ]; then
         echo 'Address='$IP_INTERNAL'/'$CIDR; \
       } > /etc/systemd/network/$DEV_NAME.network
       echo "Writting "$DEV_NAME".network"
-    elif [ $COUNTER -eq 1 ]; then 
+    elif [ $COUNTER -eq 1 ]; then
       # Internal interface
       SUBNET_MASK=$(cidr_to_netmask $(echo ${PRIVATE_IPS[$COUNTER]})
       NETWORK_ADDRESS=$(ip_to_netaddr ${PRIVATE_IPS[$COUNTER]} $SUBNET_MASK)
-      CURRENT_GATEWAY=$(echo "$GATEWAYS" | awk -v pos="$(($PUBIP_COUNT+2))" '{print $pos}')
-      
+      CURRENT_GATEWAY=$(echo "$GATEWAYS" | awk -v pos="$(($PUBIP_COUNT+2))" '{print $pos}') 
       # Setup private interface
       { \
         echo '[Match]'; \
@@ -166,7 +165,7 @@ elif [ ${#PRIVATE_IPS[@]} -gt 1 ]; then
         echo ''; \
         echo '[Route]'; \
         echo 'Gateway='$CURRENT_GATEWAY'/'$CIDR; \
-              echo 'Destination='$NETWORK_ADDRESS'/'$CIDR; \
+        echo 'Destination='$NETWORK_ADDRESS'/'$CIDR; \
         echo 'Table='$ROUTING_TABLE_INT; \
       } > /etc/systemd/network/$DEV_NAME.network
       echo "Writting "$DEV_NAME".network"
