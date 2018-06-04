@@ -77,7 +77,17 @@ CNI_DIR: "{{ K8S_BASE_DIR }}/cni-{{ CNI_VERSION }}"
 CNI_CONF_DIR: /etc/cni/net.d
 
 ################################################################################
-# Configuration for the follwoing roles:
+# Configuration for the following roles:
 # apiserver, network_ovn
 ################################################################################
 OVN_API_TOKEN: "someValue"
+#Used by autoRepairRoutes.sh; Make sure number is unique
+K8S_INTERNAL_ROUTING_TABLE: "180485"
+
+################################################################################
+# NFS configuration
+# Note: Your machine might need whitelisting
+################################################################################
+NFS_SERVER_DOMAIN: "<domain>"
+NFS_MOUNT_PATH: "<mountdirectory>"
+NFS_VOLUME_PATH: "{{ NFS_SERVER_DOMAIN }}:<mountlocation>"
