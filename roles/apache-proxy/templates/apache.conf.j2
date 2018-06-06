@@ -116,8 +116,8 @@
         AuthUserFile    /etc/apache2/.htpasswd
         Require         valid-user
     </Location>
-    
-    <Location /api/search>
+
+    <Location /api/v1/collections>
         Header set Access-Control-Allow-Origin "*"
         Header set Access-Control-Allow-Methods "OPTIONS, DELETE, PUT, POST, GET"
         Header set Access-Control-Allow-Headers "Content-Type"
