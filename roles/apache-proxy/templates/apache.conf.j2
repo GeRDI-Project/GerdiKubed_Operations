@@ -117,6 +117,12 @@
         Require         valid-user
     </Location>
 
+    <Location /api/v1/collections>
+        Header set Access-Control-Allow-Origin "*"
+        Header set Access-Control-Allow-Methods "OPTIONS, DELETE, PUT, POST, GET"
+        Header set Access-Control-Allow-Headers "Content-Type"
+    </Location>
+
     Redirect seeother /shibboleth https://test.sp.gerdi.org/Shibboleth.sso/Metadata
 
     # Frontend for presentation purposes
@@ -141,6 +147,8 @@
     ProxyPassReverse  /harvest/ena        http://10.222.21.16:8080/ena/harvest
     ProxyPass         /harvest/alpendac   http://10.222.21.17:8080/oaipmh/harvest
     ProxyPassReverse  /harvest/alpendac   http://10.222.21.17:8080/oaipmh/harvest
+    ProxyPass         /api/v1/collections http://10.222.21.100:4567/api/v1/collections
+    ProxyPassReverse  /api/v1/collections http://10.222.21.100:4567/api/v1/collections
     ProxyPass         /                   http://10.222.21.9/
     ProxyPassReverse  /                   http://10.222.21.9/
 </VirtualHost>
