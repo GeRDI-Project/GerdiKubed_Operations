@@ -123,6 +123,10 @@
         Header set Access-Control-Allow-Headers "Content-Type"
     </Location>
 
+    <Location /harvest/hccenter>
+      RequestHeader set X-Forwarded-Proto 'https' env=HTTPS
+    </Location>
+
     Redirect seeother /shibboleth https://test.sp.gerdi.org/Shibboleth.sso/Metadata
 
     # Frontend for presentation purposes
