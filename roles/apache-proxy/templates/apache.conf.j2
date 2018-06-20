@@ -124,7 +124,11 @@
     </Location>
 
     <Location /harvest/hccenter>
+      AuthType      None
+      Require all granted
       RequestHeader set X-Forwarded-Proto 'https' env=HTTPS
+      RequestHeader set X-SCRIPT-NAME /harvest/hccenter
+      RequestHeader set X-SCHEME https
     </Location>
 
     Redirect seeother /shibboleth https://test.sp.gerdi.org/Shibboleth.sso/Metadata
