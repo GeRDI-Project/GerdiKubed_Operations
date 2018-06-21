@@ -30,5 +30,4 @@ ovn-k8s-overlay gateway-init \
   --physical-interface {{ iface2.name }} \
   --physical-ip {{ iface2.ipv4 }} \
   --node-name={{ inventory_hostname }} \
-  --default-gw {{ iface2.gw }} \
-  --rampout-ip-subnets="{{ SUBNET_IP_PRE }}.{{ hostname_suffix }}.0/24"
+  --default-gw {{ iface2.gw }}
