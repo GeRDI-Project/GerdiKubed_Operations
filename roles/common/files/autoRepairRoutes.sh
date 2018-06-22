@@ -46,22 +46,27 @@ while read -r IP; do
   fi
 done <<< "$IP_ARRAY"
 
-# Check if we have enough IPs
-# Optimal: 1 Public, 2 Private
-# Acceptable: 1 Public, 1 Private
-# Unacceptable: 1 Public or 0 Private; 0 Public or 1 Private
+# Check what state we are in
+# Loadbalancer & Old Nodes: 1 Public, 2 Private (1 OVN, 1 SSH) -> Setup required
+# Loadbalancer & Old Nodes after OVN setup: 1 Public, 1 Private (1 hijacked by OVN, 1 SSH) -> No Setup required
+# New Nodes: 0 Public, 2 Private (1 OVN, 1 SSH) -> Setup required
+# New Nodes after OVN setup: 0 Public, 1 Private (1 hijacked by OVN, 1 SSH) -> No Setup required
 echo "${#PUBLIC_IPS[@]} Public & ${#PRIVATE_IPS[@]} Private IPs detected."
 
 # Error states
 if [ ${#PRIVATE_IPS[@]} -eq 0 ]; then
-  >&2 echo "No private IPs assigned to node"
-  exit 1
-elif [ ${#PUBLIC_IPS[@]} -eq 0 ]; then
-  >&2 echo "No public IPs assigned to node"
+  >&2 echo "No private IPs assigned to node. All setups require private IPs!"
   exit 1
 fi
 
+# Cases: 1 Private & 1 Public OR 1 Private & 0 Public -> Assume we are already set up -> Exit script
+if [[ ${#PRIVATE_IPS[@]} -eq 1 && ${#PUBLIC_IPS[@]} -eq 1 ]] || [[ ${#PRIVATE_IPS[@]} -eq 1 && ${#PUBLIC_IPS[@]} -eq 0 ]]; then
+  echo "Nothing to do"
+  exit 0
+fi	
+
 # All public IPs should use DHCP
+# If there are no public IPs this is obviously skipped
 for IP in "${PUBLIC_IPS[@]}"; do
   DEV_NAME=$(echo $IP | awk '{print $4}')
   # Setup public interface
@@ -91,38 +96,7 @@ ip_to_netaddr() {
   unset $IFS
 }
 
-# Handle different amounts of private interfaces
-if [ ${#PRIVATE_IPS[@]} -eq 1 ]; then
-  # One Private interface; Try to route everything (including OVN)
-  PUBIP_COUNT=${#PUBLIC_IPS[@]}
-  DEV_NAME=$(echo ${PRIVATE_IPS[0]} | awk '{print $4}')
-  IP_INTERNAL=$(echo ${PRIVATE_IPS[0]} | awk '{print $1}')
-  CIDR=$(echo ${PRIVATE_IPS[0]} | awk '{print $2}')
-  SUBNET_MASK=$(cidr_to_netmask $(echo ${PRIVATE_IPS[0]} | awk '{print $2;}'))
-  NETWORK_ADDRESS=$(ip_to_netaddr $(echo ${PRIVATE_IPS[0]} | awk '{print $1;}') $(echo $SUBNET_MASK))
-  CURRENT_GATEWAY=$(echo "$GATEWAYS" | awk -v pos="$(($PUBIP_COUNT+1))" '{print $pos}')
-
-  # Setup private interface
-  { \
-    echo '[Match]'; \
-    echo 'Name='$DEV_NAME; \
-    echo ''; \
-    echo '[Network]'; \
-    echo 'DHCP=no'; \
-    echo ''; \
-    echo '[Address]'; \
-    echo 'Address='$IP_INTERNAL'/'$CIDR; \
-    echo ''; \
-    echo '[Route]'; \
-    echo 'Gateway='$CURRENT_GATEWAY; \
-    echo 'Table='$ROUTING_TABLE_INT; \
-    echo ''; \
-    echo '[Route]'; \
-    echo 'Gateway='$CURRENT_GATEWAY'/'$CIDR; \
-    echo 'Destination='$NETWORK_ADDRESS'/'$CIDR; \
-    echo 'Table='$ROUTING_TABLE_INT; \
-  } > /etc/systemd/network/$DEV_NAME.network
-elif [ ${#PRIVATE_IPS[@]} -gt 1 ]; then
+if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
   COUNTER=0
   for IP in "${PRIVATE_IPS[@]}" ; do
     # Two or more private interfaces; First is gonna be OVN; Second SSH
@@ -172,10 +146,12 @@ elif [ ${#PRIVATE_IPS[@]} -gt 1 ]; then
     fi
     COUNTER=$((COUNTER+1))
   done
+else
+  >&2 echo "Too many private interfaces. I have no idea what to do!"
+  exit 1; 
 fi
 
 # We always use the first private ip for OVN and the second for internal
-# Note: That case 1 public & 1 private is covered by the | in egrep
 DEV_OVN=$(echo ${PRIVATE_IPS[0]} | awk '{print $4}')
 DEV_INT=$(echo ${PRIVATE_IPS[1]} | awk '{print $4}')
 
