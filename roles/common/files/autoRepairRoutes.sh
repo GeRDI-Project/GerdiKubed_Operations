@@ -63,7 +63,7 @@ fi
 if [[ ${#PRIVATE_IPS[@]} -eq 1 && ${#PUBLIC_IPS[@]} -eq 1 ]] || [[ ${#PRIVATE_IPS[@]} -eq 1 && ${#PUBLIC_IPS[@]} -eq 0 ]]; then
   echo "Nothing to do"
   exit 0
-fi	
+fi
 
 # All public IPs should use DHCP
 # If there are no public IPs this is obviously skipped
@@ -148,7 +148,7 @@ if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
   done
 else
   >&2 echo "Too many private interfaces. I have no idea what to do!"
-  exit 1; 
+  exit 1;
 fi
 
 # We always use the first private ip for OVN and the second for internal
