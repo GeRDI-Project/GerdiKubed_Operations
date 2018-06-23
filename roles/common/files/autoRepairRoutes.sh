@@ -23,12 +23,12 @@ IFS=$'\n'
 # Filter out ipv4 ips
 # Remove loopback, filter by device ens0-9
 # Get the fields we need, replace / with space
-# Filter out dynamic 
+# Filter out dynamic
 IP_ARRAY=$( \
 ip addr | grep -e "inet[[:space:]]" | \
 grep -v '127.0.0.1' | grep -E 'ens[0-9]' | \
 awk '{print $2" "$4" "$7$8}' | sed 's/\// /g' | \
-sed 's/dynamic//g') 
+sed 's/dynamic//g')
 unset $IFS
 
 ROUTING_TABLE_INT=$1
@@ -44,7 +44,7 @@ while read -r IP; do
   # Get the gateway address (for LRZ it's broadcast - 1)
   GATEWAYS+=$(echo $IP | awk '{print $3}' | awk -F"." '{printf "%d.%d.%d.%d ", $1, $2, $3, $4 - 1}')
   # Check if IP matches the private IP patterns
-  TMP=$(echo $IP | awk '{print $1}' | grep -E '^(192\.168|10\.|172\.1[6789]\.|172\.2[0-9]\.|172\.3[01]\.)') # Taken from: https://unix.stackexchange.com/a/98930 
+  TMP=$(echo $IP | awk '{print $1}' | grep -E '^(192\.168|10\.|172\.1[6789]\.|172\.2[0-9]\.|172\.3[01]\.)') # Taken from: https://unix.stackexchange.com/a/98930
   if [ -z "$TMP" ]; then
     # Public IP
     PUBLIC_IPS+=("$IP")
