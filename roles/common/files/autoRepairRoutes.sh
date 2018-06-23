@@ -20,7 +20,15 @@
 # IPs are stored as IP_ARRAY[0] = IP[[:space:]]CIDR[[:space:]]BROADCAST[[:space:]]DEVICENAME
 #      Example: 141.40.254.115 23 141.40.255.255 ens3
 IFS=$'\n'
-IP_ARRAY=$(ip addr | grep -e "inet[[:space:]]" | grep -v '127.0.0.1' | grep -E 'ens[0-9]' | awk '{print $2" "$4" "$7$8}' | sed 's/\// /g' | sed 's/dynamic//g')
+# Filter out ipv4 ips
+# Remove loopback, filter by device ens0-9
+# Get the fields we need, replace / with space
+# Filter out dynamic 
+IP_ARRAY=$( \
+ip addr | grep -e "inet[[:space:]]" | \
+grep -v '127.0.0.1' | grep -E 'ens[0-9]' | \
+awk '{print $2" "$4" "$7$8}' | sed 's/\// /g' | \
+sed 's/dynamic//g') 
 unset $IFS
 
 ROUTING_TABLE_INT=$1
