@@ -44,7 +44,7 @@ while read -r IP; do
   # Get the gateway address (for LRZ it's broadcast - 1)
   GATEWAYS+=$(echo $IP | awk '{print $3}' | awk -F"." '{printf "%d.%d.%d.%d ", $1, $2, $3, $4 - 1}')
   # Check if IP matches the private IP patterns
-  TMP=$(echo $IP | awk '{print $1}' | grep -E '10.*|172.16.*|192.168.*')
+  TMP=$(echo $IP | awk '{print $1}' | grep -E '^(192\.168|10\.|172\.1[6789]\.|172\.2[0-9]\.|172\.3[01]\.)') # Taken from: https://unix.stackexchange.com/a/98930 
   if [ -z "$TMP" ]; then
     # Public IP
     PUBLIC_IPS+=("$IP")
