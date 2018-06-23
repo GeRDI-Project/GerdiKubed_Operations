@@ -17,7 +17,12 @@
 # ABOUT:
 # This script makes sure that the sshd server is always listening to the
 # last private interface in the list of returned interfaces from ip addr.
-sed -i 's/#ListenAddress 0.0.0.0/ListenAddress '`ip addr | grep -e 'inet[[:space:]]' | grep -v '127.0.0.1' | awk '{print $2}' | sed 's/\// /g' | awk '{print $1}' | grep -E '10.*|172.16.*|192.168.*' | tail -n 1`'/
+# Replace #ListenAddress 0.0.0.0 with output of last private ipv4 interface
+# Also uncomment #AddressFamily -> AdressFamily inet
+sed -i 's/#ListenAddress 0.0.0.0/ListenAddress '`ip addr | \
+grep -e 'inet[[:space:]]' | grep -v '127.0.0.1' | grep -E 'ens[0-9]' | \
+awk '{print $2}' | sed 's/\// /g' | \
+awk '{print $1}' | grep -E '^(192\.168|10\.|172\.1[6789]\.|172\.2[0-9]\.|172\.3[01]\.)' | tail -n 1`'/
 s/#AddressFamily.*/AddressFamily inet/;' /etc/ssh/sshd_config
 systemctl restart sshd
 service sshd restart
