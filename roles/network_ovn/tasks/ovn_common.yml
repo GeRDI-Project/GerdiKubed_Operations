@@ -57,6 +57,7 @@
 - name: Pull k8s ovn integration scripts
   git:
     repo: 'https://github.com/openvswitch/ovn-kubernetes.git'
+    version: "bdb576e4fe8cfdc4a4711581e7e0af6add1bcbcb"
     dest: "{{ OVN_K8S_DIR }}"
 
 - name: Update pip

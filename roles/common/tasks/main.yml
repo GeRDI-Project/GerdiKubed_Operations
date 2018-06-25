@@ -31,6 +31,20 @@
       - python-dnspython
       - python-openssl
 
+- name: Script to fix routing of internal interfaces
+  copy:
+    src: autoRepairRoutes.sh
+    dest: /root/autoRepairRoutes.sh
+
+- name: Fix routing of internal interfaces
+  shell: bash /root/autoRepairRoutes.sh {{ K8S_INTERNAL_ROUTING_TABLE }} {{ NFS_SERVER_DOMAIN }} && sleep 2 && shutdown -r now
+  async: 1
+  poll: 0
+  ignore_errors: true
+
+- name: Waiting for server to reboot
+  local_action: wait_for host={{ inventory_hostname }} port=22 state=started delay=8 timeout=300 connect_timeout=15
+
 - name: Set hostname to {{ inventory_hostname }}
   hostname:
     name: "{{ inventory_hostname }}"
@@ -52,7 +66,6 @@
   copy:
     src: printIface.sh
     dest: /root/printIface.sh
-
 
 - name: Retrieve information for internal interface
   shell: bash /root/printIface.sh 2
@@ -120,11 +133,8 @@
     value: 262144
     state: present
 
-# Not persistent over reboot
 - name: Add rule to use internal interface for nfs
-  lineinfile:
-    dest: /root/repairRoutes.sh
-    line: ip rule add to {{ lookup('dig', NFS_SERVER_DOMAIN, 'qtype=A') }} table {{ K8S_INTERNAL_ROUTING_TABLE }}
+  shell: ip rule add to {{ lookup('dig', NFS_SERVER_DOMAIN, 'qtype=A') }} table {{ K8S_INTERNAL_ROUTING_TABLE }}
 
 - name: Mount NFS-Volume
   mount:

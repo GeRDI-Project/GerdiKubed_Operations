@@ -12,6 +12,32 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+{% raw %}
+IFS=$'\n'
+IP_ARRAY=$(ip addr | grep -e "inet[[:space:]]" | grep -v '127.0.0.1' | grep -E 'ens[0-9]' | awk '{print $2" "$4" "$7$8}' | sed 's/\// /g' | sed 's/dynamic//g')
+unset $IFS
+
+PUBLIC_IPS=()
+PRIVATE_IPS=()
+
+while read -r IP; do
+  # Check if IP matches the private IP patterns
+  TMP=$(echo $IP | awk '{print $1}' | grep -E '^(192\.168|10\.|172\.1[6789]\.|172\.2[0-9]\.|172\.3[01]\.)') # Taken from: https://unix.stackexchange.com/a/98930
+  if [ -z "$TMP" ]; then
+    # Public IP
+    PUBLIC_IPS+=("$IP")
+  else
+    # Private IP
+    PRIVATE_IPS+=("$IP")
+  fi
+done <<< "$IP_ARRAY"
+
+# Cases: 1 Private & 1 Public OR 1 Private & 0 Public -> Assume we are already set up -> Exit script
+if [[ ${#PRIVATE_IPS[@]} -eq 1 && ${#PUBLIC_IPS[@]} -eq 1 ]] || [[ ${#PRIVATE_IPS[@]} -eq 1 && ${#PUBLIC_IPS[@]} -eq 0 ]]; then
+  echo "Nothing to do"
+  exit 0
+fi
+{% endraw %}
 
 ovn-k8s-overlay minion-init \
   --cluster-ip-subnet={{ K8S_CLUSTER_IP_SUBNET }} \
@@ -30,5 +56,4 @@ ovn-k8s-overlay gateway-init \
   --physical-interface {{ iface2.name }} \
   --physical-ip {{ iface2.ipv4 }} \
   --node-name={{ inventory_hostname }} \
-  --default-gw {{ iface2.gw }} \
-  --rampout-ip-subnets="{{ SUBNET_IP_PRE }}.{{ hostname_suffix }}.0/24"
+  --default-gw {{ iface2.gw }}
