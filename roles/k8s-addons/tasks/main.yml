@@ -34,3 +34,6 @@
     dest: "/etc/kubernetes/addons/{{ item }}.yml"
   with_items:
     - "kube-dns"
+
+- name: Create kube-dns
+  shell: kubectl apply -f /etc/kubernetes/addons/kube-dns.yml
