@@ -12,6 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+- name: Setup VMWare nodes
+  hosts: vmware-nodes:!kubernetes-masters
+  remote_user: root
+  roles:
+    - vmware-node
+
+- name: Setup OpenNebula nodes
+  hosts: kubernetes-nodes:!vmware-nodes
+  roles:
+    - nebula-node
+
 - name: Initialize kubernetes nodes
   hosts: kubernetes-nodes
   remote_user: root
