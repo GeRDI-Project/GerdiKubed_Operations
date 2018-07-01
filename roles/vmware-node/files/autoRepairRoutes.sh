@@ -13,7 +13,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+# 
+# NOTE: This is a slighly different script that also makes sure networkd is setup
 # Get all attached ips
 # Make sure to only seperate by newline;
 # Also get rid of loopback IP
@@ -26,7 +27,7 @@ IFS=$'\n'
 # Filter out dynamic
 IP_ARRAY=$( \
 ip addr | grep -e "inet[[:space:]]" | \
-grep -v '127.0.0.1' | grep -E 'ens[0-9]' | \
+grep -v '127.0.0.1' | grep -E 'eth[0-9]' | \
 awk '{print $2" "$4" "$7$8}' | sed 's/\// /g' | \
 sed 's/dynamic//g')
 unset $IFS
@@ -73,21 +74,6 @@ if [[ ${#PRIVATE_IPS[@]} -eq 1 && ${#PUBLIC_IPS[@]} -eq 1 ]] || [[ ${#PRIVATE_IP
   exit 0
 fi
 
-# All public IPs should use DHCP
-# If there are no public IPs this is obviously skipped
-for IP in "${PUBLIC_IPS[@]}"; do
-  DEV_NAME=$(echo $IP | awk '{print $4}')
-  # Setup public interface
-  { \
-    echo '[Match]'; \
-    echo 'Name='$DEV_NAME; \
-    echo ''; \
-    echo '[Network]'; \
-    echo 'DHCP=yes'; \
-  } > /etc/systemd/network/$DEV_NAME.network
-  echo "Writting "$DEV_NAME".network"
-done
-
 # Taken from https://gist.github.com/kwilczynski/5d37e1cced7e76c7c9ccfdf875ba6c5b
 # arg $1 = IP
 cidr_to_netmask() {
@@ -112,7 +98,7 @@ if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
     DEV_NAME=$(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $4}')
     IP_INTERNAL=$(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $1}')
     CIDR=$(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $2}')
-    if [ $COUNTER -eq 0 ]; then
+    if [ $COUNTER -eq 1 ]; then
       # Setup OVN interface
       { \
         echo '[Match]'; \
@@ -125,7 +111,7 @@ if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
         echo 'Address='$IP_INTERNAL'/'$CIDR; \
       } > /etc/systemd/network/$DEV_NAME.network
       echo "Writting "$DEV_NAME".network"
-    elif [ $COUNTER -eq 1 ]; then
+    elif [ $COUNTER -eq 0 ]; then
       # Internal interface
       SUBNET_MASK=$(cidr_to_netmask $(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $2;}'))
       NETWORK_ADDRESS=$(ip_to_netaddr $(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $1;}') $(echo $SUBNET_MASK))
@@ -137,16 +123,16 @@ if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
         echo ''; \
         echo '[Network]'; \
         echo 'DHCP=no'; \
-        echo ''; \
-        echo '[Address]';
+        echo 'DNS=129.187.5.1'; \
         echo 'Address='$IP_INTERNAL'/'$CIDR; \
+        echo 'Gateway='$CURRENT_GATEWAY; \
         echo ''; \
         echo '[Route]'; \
         echo 'Gateway='$CURRENT_GATEWAY; \
         echo 'Table='$ROUTING_TABLE_INT; \
         echo ''; \
         echo '[Route]'; \
-        echo 'Gateway='$CURRENT_GATEWAY'/'$CIDR; \
+        echo 'Gateway='$CURRENT_GATEWAY; \
         echo 'Destination='$NETWORK_ADDRESS'/'$CIDR; \
         echo 'Table='$ROUTING_TABLE_INT; \
       } > /etc/systemd/network/$DEV_NAME.network
@@ -160,12 +146,12 @@ else
 fi
 
 # We always use the first private ip for OVN and the second for internal
-DEV_OVN=$(echo ${PRIVATE_IPS[0]} | awk '{print $4}')
-DEV_INT=$(echo ${PRIVATE_IPS[1]} | awk '{print $4}')
+DEV_OVN=$(echo ${PRIVATE_IPS[1]} | awk '{print $4}')
+DEV_INT=$(echo ${PRIVATE_IPS[0]} | awk '{print $4}')
 
-IP_INT=$(echo ${PRIVATE_IPS[1]} | awk '{print $1}')
+IP_INT=$(echo ${PRIVATE_IPS[0]} | awk '{print $1}')
 
-CIDR=$(echo ${PRIVATE_IPS[1]} | awk '{print $2}')
+CIDR=$(echo ${PRIVATE_IPS[0]} | awk '{print $2}')
 
 # Write repairRoutes.sh
 # Taken from Gerdi GIT (gerdikubed/util/sed.src/repairRoutes.sh)
@@ -197,8 +183,24 @@ chmod +x /root/repairRoutes.sh
   echo 'WantedBy=multi-user.target'; \
 } > /etc/systemd/system/repairRoutes.service
 
+# Start systemd networking
+systemctl enable systemd-networkd.service
+systemctl enable systemd-resolved.service
+
+rm /etc/systemd/99-default.link
+rm /etc/resolv.conf
+ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
+
+rm /etc/network/interfaces
+apt-get purge ifupdown
+apt-get install -y resolv.d
+
+systemctl disable networking.service
+systemctl restart systemd-networkd.service
+systemctl restart systemd-resolved.service
+
 rm -f /etc/systemd/network/wired.network
-systemctl enable repairRoutes.service
+#systemctl enable repairRoutes.service
 systemctl daemon-reload
 
 sed -i 's/#ListenAddress 0.0.0.0/ListenAddress '$IP_INT'/
