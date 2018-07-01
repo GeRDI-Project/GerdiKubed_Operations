@@ -19,16 +19,32 @@ IFS=$'\n'
 # Get number of eth0-9 interfaces
 NIC_ARRAY=$( \
 	ip addr | grep -E 'eth[0-9]:' | awk '{print $2}')
+IP_ARRAY=$( \
+	ip addr | grep -e "inet[[:space:]]" | \
+	grep -v '127.0.0.1' | grep -E 'eth[0-9]' | \
+	awk '{print $2" "$4" "$7$8}' | sed 's/\// /g' | \
+	sed 's/dynamic//g')
 unset $IFS
 # Count results
 COUNTER=0
+COUNTERIP=0
 while read -r NIC; do
   if [[ ! -z "$NIC" ]]; then
     COUNTER=$((COUNTER+1))
   fi
 done <<< "$NIC_ARRAY"
 
-echo "$COUNTER NICs detected & $# IPs passed to script"
+while read -r IP; do
+  COUNTERIP=$((COUNTERIP+1))
+done <<< "$IP_ARRAY"
+
+echo "$COUNTER NICs detected, $# IPs passed to script & $COUNTERIP IPs already setup"
+
+# Check if we are already setup
+if [ "$COUNTER" -eq "$COUNTERIP" ]; then
+  echo "NICs already setup. Nothing to do here."
+  exit 0
+fi
 
 # Check if provided amount of ips matches amount of NICs
 if [ "$#" -ne $COUNTER ]; then
