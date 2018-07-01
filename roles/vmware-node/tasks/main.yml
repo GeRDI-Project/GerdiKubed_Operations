@@ -19,3 +19,22 @@
 
 - name: Setup NICs of VMware machine
   shell: bash /root/setupNIC.sh {{ eth0ip }} {{ eth1ip }} {{ eth2ip }}
+
+- name: Script to fix routing of internal interfaces
+  copy:
+    src: autoRepairRoutes.sh
+    dest: /root/autoRepairRoutes.sh
+
+- name: Fix routing of internal interfaces
+  shell: bash /root/autoRepairRoutes.sh {{ K8S_INTERNAL_ROUTING_TABLE }} {{ NFS_SERVER_DOMAIN }} && sleep 2 && shutdown -r now
+  async: 1
+  poll: 0
+  ignore_errors: true
+
+- name: Waiting for server to reboot
+  wait_for_connection: 
+    connect_timeout: 20
+    sleep: 5
+    delay: 5
+    timeout: 120
+  #local_action: wait_for host={{ inventory_hostname }} port=22 state=started delay=60 timeout=120
