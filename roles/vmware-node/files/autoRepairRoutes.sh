@@ -126,15 +126,15 @@ if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
         echo 'DNS=129.187.5.1'; \
         echo 'Address='$IP_INTERNAL'/'$CIDR; \
         echo 'Gateway='$CURRENT_GATEWAY; \
-        echo ''; \
-        echo '[Route]'; \
-        echo 'Gateway='$CURRENT_GATEWAY; \
-        echo 'Table='$ROUTING_TABLE_INT; \
-        echo ''; \
-        echo '[Route]'; \
-        echo 'Gateway='$CURRENT_GATEWAY; \
-        echo 'Destination='$NETWORK_ADDRESS'/'$CIDR; \
-        echo 'Table='$ROUTING_TABLE_INT; \
+        #echo ''; \
+        #echo '[Route]'; \
+        #echo 'Gateway='$CURRENT_GATEWAY; \
+        #echo 'Table='$ROUTING_TABLE_INT; \
+        #echo ''; \
+        #echo '[Route]'; \
+        #echo 'Gateway='$CURRENT_GATEWAY; \
+        #echo 'Destination='$NETWORK_ADDRESS'/'$CIDR; \
+        #echo 'Table='$ROUTING_TABLE_INT; \
       } > /etc/systemd/network/$DEV_NAME.network
       echo "Writting "$DEV_NAME".network"
     fi
@@ -146,54 +146,54 @@ else
 fi
 
 # We always use the first private ip for OVN and the second for internal
-DEV_OVN=$(echo ${PRIVATE_IPS[1]} | awk '{print $4}')
-DEV_INT=$(echo ${PRIVATE_IPS[0]} | awk '{print $4}')
+
+#DEV_OVN=$(echo ${PRIVATE_IPS[1]} | awk '{print $4}')
+#DEV_INT=$(echo ${PRIVATE_IPS[0]} | awk '{print $4}')
 
 IP_INT=$(echo ${PRIVATE_IPS[0]} | awk '{print $1}')
 
-CIDR=$(echo ${PRIVATE_IPS[0]} | awk '{print $2}')
+#CIDR=$(echo ${PRIVATE_IPS[0]} | awk '{print $2}')
 
 # Write repairRoutes.sh
 # Taken from Gerdi GIT (gerdikubed/util/sed.src/repairRoutes.sh)
-{ \
-  echo '#!/bin/bash'; \
-  echo "ip route | egrep '"$DEV_INT"|"$DEV_OVN"' | \\" ; \
-  echo 'while read line'; \
-  echo 'do'; \
-  echo '  ip route delete $line'; \
-  echo 'done'; \
-  echo ''; \
-  echo 'ip rule add from '$IP_INT' lookup '$ROUTING_TABLE_INT; \
-  echo 'ip rule add to '$NETWORK_ADDRESS'/'$CIDR' lookup '$ROUTING_TABLE_INT; \
-  echo 'ip rule add to '$NFS_SERVER_DOMAIN' table '$ROUTING_TABLE_INT; \
-} > /root/repairRoutes.sh
+# Slightly adapted to not delete the default gateway
 
-chmod +x /root/repairRoutes.sh
+#{ \
+#  echo '#!/bin/bash'; \
+#  echo "ip route | egrep '"$DEV_INT"|"$DEV_OVN"' | grep -v 'default' | \\" ; \
+#  echo 'while read line'; \
+#  echo 'do'; \
+#  echo '  ip route delete $line'; \
+#  echo 'done'; \
+#  echo ''; \
+#  echo 'ip rule add from '$IP_INT' lookup '$ROUTING_TABLE_INT; \
+#  echo 'ip rule add to '$NETWORK_ADDRESS'/'$CIDR' lookup '$ROUTING_TABLE_INT; \
+#  echo 'ip rule add to '$NFS_SERVER_DOMAIN' table '$ROUTING_TABLE_INT; \
+#} > /root/repairRoutes.sh
 
-{ \
-  echo '[Unit]'; \
-  echo 'Description=Repair routes on multi NIC setup'; \
-  echo 'After=network.target'; \
-  echo ''; \
-  echo '[Service]'; \
-  echo 'ExecStart=/root/repairRoutes.sh'; \
-  echo 'Type=oneshot'; \
-  echo ''; \
-  echo '[Install]'; \
-  echo 'WantedBy=multi-user.target'; \
-} > /etc/systemd/system/repairRoutes.service
+#chmod +x /root/repairRoutes.sh
+
+#{ \
+#  echo '[Unit]'; \
+#  echo 'Description=Repair routes on multi NIC setup'; \
+#  echo 'After=network.target'; \
+#  echo ''; \
+#  echo '[Service]'; \
+#  echo 'ExecStart=/root/repairRoutes.sh'; \
+#  echo 'Type=oneshot'; \
+#  echo ''; \
+#  echo '[Install]'; \
+#  echo 'WantedBy=multi-user.target'; \
+#} > /etc/systemd/system/repairRoutes.service
 
 # Start systemd networking
 systemctl enable systemd-networkd.service
 systemctl enable systemd-resolved.service
 
-rm /etc/systemd/99-default.link
 rm /etc/resolv.conf
 ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
 
 rm /etc/network/interfaces
-apt-get purge ifupdown
-apt-get install -y resolv.d
 
 systemctl disable networking.service
 systemctl restart systemd-networkd.service

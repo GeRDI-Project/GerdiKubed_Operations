@@ -14,7 +14,7 @@
 # limitations under the License.
 {% raw %}
 IFS=$'\n'
-IP_ARRAY=$(ip addr | grep -e "inet[[:space:]]" | grep -v '127.0.0.1' | grep -E 'ens[0-9]' | awk '{print $2" "$4" "$7$8}' | sed 's/\// /g' | sed 's/dynamic//g')
+IP_ARRAY=$(ip addr | grep -e "inet[[:space:]]" | grep -v '127.0.0.1' | grep -E 'ens[0-9]|eth[0-9]' | awk '{print $2" "$4" "$7$8}' | sed 's/\// /g' | sed 's/dynamic//g')
 unset $IFS
 
 PUBLIC_IPS=()
@@ -42,18 +42,18 @@ fi
 ovn-k8s-overlay minion-init \
   --cluster-ip-subnet={{ K8S_CLUSTER_IP_SUBNET }} \
   --minion-switch-subnet={{ SUBNET_IP_PRE }}.{{ hostname_suffix }}.0/24 \
-  --node-name={{ inventory_hostname }}
+  --node-name={{ hostname_vmware }}
 
 {% if inventory_hostname in groups['kubernetes-masters'] %}
 ovn-k8s-overlay master-init \
   --cluster-ip-subnet={{K8S_CLUSTER_IP_SUBNET}} \
   --master-switch-subnet={{ SUBNET_IP_PRE }}.{{ hostname_suffix }}.0/24 \
-  --node-name={{ inventory_hostname }}
+  --node-name={{ hostname_vmware }}
 {% endif %}
 
 ovn-k8s-overlay gateway-init \
   --cluster-ip-subnet={{ K8S_CLUSTER_IP_SUBNET }} \
   --physical-interface {{ iface2.name }} \
   --physical-ip {{ iface2.ipv4 }} \
-  --node-name={{ inventory_hostname }} \
+  --node-name={{ hostname_vmware }} \
   --default-gw {{ iface2.gw }}

@@ -26,7 +26,7 @@
     dest: /root/autoRepairRoutes.sh
 
 - name: Fix routing of internal interfaces
-  shell: bash /root/autoRepairRoutes.sh {{ K8S_INTERNAL_ROUTING_TABLE }} {{ NFS_SERVER_DOMAIN }} && sleep 2 && shutdown -r now
+  shell: bash /root/autoRepairRoutes.sh {{ K8S_INTERNAL_ROUTING_TABLE }} {{ lookup('dig', NFS_SERVER_DOMAIN, 'qtype=A') }} && sleep 2 && shutdown -r now
   async: 1
   poll: 0
   ignore_errors: true
