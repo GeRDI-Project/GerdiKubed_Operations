@@ -16,6 +16,7 @@
 # Allow access to k8s apiserver
 - iptables:
     chain: INPUT
+    action: insert
     protocol: tcp
     destination_port: 443
     jump: ACCEPT
@@ -24,6 +25,7 @@
 # Allow access to the ovsdb
 - iptables:
     chain: INPUT
+    action: insert
     protocol: tcp
     destination_port: 6641
     jump: ACCEPT
@@ -31,6 +33,7 @@
 
 - iptables:
     chain: INPUT
+    action: insert
     protocol: tcp
     destination_port: 6642
     jump: ACCEPT
@@ -38,6 +41,7 @@
 
 - iptables:
     chain: INPUT
+    action: insert
     protocol: tcp
     destination_port: 2379
     jump: ACCEPT
@@ -45,6 +49,7 @@
 
 - iptables:
     chain: INPUT
+    action: insert
     protocol: tcp
     destination_port: 2380
     jump: ACCEPT

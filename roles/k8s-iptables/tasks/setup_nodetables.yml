@@ -17,6 +17,7 @@
 # TODO: source: MASTERIP or !MASTERIPS
 - iptables:
     chain: INPUT
+    action: insert
     protocol: tcp
     destination_port: 10250
     jump: ACCEPT
@@ -24,6 +25,7 @@
 
 - iptables:
     chain: INPUT
+    action: insert
     protocol: tcp
     destination_port: 10255
     jump: DROP
@@ -31,6 +33,7 @@
 
 - iptables:
     chain: INPUT
+    action: insert
     protocol: tcp
     destination_port: 10248
     jump: DROP
