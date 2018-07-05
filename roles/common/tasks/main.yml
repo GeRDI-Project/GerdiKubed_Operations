@@ -31,11 +31,6 @@
       - python-dnspython
       - python-openssl
 
-#- name: Set hostname to {{ inventory_hostname }}
-#  hostname:
-#    name: "{{ inventory_hostname }}"
-#  when: SET_HOSTNAME
-
 - name: Create k8s directories
   file:
     path: "{{ item.path }}"
@@ -56,6 +51,7 @@
 - name: Retrieve information for internal interface
   shell: bash /root/printIface.sh 2
   register: internalInterface
+  ignore_errors: yes
 
 - name: Set facts for second interface
   set_fact:
@@ -67,7 +63,7 @@
       mask: "{{ internalInterface.stdout.split(' ')[4] }}"
 
 - name: Retrieve information for third interface
-  shell: bash /root/printIface.sh 3
+  shell: bash /root/printIface.sh 1
   register: thirdInterface
   ignore_errors: yes
 
@@ -118,9 +114,6 @@
     name: vm.max_map_count
     value: 262144
     state: present
-
-- name: Add rule to use internal interface for nfs
-  shell: ip rule add to {{ lookup('dig', NFS_SERVER_DOMAIN, 'qtype=A') }} table {{ K8S_INTERNAL_ROUTING_TABLE }}
 
 - name: Mount NFS-Volume
   mount:
