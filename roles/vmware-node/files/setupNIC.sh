@@ -15,6 +15,15 @@
 #
 # Note: VMware machines start out with the ifupdown package,
 # our setup requires the systemd networking
+
+# Test if we are already set up
+DIRECTORYTEST=$(find /etc/systemd/network -name "*.network" | wc -l)
+
+if [ "$DIRECTORYTEST" -eq "$#" ]; then
+  echo "Networkd already setup. Nothing to do here."
+  exit 0;
+fi
+
 IFS=$'\n'
 # Get number of eth0-9 interfaces
 NIC_ARRAY=$( \
