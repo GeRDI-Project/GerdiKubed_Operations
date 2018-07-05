@@ -13,9 +13,9 @@
 # limitations under the License.
 # ---
 # Install iptables package
-- name: Install iptables
+- name: Install iptables-persistent
   apt:
-    name: iptables
+    name: iptables-persistent
     state: latest
 
 # Note: VMware machines already have this
