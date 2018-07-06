@@ -14,7 +14,10 @@
 # limitations under the License.
 {% raw %}
 IFS=$'\n'
-IP_ARRAY=$(ip addr | grep -e "inet[[:space:]]" | grep -v '127.0.0.1' | grep -E 'ens[0-9]|eth[0-9]' | awk '{print $2" "$4" "$7$8}' | sed 's/\// /g' | sed 's/dynamic//g')
+IP_ARRAY=$(ip addr | grep -e "inet[[:space:]]" | 
+	   grep -v '127.0.0.1' | grep -E 'ens[0-9]|eth[0-9]' | 
+	   awk '{print $2" "$4" "$7$8}' | sed 's/\// /g' | 
+	   sed 's/dynamic//g')
 unset $IFS
 
 PUBLIC_IPS=()
