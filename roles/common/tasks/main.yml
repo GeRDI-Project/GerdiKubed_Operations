@@ -61,6 +61,7 @@
       gw:   "{{ internalInterface.stdout.split(' ')[2] }}"
       nw:   "{{ internalInterface.stdout.split(' ')[3] }}"
       mask: "{{ internalInterface.stdout.split(' ')[4] }}"
+  when: internalInterface.rc == 0
 
 - name: Retrieve information for third interface
   shell: bash /root/printIface.sh 1
