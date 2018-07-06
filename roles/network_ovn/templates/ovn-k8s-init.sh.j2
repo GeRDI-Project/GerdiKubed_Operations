@@ -43,19 +43,19 @@ fi
 ovn-k8s-overlay minion-init \
   --cluster-ip-subnet={{ K8S_CLUSTER_IP_SUBNET }} \
   --minion-switch-subnet={{ SUBNET_IP_PRE }}.{{ hostname_suffix }}.0/24 \
-  --node-name={{ hostname_vmware | default(inventory_hostname) }}
+  --node-name={{ hostname_overwrite | default(inventory_hostname) }}
 {% endif %}
 
 {% if inventory_hostname in groups['kubernetes-masters'] %}
 ovn-k8s-overlay master-init \
   --cluster-ip-subnet={{K8S_CLUSTER_IP_SUBNET}} \
   --master-switch-subnet={{ SUBNET_IP_PRE }}.{{ hostname_suffix }}.0/24 \
-  --node-name={{ hostname_vmware | default(inventory_hostname) }}
+  --node-name={{ hostname_overwrite | default(inventory_hostname) }}
 {% endif %}
 
 ovn-k8s-overlay gateway-init \
   --cluster-ip-subnet={{ K8S_CLUSTER_IP_SUBNET }} \
   --physical-interface {{ iface2.name }} \
   --physical-ip {{ iface2.ipv4 }} \
-  --node-name={{ hostname_vmware | default(inventory_hostname) }} \
+  --node-name={{ hostname_overwrite | default(inventory_hostname) }} \
   --default-gw {{ iface2.gw }}
