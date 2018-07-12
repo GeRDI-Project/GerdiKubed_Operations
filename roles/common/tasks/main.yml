@@ -48,45 +48,38 @@
     src: printIface.sh
     dest: /root/printIface.sh
 
-- name: Retrieve information for internal interface
+- name: Retrieve information for OVN (2nd) interface
   shell: bash /root/printIface.sh 2
-  register: internalInterface
+  register: ovnInterface
   ignore_errors: yes
 
-- name: Set facts for second interface
+- name: Get facts for OVN (2nd) interface
   set_fact:
     iface2:
+      name: "{{ ovnInterface.stdout.split(' ')[0] }}"
+      ipv4: "{{ ovnInterface.stdout.split(' ')[1] }}"
+      gw:   "{{ ovnInterface.stdout.split(' ')[2] }}"
+      nw:   "{{ ovnInterface.stdout.split(' ')[3] }}"
+      mask: "{{ ovnInterface.stdout.split(' ')[4] }}"
+  when: ovnInterface.rc == 0
+
+- name: Retrieve information for SSH (1st) interface
+  shell: bash /root/printIface.sh 1
+  register: internalInterface
+
+- name: Get facts for SSH (1st) interface
+  set_fact:
+    iface1:
       name: "{{ internalInterface.stdout.split(' ')[0] }}"
       ipv4: "{{ internalInterface.stdout.split(' ')[1] }}"
       gw:   "{{ internalInterface.stdout.split(' ')[2] }}"
       nw:   "{{ internalInterface.stdout.split(' ')[3] }}"
       mask: "{{ internalInterface.stdout.split(' ')[4] }}"
+
+- name: Set SSH (1st) interface / internalIP fact
+  set_fact:
+    internalIP: "{{ iface1.ipv4 }}"
   when: internalInterface.rc == 0
-
-- name: Retrieve information for third interface
-  shell: bash /root/printIface.sh 1
-  register: thirdInterface
-  ignore_errors: yes
-
-- name: Set facts for third interface
-  set_fact:
-    iface3:
-      name: "{{ thirdInterface.stdout.split(' ')[0] }}"
-      ipv4: "{{ thirdInterface.stdout.split(' ')[1] }}"
-      gw: "{{ thirdInterface.stdout.split(' ')[2] }}"
-      nw: "{{ thirdInterface.stdout.split(' ')[3] }}"
-      hw: "{{ thirdInterface.stdout.split(' ')[4] }}"
-  when: thirdInterface.rc == 0
-
-- name: Set fact for internal address (on first run)
-  set_fact:
-    internalIP: "{{ iface3.ipv4 }}"
-  when: thirdInterface.rc == 0
-
-- name: Set fact for internal address (on second+ run)
-  set_fact:
-    internalIP: "{{ iface2.ipv4 }}"
-  when: thirdInterface.rc != 0
 
 - name: Install server key and cert
   copy:
