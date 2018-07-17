@@ -39,3 +39,4 @@
   copy:
     src: ovn_cni
     dest: "{{ CNI_DIR }}/ovn_cni"
+    mode: 0755 
