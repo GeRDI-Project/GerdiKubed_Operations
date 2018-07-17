@@ -2,6 +2,7 @@
 Description=Kubernetes Kubelet Server
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 After=docker.service
+After=ovn-k8s-init.service
 Requires=docker.service
 
 [Service]
