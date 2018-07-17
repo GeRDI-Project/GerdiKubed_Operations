@@ -42,10 +42,15 @@ if [[ ${#PRIVATE_IPS[@]} -eq 1 && ${#PUBLIC_IPS[@]} -eq 1 ]] || [[ ${#PRIVATE_IP
 fi
 {% endraw %}
 
+# Delete rogue ip route created by networkd
+ip route delete $(ip route | grep {{ iface2.name }} | head -1)
+
+{% if inventory_hostname not in groups['kubernetes-masters'] %}
 ovn-k8s-overlay minion-init \
   --cluster-ip-subnet={{ K8S_CLUSTER_IP_SUBNET }} \
   --minion-switch-subnet={{ SUBNET_IP_PRE }}.{{ hostname_suffix }}.0/24 \
   --node-name={{ hostname_overwrite | default(inventory_hostname) }}
+{% endif %}
 
 {% if inventory_hostname in groups['kubernetes-masters'] %}
 ovn-k8s-overlay master-init \
