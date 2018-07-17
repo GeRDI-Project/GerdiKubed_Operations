@@ -11,6 +11,7 @@ ExecStart=/usr/local/bin/ovn-k8s-watcher \
   --log-file \
   -vfile:info \
   -vconsole:emer
+Restart=on-failure
 
 [Install]
 WantedBy=default.target

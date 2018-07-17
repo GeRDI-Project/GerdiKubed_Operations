@@ -12,6 +12,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# Delete rogue ip route created by networkd
+ip route delete $(ip route | grep {{ iface2.name }} | head -1)
+
 {% raw %}
 IFS=$'\n'
 IP_ARRAY=$(ip addr | grep -e "inet[[:space:]]" | 
@@ -41,9 +44,6 @@ if [[ ${#PRIVATE_IPS[@]} -eq 1 && ${#PUBLIC_IPS[@]} -eq 1 ]] || [[ ${#PRIVATE_IP
   exit 0
 fi
 {% endraw %}
-
-# Delete rogue ip route created by networkd
-ip route delete $(ip route | grep {{ iface2.name }} | head -1)
 
 {% if inventory_hostname not in groups['kubernetes-masters'] %}
 ovn-k8s-overlay minion-init \
