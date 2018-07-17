@@ -138,6 +138,9 @@ fi
 
 IP_INT=$(echo ${PRIVATE_IPS[0]} | awk '{print $1}')
 
+# Setup fallback DNS so Docker doesn't loose it's mind
+sed -i 's/#DNS=/DNS=129.187.5.1/;' /etc/systemd/resolved.conf
+
 rm -f /etc/systemd/network/wired.network
 systemctl restart systemd-networkd.service
 systemctl restart systemd-resolved.service

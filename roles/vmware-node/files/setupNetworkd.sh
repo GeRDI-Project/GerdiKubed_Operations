@@ -146,6 +146,9 @@ ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
 
 rm /etc/network/interfaces
 
+# Setup systemd DNS
+sed -i 's/#DNS=/DNS=129.187.5.1/;' /etc/systemd/resolved.conf
+
 systemctl disable networking.service
 systemctl restart systemd-networkd.service
 systemctl restart systemd-resolved.service
