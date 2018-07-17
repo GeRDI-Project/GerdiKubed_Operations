@@ -14,11 +14,11 @@
 ---
 - name: Script to set up networkd interfaces
   copy:
-    src: autoRepairRoutes.sh
-    dest: /root/autoRepairRoutes.sh
+    src: setupNetworkd.sh
+    dest: /root/setupNetworkd.sh
 
 - name: Set up networkd interfaces
-  shell: bash /root/autoRepairRoutes.sh
+  shell: bash /root/setupNetworkd.sh
 
 - name: Set hostname to {{ inventory_hostname }}
   hostname:
