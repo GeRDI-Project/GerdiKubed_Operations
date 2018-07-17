@@ -12,6 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+# [SAI-584] Force a recreation of all certificates (same FQDNs, different IPS
+# will not be overwritten. Resulting in machines getting invalid certificates for their ips)
+- name: Delete previous directory if it exists
+  file:
+    path: "{{ CONTROL_BASE_DIR }}"
+    state: absent
+  tags: [ 'never', 'force' ]
+
 # create canonical place for certs and keys on control machine
 - name: Create directory structure for certs and keys on control machine
   file:
@@ -42,7 +50,6 @@
 - name: Initialize serial numbers
   shell: "echo '01' > {{ CONTROL_CA_DIR }}/serial.txt"
   when: serial.stat.size == 0
-
 
 # create keys and certs and sign them
 - name: Create keys and certs and sign them
