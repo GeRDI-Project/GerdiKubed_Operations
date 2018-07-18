@@ -12,45 +12,44 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+- name: Allow access to apiserver
+  ufw:
+    rule: allow
+    port: 443
+    proto: tcp
 
-# Allow access to k8s apiserver
-- iptables:
-    chain: INPUT
-    action: insert
-    protocol: tcp
-    destination_port: 443
-    jump: ACCEPT
-    comment: Kubernetes APIserver
+- name: Allow access to ovsdb
+  ufw:
+    rule: allow
+    port: 6641:6642
+    proto: tcp
 
-# Allow access to the ovsdb
-- iptables:
-    chain: INPUT
-    action: insert
-    protocol: tcp
-    destination_port: 6641
-    jump: ACCEPT
-    comment: ovsdb access
+- name: Allow access to etcd
+  ufw:
+    rule: allow
+    port: 2379:2389
+    proto: tcp
 
-- iptables:
-    chain: INPUT
-    action: insert
-    protocol: tcp
-    destination_port: 6642
-    jump: ACCEPT
-    comment: ovsdb access
+- name: Allow access to kubelet; kube-controller-manager & kube-scheduler
+  ufw:
+    rule: allow
+    port: 10250:10252
+    proto: tcp
 
-- iptables:
-    chain: INPUT
-    action: insert
-    protocol: tcp
-    destination_port: 2379
-    jump: ACCEPT
-    comment: etcd access
+- name: Allow access to kubedns
+  ufw:
+    rule: allow
+    port: 53
+    proto: any
 
-- iptables:
-    chain: INPUT
-    action: insert
-    protocol: tcp
-    destination_port: 2380
-    jump: ACCEPT
-    comment: etcd access
+- name: Allow access to kubedns
+  ufw:
+    rule: allow
+    port: 10053:10055
+    proto: tcp
+
+- name: Allow access to kubedns
+  ufw:
+    rule: allow
+    port: 10053
+    proto: udp

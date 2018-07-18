@@ -12,23 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ---
-# Install iptables package
-- name: Install iptables-persistent
-  apt:
-    name: iptables-persistent
-    state: latest
-
-# Note: VMware machines already have this
-- name: Copy default state of iptables
-  copy:
-    src: iptables-default
-    dest: /root/iptables-default
-  when: inventory_hostname not in groups['vmware-nodes']
-
-# Again, VMWare machines already have this
-- name: Apply default state of iptables
-  shell: iptables-restore < iptables-default
-  when: inventory_hostname not in groups['vmware-nodes']
+- name: Install iptables and ufw
+  apt: name={{ item }} state=latest
+  with_items:
+    - iptables
+    - ufw
 
 - name: Setup master iptables
   import_tasks: setup_mastertables.yml
@@ -37,3 +25,34 @@
 - name: Setup node iptables
   import_tasks: setup_nodetables.yml
   when: inventory_hostname in groups['kubernetes-nodes']
+
+# VMware nodes use gateways, so do not require this step
+- name: Allow & Limit SSH logins from everywhere
+  ufw:
+    rule: limit
+    port: ssh
+    proto: tcp
+  when: inventory_hostname not in groups['vmware-nodes']
+
+- name: Allow geneve (OVN) tunnel traffic
+  ufw:
+    rule: allow
+    proto: udp
+    port: 6081
+
+- name: Enable logging
+  ufw:
+    logging: on
+
+# TODO Find either a way to replace ufw or to use ipv6 as well
+- name: Disable ipv6 in ufw
+  lineinfile:
+    path: /etc/default/ufw
+    regexp: '^IPV6=yes'
+    line: 'IPV6=no'
+
+# Reload for changes to take effect
+- name: Reload ufw
+  ufw:
+    state: enabled
+    policy: reject

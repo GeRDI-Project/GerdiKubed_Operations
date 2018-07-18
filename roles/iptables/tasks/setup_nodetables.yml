@@ -14,27 +14,15 @@
 ---
 
 # Allow access to workernode health check
-# TODO: source: MASTERIP or !MASTERIPS
-- iptables:
-    chain: INPUT
-    action: insert
-    protocol: tcp
-    destination_port: 10250
-    jump: ACCEPT
-    comment: Kubernetes health check
+# TODO: source: should be MASTERIP or !MASTERIPS
+- name: Allow kublet port
+  ufw:
+    rule: allow
+    port: 10250
+    proto: tcp
 
-- iptables:
-    chain: INPUT
-    action: insert
-    protocol: tcp
-    destination_port: 10255
-    jump: DROP
-    comment: DROP Kubernetes Read-Only Kublet API
-
-- iptables:
-    chain: INPUT
-    action: insert
-    protocol: tcp
-    destination_port: 10248
-    jump: DROP
-    comment: DROP [Deprecated] Kubernetes healthz port
+- name: Allow services running on node
+  ufw:
+    rule: allow
+    port: 30000:32767
+    proto: tcp 
