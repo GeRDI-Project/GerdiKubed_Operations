@@ -1,0 +1,58 @@
+# Copyright 2018 Walentin Lamonos lamonos@lrz.de
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ---
+- name: Install iptables and ufw
+  apt: name={{ item }} state=latest
+  with_items:
+    - iptables
+    - ufw
+
+- name: Setup master iptables
+  import_tasks: setup_mastertables.yml
+  when: inventory_hostname in groups['kubernetes-masters']
+
+- name: Setup node iptables
+  import_tasks: setup_nodetables.yml
+  when: inventory_hostname in groups['kubernetes-nodes']
+
+# VMware nodes use gateways, so do not require this step
+- name: Allow & Limit SSH logins from everywhere
+  ufw:
+    rule: limit
+    port: ssh
+    proto: tcp
+  when: inventory_hostname not in groups['vmware-nodes']
+
+- name: Allow geneve (OVN) tunnel traffic
+  ufw:
+    rule: allow
+    proto: udp
+    port: 6081
+
+- name: Enable logging
+  ufw:
+    logging: on
+
+# TODO Find either a way to replace ufw or to use ipv6 as well
+- name: Disable ipv6 in ufw
+  lineinfile:
+    path: /etc/default/ufw
+    regexp: '^IPV6=yes'
+    line: 'IPV6=no'
+
+# Reload for changes to take effect
+- name: Reload ufw
+  ufw:
+    state: enabled
+    policy: reject

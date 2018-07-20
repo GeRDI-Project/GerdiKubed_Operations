@@ -28,7 +28,7 @@
   remote_user: root
   roles:
     - common
-    - iptables
+    - ufw
     - docker
     - cni
     - k8s-binaries
