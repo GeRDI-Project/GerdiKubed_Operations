@@ -150,6 +150,7 @@ rm /etc/network/interfaces
 sed -i 's/#DNS=/DNS=129.187.5.1/;' /etc/systemd/resolved.conf
 
 systemctl disable networking.service
+apt-get purge -y resolvconf
 systemctl restart systemd-networkd.service
 systemctl restart systemd-resolved.service
 
