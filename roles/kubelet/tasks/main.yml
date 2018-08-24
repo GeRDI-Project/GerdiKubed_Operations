@@ -18,6 +18,10 @@
     dest:   "/usr/bin/kubelet"
     state:  link
 
+# Kubelet on vmware machines didn't find the config
+- name: export kubeconfig path
+  shell: export KUBECONFIG={{ K8S_KUBECONFIG }}
+ 
 - name: Create a systemd unit file
   template:
     src: kubelet.service.j2
