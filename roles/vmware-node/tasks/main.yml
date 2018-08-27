@@ -27,6 +27,3 @@
 
 - name: Setup networkd
   shell: bash /root/setupNetworkd.sh
-  async: 1
-  poll: 0
-  ignore_errors: true

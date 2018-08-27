@@ -138,20 +138,20 @@ fi
 IP_INT=$(echo ${PRIVATE_IPS[0]} | awk '{print $1}')
 
 rm /etc/resolv.conf
-apt-get purge -y resolvconf
+#apt-get purge -y resolvconf
 
 # Start systemd networking
-systemctl enable --now systemd-networkd.service
-systemctl enable --now systemd-resolved.service
+systemctl enable --now systemd-networkd.service > /dev/null 2>&1
+systemctl enable --now systemd-resolved.service > /dev/null 2>&1
 
 # Setup systemd DNS
 sed -i 's/#DNS=/DNS=129.187.5.1/;' /etc/systemd/resolved.conf
 
-systemctl disable networking.service
+systemctl disable networking.service > /dev/null 2>&1
 
 ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
 
-systemctl restart systemd-resolved.service
+systemctl restart systemd-resolved.service > /dev/null 2>&1
 
 rm -f /etc/systemd/network/wired.network
 systemctl daemon-reload
