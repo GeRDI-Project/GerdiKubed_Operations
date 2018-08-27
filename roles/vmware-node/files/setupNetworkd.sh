@@ -137,21 +137,20 @@ fi
 # We always use the first private ip for OVN and the second for internal
 IP_INT=$(echo ${PRIVATE_IPS[0]} | awk '{print $1}')
 
-# Start systemd networking
-systemctl enable systemd-networkd.service
-systemctl enable systemd-resolved.service
-
 rm /etc/resolv.conf
-ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
+apt-get purge -y resolvconf
 
-rm /etc/network/interfaces
+# Start systemd networking
+systemctl enable --now systemd-networkd.service
+systemctl enable --now systemd-resolved.service
 
 # Setup systemd DNS
 sed -i 's/#DNS=/DNS=129.187.5.1/;' /etc/systemd/resolved.conf
 
 systemctl disable networking.service
-apt-get purge -y resolvconf
-systemctl restart systemd-networkd.service
+
+ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
+
 systemctl restart systemd-resolved.service
 
 rm -f /etc/systemd/network/wired.network
