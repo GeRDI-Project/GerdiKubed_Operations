@@ -86,7 +86,7 @@ def setup_interface(container_id, cni_netns, cni_ifname,
         with ipdb.interfaces[veth_inside] as veth_inside_iface:
             # Move the inner veth inside the container namespace
             vlog.dbg("Adding veth inner interface to namespace for "
-                     "container %s" % container_id)
+                    "container %s" % container_id)
             veth_inside_iface.net_ns_fd = container_id
 
     except Exception as e:
@@ -99,9 +99,9 @@ def setup_interface(container_id, cni_netns, cni_ifname,
                                 mode='explicit')
         # Configure veth_inside: set name, mtu, mac address, ip, and bring up
         vlog.dbg("Configuring and bringing up veth inner interface %s. "
-                 "New name:'%s',MAC address:'%s', MTU:'%s', IP:%s" %
-                 (veth_inside, cni_ifname, mac_address,
-                 config.get_option('mtu'), ip_address))
+                "New name:'%s',MAC address:'%s', MTU:'%s', IP:%s" %
+                (veth_inside, cni_ifname, mac_address,
+                config.get_option('mtu'), ip_address))
         with ns_ipdb.interfaces[veth_inside] as veth_inside_iface:
             veth_inside_iface.ifname = cni_ifname
             veth_inside_iface.address = mac_address
@@ -111,7 +111,7 @@ def setup_interface(container_id, cni_netns, cni_ifname,
 
         # Set the gateway
         vlog.dbg("Setting gateway_ip %s for container:%s"
-                 % (gateway_ip, container_id))
+                % (gateway_ip, container_id))
         ns_ipdb.routes.add(dst='default', gateway=gateway_ip).commit()
 
         return veth_outside
@@ -124,7 +124,7 @@ def setup_interface(container_id, cni_netns, cni_ifname,
 
 def cni_add(cni_ifname, cni_netns, namespace, pod_name, container_id):
     k8s_api_server = ovs_vsctl("--if-exists", "get", "Open_vSwitch", ".",
-                               "external_ids:k8s-api-server").strip('"')
+                              "external_ids:k8s-api-server").strip('"')
     if not k8s_api_server:
         raise OVNCNIException(100, "failed to get K8S_API_SERVER")
     if not k8s_api_server.startswith("http"):
@@ -162,8 +162,8 @@ def cni_add(cni_ifname, cni_netns, namespace, pod_name, container_id):
         raise OVNCNIException(100, "failed in pod annotation key extract")
 
     veth_outside = setup_interface(container_id, cni_netns, cni_ifname,
-                                   mac_address, ip_address,
-                                   gateway_ip)
+                                  mac_address, ip_address,
+                                  gateway_ip)
 
     iface_id = "%s_%s" % (namespace, pod_name)
 
@@ -218,12 +218,12 @@ def main():
         raise OVNCNIException(100, 'required CNI variables missing', str(e))
 
     vlog.dbg("plugin invoked with "
-             "cni_command = %s "
-             "cni_container_id = %s "
-             "cni_ifname = %s "
-             "cni_netns = %s "
-             "cni_args = %s"
-             % (cni_command, container_id, cni_ifname, cni_netns,
+            "cni_command = %s "
+            "cni_container_id = %s "
+            "cni_ifname = %s "
+            "cni_netns = %s "
+            "cni_args = %s"
+            % (cni_command, container_id, cni_ifname, cni_netns,
                 cni_args))
 
     if cni_command == "ADD":
@@ -241,7 +241,7 @@ if __name__ == '__main__':
         sys.exit(1)
     except Exception as e:
         error = {'cniVersion': CNI_VERSION, 'code': 100,
-                 'message': str(e)}
+                'message': str(e)}
         vlog.err("Unexpected exception %s" % str(e))
         print(json.dumps(error))
         sys.exit(1)
