@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# 
+#
 # NOTE: This is a slighly different script that also makes sure networkd is setup
 # Get all attached ips
 # Make sure to only seperate by newline;
@@ -123,7 +123,7 @@ if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
         echo 'DNS=129.187.5.1'; \
         echo 'Address='$IP_INTERNAL'/'$CIDR; \
         echo 'Gateway='$CURRENT_GATEWAY; \
-	echo 'IPForward=kernel'; \
+        echo 'IPForward=kernel'; \
       } > /etc/systemd/network/$DEV_NAME.network
       echo "Writting "$DEV_NAME".network"
     fi

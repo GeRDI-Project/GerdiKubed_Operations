@@ -125,7 +125,7 @@ if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
         echo 'DNS=129.187.5.1'; \
         echo 'Address='$IP_INTERNAL'/'$CIDR; \
         echo 'Gateway='$CURRENT_GATEWAY; \
-	echo 'IPForward=kernel'; \
+        echo 'IPForward=kernel'; \
       } > /etc/systemd/network/$DEV_NAME.network
       echo "Writting "$DEV_NAME".network"
     fi
