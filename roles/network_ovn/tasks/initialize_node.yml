@@ -43,10 +43,11 @@
     mode: 0755
   notify:
     - start ovn-k8s-init
-  #when: thirdInterface == 0
+  when: ovnInterface.rc == 0
 
 - name: Register ovn-k8s-init to systemd and start it
   systemd:
     name: ovn-k8s-init.service
     enabled: yes
+    state: restarted
     daemon-reload: yes

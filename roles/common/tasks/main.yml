@@ -31,25 +31,6 @@
       - python-dnspython
       - python-openssl
 
-- name: Script to fix routing of internal interfaces
-  copy:
-    src: autoRepairRoutes.sh
-    dest: /root/autoRepairRoutes.sh
-
-- name: Fix routing of internal interfaces
-  shell: bash /root/autoRepairRoutes.sh {{ K8S_INTERNAL_ROUTING_TABLE }} {{ NFS_SERVER_DOMAIN }} && sleep 2 && shutdown -r now
-  async: 1
-  poll: 0
-  ignore_errors: true
-
-- name: Waiting for server to reboot
-  local_action: wait_for host={{ inventory_hostname }} port=22 state=started delay=8 timeout=300 connect_timeout=15
-
-- name: Set hostname to {{ inventory_hostname }}
-  hostname:
-    name: "{{ inventory_hostname }}"
-  when: SET_HOSTNAME
-
 - name: Create k8s directories
   file:
     path: "{{ item.path }}"
@@ -67,43 +48,38 @@
     src: printIface.sh
     dest: /root/printIface.sh
 
-- name: Retrieve information for internal interface
+- name: Retrieve information for OVN (2nd) interface
   shell: bash /root/printIface.sh 2
-  register: internalInterface
+  register: ovnInterface
+  ignore_errors: yes
 
-- name: Set facts for second interface
+- name: Get facts for OVN (2nd) interface
   set_fact:
     iface2:
+      name: "{{ ovnInterface.stdout.split(' ')[0] }}"
+      ipv4: "{{ ovnInterface.stdout.split(' ')[1] }}"
+      gw:   "{{ ovnInterface.stdout.split(' ')[2] }}"
+      nw:   "{{ ovnInterface.stdout.split(' ')[3] }}"
+      mask: "{{ ovnInterface.stdout.split(' ')[4] }}"
+  when: ovnInterface.rc == 0
+
+- name: Retrieve information for SSH (1st) interface
+  shell: bash /root/printIface.sh 1
+  register: internalInterface
+
+- name: Get facts for SSH (1st) interface
+  set_fact:
+    iface1:
       name: "{{ internalInterface.stdout.split(' ')[0] }}"
       ipv4: "{{ internalInterface.stdout.split(' ')[1] }}"
       gw:   "{{ internalInterface.stdout.split(' ')[2] }}"
       nw:   "{{ internalInterface.stdout.split(' ')[3] }}"
       mask: "{{ internalInterface.stdout.split(' ')[4] }}"
 
-- name: Retrieve information for third interface
-  shell: bash /root/printIface.sh 3
-  register: thirdInterface
-  ignore_errors: yes
-
-- name: Set facts for third interface
+- name: Set SSH (1st) interface / internalIP fact
   set_fact:
-    iface3:
-      name: "{{ thirdInterface.stdout.split(' ')[0] }}"
-      ipv4: "{{ thirdInterface.stdout.split(' ')[1] }}"
-      gw: "{{ thirdInterface.stdout.split(' ')[2] }}"
-      nw: "{{ thirdInterface.stdout.split(' ')[3] }}"
-      hw: "{{ thirdInterface.stdout.split(' ')[4] }}"
-  when: thirdInterface.rc == 0
-
-- name: Set fact for internal address (on first run)
-  set_fact:
-    internalIP: "{{ iface3.ipv4 }}"
-  when: thirdInterface.rc == 0
-
-- name: Set fact for internal address (on second+ run)
-  set_fact:
-    internalIP: "{{ iface2.ipv4 }}"
-  when: thirdInterface.rc != 0
+    internalIP: "{{ iface1.ipv4 }}"
+  when: internalInterface.rc == 0
 
 - name: Install server key and cert
   copy:
@@ -132,9 +108,6 @@
     name: vm.max_map_count
     value: 262144
     state: present
-
-- name: Add rule to use internal interface for nfs
-  shell: ip rule add to {{ lookup('dig', NFS_SERVER_DOMAIN, 'qtype=A') }} table {{ K8S_INTERNAL_ROUTING_TABLE }}
 
 - name: Mount NFS-Volume
   mount:

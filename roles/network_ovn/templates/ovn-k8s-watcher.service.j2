@@ -2,6 +2,7 @@
 Description=Open virtual net kubernetes watcher
 Documentation=https://github.com/openvswitch/ovn-kubernetes/README.md
 After=apiserver.service
+After=ovn-k8s-init.service
 
 [Service]
 ExecStart=/usr/local/bin/ovn-k8s-watcher \
@@ -10,6 +11,7 @@ ExecStart=/usr/local/bin/ovn-k8s-watcher \
   --log-file \
   -vfile:info \
   -vconsole:emer
+Restart=on-failure
 
 [Install]
 WantedBy=default.target

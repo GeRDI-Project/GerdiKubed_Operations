@@ -73,21 +73,6 @@ if [[ ${#PRIVATE_IPS[@]} -eq 1 && ${#PUBLIC_IPS[@]} -eq 1 ]] || [[ ${#PRIVATE_IP
   exit 0
 fi
 
-# All public IPs should use DHCP
-# If there are no public IPs this is obviously skipped
-for IP in "${PUBLIC_IPS[@]}"; do
-  DEV_NAME=$(echo $IP | awk '{print $4}')
-  # Setup public interface
-  { \
-    echo '[Match]'; \
-    echo 'Name='$DEV_NAME; \
-    echo ''; \
-    echo '[Network]'; \
-    echo 'DHCP=yes'; \
-  } > /etc/systemd/network/$DEV_NAME.network
-  echo "Writting "$DEV_NAME".network"
-done
-
 # Taken from https://gist.github.com/kwilczynski/5d37e1cced7e76c7c9ccfdf875ba6c5b
 # arg $1 = IP
 cidr_to_netmask() {
@@ -107,12 +92,12 @@ ip_to_netaddr() {
 if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
   COUNTER=0
   for IP in "${PRIVATE_IPS[@]}" ; do
-    # Two or more private interfaces; First is gonna be OVN; Second SSH
+    # Two or more private interfaces; First is gonna be SSH; Second OVN
     PUBIP_COUNT=${#PUBLIC_IPS[@]}
     DEV_NAME=$(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $4}')
     IP_INTERNAL=$(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $1}')
     CIDR=$(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $2}')
-    if [ $COUNTER -eq 0 ]; then
+    if [ $COUNTER -eq 1 ]; then
       # Setup OVN interface
       { \
         echo '[Match]'; \
@@ -125,7 +110,7 @@ if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
         echo 'Address='$IP_INTERNAL'/'$CIDR; \
       } > /etc/systemd/network/$DEV_NAME.network
       echo "Writting "$DEV_NAME".network"
-    elif [ $COUNTER -eq 1 ]; then
+    elif [ $COUNTER -eq 0 ]; then
       # Internal interface
       SUBNET_MASK=$(cidr_to_netmask $(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $2;}'))
       NETWORK_ADDRESS=$(ip_to_netaddr $(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $1;}') $(echo $SUBNET_MASK))
@@ -137,18 +122,10 @@ if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
         echo ''; \
         echo '[Network]'; \
         echo 'DHCP=no'; \
-        echo ''; \
-        echo '[Address]';
+        echo 'DNS=129.187.5.1'; \
         echo 'Address='$IP_INTERNAL'/'$CIDR; \
-        echo ''; \
-        echo '[Route]'; \
         echo 'Gateway='$CURRENT_GATEWAY; \
-        echo 'Table='$ROUTING_TABLE_INT; \
-        echo ''; \
-        echo '[Route]'; \
-        echo 'Gateway='$CURRENT_GATEWAY'/'$CIDR; \
-        echo 'Destination='$NETWORK_ADDRESS'/'$CIDR; \
-        echo 'Table='$ROUTING_TABLE_INT; \
+        echo 'IPForward=kernel'; \
       } > /etc/systemd/network/$DEV_NAME.network
       echo "Writting "$DEV_NAME".network"
     fi
@@ -159,47 +136,17 @@ else
   exit 1;
 fi
 
-# We always use the first private ip for OVN and the second for internal
-DEV_OVN=$(echo ${PRIVATE_IPS[0]} | awk '{print $4}')
-DEV_INT=$(echo ${PRIVATE_IPS[1]} | awk '{print $4}')
+IP_INT=$(echo ${PRIVATE_IPS[0]} | awk '{print $1}')
 
-IP_INT=$(echo ${PRIVATE_IPS[1]} | awk '{print $1}')
-
-CIDR=$(echo ${PRIVATE_IPS[1]} | awk '{print $2}')
-
-# Write repairRoutes.sh
-# Taken from Gerdi GIT (gerdikubed/util/sed.src/repairRoutes.sh)
-{ \
-  echo '#!/bin/bash'; \
-  echo "ip route | egrep '"$DEV_INT"|"$DEV_OVN"' | \\" ; \
-  echo 'while read line'; \
-  echo 'do'; \
-  echo '  ip route delete $line'; \
-  echo 'done'; \
-  echo ''; \
-  echo 'ip rule add from '$IP_INT' lookup '$ROUTING_TABLE_INT; \
-  echo 'ip rule add to '$NETWORK_ADDRESS'/'$CIDR' lookup '$ROUTING_TABLE_INT; \
-  echo 'ip rule add to '$NFS_SERVER_DOMAIN' table '$ROUTING_TABLE_INT; \
-} > /root/repairRoutes.sh
-
-chmod +x /root/repairRoutes.sh
-
-{ \
-  echo '[Unit]'; \
-  echo 'Description=Repair routes on multi NIC setup'; \
-  echo 'After=network.target'; \
-  echo ''; \
-  echo '[Service]'; \
-  echo 'ExecStart=/root/repairRoutes.sh'; \
-  echo 'Type=oneshot'; \
-  echo ''; \
-  echo '[Install]'; \
-  echo 'WantedBy=multi-user.target'; \
-} > /etc/systemd/system/repairRoutes.service
+# Setup fallback DNS so Docker doesn't loose it's mind
+sed -i 's/#DNS=/DNS=129.187.5.1/;' /etc/systemd/resolved.conf
 
 rm -f /etc/systemd/network/wired.network
-systemctl enable repairRoutes.service
+systemctl restart systemd-networkd.service
+systemctl restart systemd-resolved.service
 systemctl daemon-reload
 
 sed -i 's/#ListenAddress 0.0.0.0/ListenAddress '$IP_INT'/
   s/#AddressFamily.*/AddressFamily inet/;' /etc/ssh/sshd_config
+
+service sshd restart

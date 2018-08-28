@@ -1,4 +1,4 @@
-# Copyright 2018 Tobias Weber weber@lrz.de
+# Copyright 2018 Walentin Lamonos lamonos@lrz.de
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,31 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Setup VMWare nodes
-  hosts: kubernetes-masters:&vmware-nodes
-  remote_user: root
-  roles:
-    - vmware-node
+- name: Script to set up networkd interfaces
+  copy:
+    src: setupNetworkd.sh
+    dest: /root/setupNetworkd.sh
 
-- name: Setup OpenNebula nodes
-  hosts: kubernetes-masters:!vmware-nodes
-  roles:
-    - nebula-node
+- name: Set up networkd interfaces
+  shell: bash /root/setupNetworkd.sh
 
-- name: Initialize kubernetes nodes
-  hosts: kubernetes-masters
-  remote_user: root
-  roles:
-    - common
-    - ufw
-    - etcd
-    - k8s-binaries
-    - docker
-    - cni
-    - kubelet
-    - kube-proxy
-    - apiserver
-    - scheduler
-    - controller-manager
-    - network_ovn
-    - k8s-addons
+- name: Set hostname to {{ inventory_hostname }}
+  hostname:
+    name: "{{ inventory_hostname }}"

@@ -26,6 +26,7 @@ CONTROL_BASE_DIR:   "<some_dir>"
 ################################################################################
 K8S_MASTER_DOMAIN: "{{ K8S_CLUSTER_NAME + '-mstr-0.' + K8S_DOMAIN_NAMESPACE }}"
 K8S_MASTER_IP: "{{ lookup('dig', K8S_MASTER_DOMAIN) }}"
+K8S_APISERVER: "https://{{K8S_MASTER_IP}}"
 # Base dir on all machines (except CONTROL_MACHINE)
 K8S_BASE_DIR: /opt/k8s
 # Directories in which the k8s binaries reside
