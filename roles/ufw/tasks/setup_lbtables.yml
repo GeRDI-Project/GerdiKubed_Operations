@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#       http://www.apache.org/licenses/LICENSE-2.0
+#      http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,18 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Script to setup NICs of VMware machine
-  copy:
-    src: setupNIC.sh
-    dest: /root/setupNIC.sh
 
-- name: Setup NICs of VMware machine
-  shell: bash /root/setupNIC.sh {{ eth0ip }} {{ eth1ip }} {{ eth2ip }}
+# Allow Apache access
+- name: Allow http port
+  ufw:
+    rule: allow
+    port: 80
+    proto: tcp
 
-- name: Script that sets up networkd
-  copy:
-    src: setupNetworkd.sh
-    dest: /root/setupNetworkd.sh
-
-- name: Setup networkd
-  shell: bash /root/setupNetworkd.sh {{ K8S_INTERNAL_ROUTING_TABLE }} {{ lookup('dig', NFS_SERVER_DOMAIN, 'qtype=A') }}
+- name: Allow https port
+  ufw:
+    rule: allow
+    port: 443
+    proto: tcp
