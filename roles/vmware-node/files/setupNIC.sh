@@ -87,7 +87,7 @@ while read -r NIC; do
         echo 'iface eth'$COUNTER' inet static'; \
         echo '  address '${!TEMP}; \
         echo '  netmask 23'; \
-     } >> /etc/network/interfaces
+    } >> /etc/network/interfaces
   fi
   COUNTER=$((COUNTER+1))
   TEMP=$((TEMP+1))

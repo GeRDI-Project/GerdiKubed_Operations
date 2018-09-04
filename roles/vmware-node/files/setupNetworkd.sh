@@ -159,7 +159,7 @@ if [ ${#PUBLIC_IPS[@]} -eq 1 ]; then
   systemctl daemon-reload
 elif [ ${#PUBLIC_IPS[@]} -gt 1 ]; then
   >&2 echo "Too many public interfaces. I have no idea what to do!"
-  exit 1; 
+  exit 1;
 fi
 
 if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
