@@ -135,7 +135,7 @@ if [ ${#PUBLIC_IPS[@]} -eq 1 ]; then
     echo 'ip rule add from '$IP_INT' lookup '$ROUTING_TABLE_INT; \
     echo 'ip rule add to '$NETWORK_ADDRESS'/'$CIDR' lookup '$ROUTING_TABLE_INT; \
     echo 'ip rule add to '$NFS_SERVER_DOMAIN' table '$ROUTING_TABLE_INT; \
-    echo 'ip rule add from all to 129.187.0.0/16 lookup '$ROUTING_TABLE_INT; \
+    echo 'ip rule add from all to 129.187.48.0/24 lookup '$ROUTING_TABLE_INT; \
     echo 'ip rule add from all to 10.156.10.20 lookup '$ROUTING_TABLE_INT; \
     echo 'ip rule add from all to 10.156.10.40 lookup '$ROUTING_TABLE_INT; \
   } > /root/repairRoutes.sh
