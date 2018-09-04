@@ -41,6 +41,7 @@
     src:  ovn-k8s-init.sh.j2
     dest: "{{ OVN_K8S_DIR }}/ovn-k8s-init.sh"
     mode: 0755
+    force: no
   notify:
     - start ovn-k8s-init
   when: ovnInterface.rc == 0
