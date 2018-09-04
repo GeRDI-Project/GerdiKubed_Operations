@@ -26,4 +26,4 @@
     dest: /root/setupNetworkd.sh
 
 - name: Setup networkd
-  shell: bash /root/setupNetworkd.sh
+  shell: bash /root/setupNetworkd.sh {{ K8S_INTERNAL_ROUTING_TABLE }} {{ lookup('dig', NFS_SERVER_DOMAIN, 'qtype=A') }}

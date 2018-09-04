@@ -32,6 +32,9 @@ awk '{print $2" "$4" "$7$8}' | sed 's/\// /g' | \
 sed 's/dynamic//g')
 unset $IFS
 
+ROUTING_TABLE_INT=$1
+NFS_SERVER_DOMAIN=$2
+
 PUBLIC_IPS=()
 PRIVATE_IPS=()
 GATEWAYS=()
@@ -65,6 +68,11 @@ if [ ${#PRIVATE_IPS[@]} -eq 0 ]; then
   exit 1
 fi
 
+EXIST=`ip rule show $NFS_SERVER_DOMAIN | wc -l`
+if [ ${#PUBLIC_IPS[@]} -eq 1 ] && [ $EXIST -eq 0 ]; then
+  ip rule add to $NFS_SERVER_DOMAIN table $ROUTING_TABLE_INT
+fi
+
 # Cases: 1 Private & 1 Public OR 1 Private & 0 Public -> Assume we are already set up -> Exit script
 if [[ ${#PRIVATE_IPS[@]} -eq 1 && ${#PUBLIC_IPS[@]} -eq 1 ]] || [[ ${#PRIVATE_IPS[@]} -eq 1 && ${#PUBLIC_IPS[@]} -eq 0 ]]; then
   echo "Nothing to do"
@@ -87,33 +95,107 @@ ip_to_netaddr() {
   unset $IFS
 }
 
+if [ ${#PUBLIC_IPS[@]} -eq 1 ]; then
+  PRIVATEIP_COUNT=${#PRIVATE_IPS[@]}
+  DEV_NAME=$(echo ${PUBLIC_IPS[0]} | awk '{print $4}')
+  IP_INTERNAL=$(echo ${PUBLIC_IPS[0]} | awk '{print $1}')
+  CIDR=$(echo ${PUBLIC_IPS[0]} | awk '{print $2}')
+  CURRENT_GATEWAY=$(echo "$GATEWAYS" | awk -v pos=$(($PRIVATEIP_COUNT+1)) '{print $pos}')
+  SUBNET_MASK=$(cidr_to_netmask $(echo ${PUBLIC_IPS[0]} | awk '{print $2;}'))
+  NETWORK_ADDRESS=$(ip_to_netaddr $(echo ${PUBLIC_IPS[0]} | awk '{print $1;}') $(echo $SUBNET_MASK))
+  { \
+    echo '[Match]'; \
+    echo 'Name='$DEV_NAME; \
+    echo ''; \
+    echo '[Network]'; \
+    echo 'DHCP=no'; \
+    echo 'DNS=129.187.5.1'; \
+    echo 'Address='$IP_INTERNAL'/'$CIDR; \
+    echo 'Gateway='$CURRENT_GATEWAY; \
+    echo 'IPForward=kernel'; \
+  } > /etc/systemd/network/1-$DEV_NAME.network
+  echo "Writting 1-"$DEV_NAME".network"
+  # Setup repairRoutes.sh
+  DEV_OVN=$(echo ${PRIVATE_IPS[1]} | awk '{print $4}')
+  DEV_INT=$(echo ${PRIVATE_IPS[0]} | awk '{print $4}')
+  IP_INT=$(echo ${PRIVATE_IPS[0]} | awk '{print $1}')
+  CIDR=$(echo ${PRIVATE_IPS[0]} | awk '{print $2}')
+  SUBNET_MASK=$(cidr_to_netmask $(echo ${PRIVATE_IPS[0]} | awk '{print $2;}'))
+  NETWORK_ADDRESS=$(ip_to_netaddr $(echo ${PRIVATE_IPS[0]} | awk '{print $1;}') $(echo $SUBNET_MASK))
+  # Write repairRoutes.sh
+  # Taken from Gerdi GIT (gerdikubed/util/sed.src/repairRoutes.sh)
+  { \
+    echo '#!/bin/bash'; \
+    echo "ip route | egrep '"$DEV_INT"|"$DEV_OVN"' | \\" ; \
+    echo 'while read line'; \
+    echo 'do'; \
+    echo '  ip route delete $line'; \
+    echo 'done'; \
+    echo ''; \
+    echo 'ip rule add from '$IP_INT' lookup '$ROUTING_TABLE_INT; \
+    echo 'ip rule add to '$NETWORK_ADDRESS'/'$CIDR' lookup '$ROUTING_TABLE_INT; \
+    echo 'ip rule add to '$NFS_SERVER_DOMAIN' table '$ROUTING_TABLE_INT; \
+    echo 'ip rule add from all to 129.187.0.0/16 lookup '$ROUTING_TABLE_INT; \
+    echo 'ip rule add from all to 10.156.10.20 lookup '$ROUTING_TABLE_INT; \
+    echo 'ip rule add from all to 10.156.10.40 lookup '$ROUTING_TABLE_INT; \
+  } > /root/repairRoutes.sh
+
+  chmod +x /root/repairRoutes.sh
+
+  { \
+    echo '[Unit]'; \
+    echo 'Description=Repair routes on multi NIC setup'; \
+    echo 'After=network.target'; \
+    echo ''; \
+    echo '[Service]'; \
+    echo 'ExecStart=/root/repairRoutes.sh'; \
+    echo 'Type=oneshot'; \
+    echo ''; \
+    echo '[Install]'; \
+    echo 'WantedBy=multi-user.target'; \
+  } > /etc/systemd/system/repairRoutes.service
+
+  systemctl enable --now repairRoutes.service > /dev/null 2>&1
+  systemctl daemon-reload
+elif [ ${#PUBLIC_IPS[@]} -gt 1 ]; then
+  >&2 echo "Too many public interfaces. I have no idea what to do!"
+  exit 1; 
+fi
+
 if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
   COUNTER=0
   for IP in "${PRIVATE_IPS[@]}" ; do
-    # Two or more private interfaces; First is gonna be OVN; Second SSH
-    PUBIP_COUNT=${#PUBLIC_IPS[@]}
+    # Two private interfaces; First is gonna be SSH; Second OVN
     DEV_NAME=$(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $4}')
     IP_INTERNAL=$(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $1}')
     CIDR=$(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $2}')
-    if [ $COUNTER -eq 1 ]; then
-      # Setup OVN interface
+    NETWORK_ADDRESS=$(ip_to_netaddr $(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $1;}') $(echo $SUBNET_MASK))
+    CURRENT_GATEWAY=$(echo "$GATEWAYS" | awk -v pos="$(($COUNTER+1))" '{print $pos}')
+    if [ $COUNTER -eq 0 ]; then
+      # Setup SSH interface
       { \
         echo '[Match]'; \
         echo 'Name='$DEV_NAME; \
         echo ''; \
         echo '[Network]'; \
         echo 'DHCP=no'; \
-        echo ''; \
-        echo '[Address]'; \
+        echo 'DNS=129.187.5.1'; \
         echo 'Address='$IP_INTERNAL'/'$CIDR; \
+        echo 'IPForward=kernel'; \
+        echo ''; \
+        echo '[Route]'; \
+        echo 'Gateway='$CURRENT_GATEWAY; \
+        echo 'Table='$ROUTING_TABLE_INT; \
+        echo ''; \
+        echo '[Route]'; \
+        echo 'Gateway='$CURRENT_GATEWAY; \
+        echo 'Destination='$NETWORK_ADDRESS'/'$CIDR; \
+        echo 'Table='$ROUTING_TABLE_INT; \
       } > /etc/systemd/network/$DEV_NAME.network
       echo "Writting "$DEV_NAME".network"
-    elif [ $COUNTER -eq 0 ]; then
-      # Internal interface
+    elif [ $COUNTER -eq 1 ]; then
       SUBNET_MASK=$(cidr_to_netmask $(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $2;}'))
-      NETWORK_ADDRESS=$(ip_to_netaddr $(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $1;}') $(echo $SUBNET_MASK))
-      CURRENT_GATEWAY=$(echo "$GATEWAYS" | awk -v pos="$(($PUBIP_COUNT+2))" '{print $pos}')
-      # Setup private interface
+      # Setup OVN interface
       { \
         echo '[Match]'; \
         echo 'Name='$DEV_NAME; \

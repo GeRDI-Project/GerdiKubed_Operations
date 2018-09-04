@@ -65,8 +65,9 @@ fi
 COUNTER=0
 TEMP=1
 while read -r NIC; do
+  # Setup private interfaces
   # Skip eth0; This is setup by default on VMware machines
-  if [ "$COUNTER" -gt 0 ]; then
+  if [ "$COUNTER" -gt 0 ] && [ "$COUNTER" -ne 2 ]; then
     # grep || makes sure that the interface is not already in
     grep -q -F 'auto eth'$COUNTER /etc/network/interfaces ||
     { \
@@ -76,6 +77,17 @@ while read -r NIC; do
         echo '	address '${!TEMP}; \
         echo '	netmask 22'; \
     } >> /etc/network/interfaces
+  elif [ "$COUNTER" -eq 2 ]; then
+    # Setup public interface
+    # grep || makes sure that the interface is not already in
+    grep -q -F 'auto eth'$COUNTER /etc/network/interfaces ||
+    { \
+        printf '\n'; \
+        echo 'auto eth'$COUNTER; \
+        echo 'iface eth'$COUNTER' inet static'; \
+        echo '  address '${!TEMP}; \
+        echo '  netmask 23'; \
+     } >> /etc/network/interfaces
   fi
   COUNTER=$((COUNTER+1))
   TEMP=$((TEMP+1))
