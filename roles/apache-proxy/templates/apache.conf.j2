@@ -22,7 +22,7 @@
 
 <VirtualHost *:443>
     ServerName      www.{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}
-    ServerAlias     nd-{{ hostname_suffix }}.ext.{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}
+    ServerAlias     {{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}
     ServerAlias     eree.showcase.gerdi.org
     ServerAlias     tumor.showcase.gerdi.org
     ServerAdmin     weber@lrz.de
