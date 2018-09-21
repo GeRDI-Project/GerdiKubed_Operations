@@ -159,6 +159,8 @@
     ProxyPassReverse  /harvest/soep       http://10.222.21.18:8080/soep/harvest
     ProxyPass         /harvest/zenodo     http://10.222.21.19:8080/oaipmh/harvest
     ProxyPassReverse  /harvest/zenodo     http://10.222.21.19:8080/oaipmh/harvest
+    ProxyPass         /harvest/opendatalmu  http://10.222.21.20:8080/oaipmh/harvest
+    ProxyPassReverse  /harvest/opendatalmu  http://10.222.21.20:8080/oaipmh/harvest
     ProxyPass         /harvest/hccenter   http://10.222.21.22
     ProxyPassReverse  /harvest/hccenter   http://10.222.21.22
     ProxyPass         /api/v1/hccenter    http://10.222.21.22/v1
