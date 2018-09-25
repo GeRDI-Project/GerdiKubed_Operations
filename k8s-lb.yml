@@ -12,27 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Setup VMWare nodes
-  hosts: vmware-nodes:&loadbalancer-nodes
-  remote_user: root
-  roles:
-    - vmware-node
-
-- name: Setup OpenNebula nodes
-  hosts: loadbalancer-nodes:!vmware-nodes
-  roles:
-    - nebula-node
-
-- name: Initialize loadbalancer kubernetes nodes
+- name: Initialize loadbalancer nodes
   hosts: loadbalancer-nodes
   remote_user: root
   roles:
     - common
     - ufw
-    - docker
-    - cni
-    - k8s-binaries
-    - kubelet
-    - kube-proxy
-    - network_ovn
     - apache-proxy

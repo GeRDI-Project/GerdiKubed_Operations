@@ -5,13 +5,12 @@
 # mstr-0.staging.gerdi.org ansible_user=root eth0ip=IP1 eth1ip=IP2 eth2ip=IP3 (optional)
 
 [loadbalancer-nodes]
-# Do not add lb nodes to kubernetes-nodes
-# add all lb nodes, pattern:
-# HOSTNAME          User              Variable                     Hostname (optional)
-# lb1.example.com ansible_user=root hostname_suffix=<previous++> hostname_overwrite=
+# Add all lb nodes, pattern:
+# HOSTNAME          User
+# lb1.example.com ansible_user=root
 
 [kubernetes-nodes]
-# add all nodes, pattern:
+# add all nodes (including lb if required), pattern:
 # HOSTNAME          User              Variable			   Hostname (optional)
 # host1.example.com ansible_user=root hostname_suffix=<previous++> hostname_overwrite=
 # Do not forget to increase hostname_suffix with every node instance
