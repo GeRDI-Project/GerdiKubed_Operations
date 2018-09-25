@@ -1,14 +1,12 @@
 ########################################
 # Start: Change the values
 ########################################
-K8S_CLUSTER_NAME: "nibi" # this MUST NOT include UPPERCASE chars!
-# K8S_CLUSTER_NAME is deprecated! Do not use it anymore! Use instead:
-K8S_DEPLOYMENT_CONTEXT: "test" # will replace K8S_CLUSTER_NAME sometimes
+K8S_DEPLOYMENT_CONTEXT: "test"
 K8S_VERSION: "vx.y.z"
 K8S_GLOBAL_LOG_LEVEL: "v=2"
 # Certificates will be created with both DNS-names and IP-Adresses in the alternative names.
 # DNS-names in certs will comply to the following pattern:
-# {{ K8S_CLUSTER_NAME }}-[mstr|node]-{{ hostname_suffix }}.{{ K8S_DOMAIN_NAMESPACE }}
+# {{ K8S_DEPLOYMENT_CONTEXT }}-[mstr|node]-{{ hostname_suffix }}.{{ K8S_DOMAIN_NAMESPACE }}
 K8S_DOMAIN_NAMESPACE: "example.com"
 # You will find the cert infrastructure (e.g. ca-key and cert and all other stuff) here:
 # Do not use ~ or relative paths, please spell out absolute path
@@ -24,9 +22,8 @@ CONTROL_BASE_DIR:   "<some_dir>"
 ################################################################################
 # Global configuration
 ################################################################################
-K8S_MASTER_DOMAIN: "{{ K8S_CLUSTER_NAME + '-mstr-0.' + K8S_DOMAIN_NAMESPACE }}"
+K8S_MASTER_DOMAIN: "{{ K8S_DEPLOYMENT_CONTEXT + '-mstr-0.' + K8S_DOMAIN_NAMESPACE }}"
 K8S_MASTER_IP: "{{ lookup('dig', K8S_MASTER_DOMAIN) }}"
-K8S_APISERVER: "https://{{K8S_MASTER_IP}}"
 # Base dir on all machines (except CONTROL_MACHINE)
 K8S_BASE_DIR: /opt/k8s
 # Directories in which the k8s binaries reside
