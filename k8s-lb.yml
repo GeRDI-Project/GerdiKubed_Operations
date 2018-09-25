@@ -13,18 +13,18 @@
 # limitations under the License.
 ---
 - name: Setup VMWare nodes
-  hosts: vmware-nodes:!kubernetes-masters
+  hosts: vmware-nodes:&loadbalancer-nodes
   remote_user: root
   roles:
     - vmware-node
 
 - name: Setup OpenNebula nodes
-  hosts: kubernetes-nodes:!vmware-nodes
+  hosts: loadbalancer-nodes:!vmware-nodes
   roles:
     - nebula-node
 
-- name: Initialize kubernetes nodes
-  hosts: kubernetes-nodes
+- name: Initialize loadbalancer kubernetes nodes
+  hosts: loadbalancer-nodes
   remote_user: root
   roles:
     - common
