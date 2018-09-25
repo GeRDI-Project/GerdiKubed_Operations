@@ -28,7 +28,7 @@
 
 - name: Setup lb iptables
   import_tasks: setup_lbtables.yml
-  when: pubInterface.rc == 0
+  when: inventory_hostname in groups['loadbalancer-nodes']
 
 # VMware nodes use gateways, so do not require this step
 - name: Allow & Limit SSH logins from everywhere
