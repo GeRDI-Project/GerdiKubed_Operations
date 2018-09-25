@@ -26,6 +26,10 @@
   import_tasks: setup_nodetables.yml
   when: inventory_hostname in groups['kubernetes-nodes']
 
+- name: Setup lb iptables
+  import_tasks: setup_lbtables.yml
+  when: pubInterface.rc == 0
+
 # VMware nodes use gateways, so do not require this step
 - name: Allow & Limit SSH logins from everywhere
   ufw:
@@ -43,13 +47,6 @@
 - name: Enable logging
   ufw:
     logging: on
-
-# TODO Find either a way to replace ufw or to use ipv6 as well
-- name: Disable ipv6 in ufw
-  lineinfile:
-    path: /etc/default/ufw
-    regexp: '^IPV6=yes'
-    line: 'IPV6=no'
 
 # Reload for changes to take effect
 - name: Reload ufw

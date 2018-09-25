@@ -30,6 +30,7 @@
       - python-dbus
       - python-dnspython
       - python-openssl
+      - unzip
 
 - name: Create k8s directories
   file:
@@ -47,6 +48,11 @@
   copy:
     src: printIface.sh
     dest: /root/printIface.sh
+
+- name: Retrieve information for Public (3rd) interface
+  shell: bash /root/printIface.sh 3
+  register: pubInterface
+  ignore_errors: yes
 
 - name: Retrieve information for OVN (2nd) interface
   shell: bash /root/printIface.sh 2
@@ -116,3 +122,15 @@
     fstype: nfs
     opts:   tcp,nolock,rsize=65536,wsize=65536,timeo=600,intr
     state:  mounted
+
+- name: Create /local/nfs
+  file:
+    path: /local
+    state: directory
+    mode: 0775
+
+- name: Create symlink from /mnt/nfs/{{ K8S_DEPLOYMENT_CONTEXT}} to /local/nfs
+  file:
+    src: /mnt/nfs/{{ K8S_DEPLOYMENT_CONTEXT}}
+    dest: /local/nfs
+    state: link
