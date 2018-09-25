@@ -14,8 +14,4 @@
 ---
 - name: Cordon node, if master
   shell: bash kubectl cordon {{ inventory_hostname }}
-  when: inventory_hostname in groups['kubernetes-masters']
-
-- name: Cordon node, if loadbalancer
-  shell: bash kubectl cordon {{ inventory_hostname }}
-  when: inventory_hostname in groups['loadbalancer-nodes']
+  when: inventory_hostname in groups['kubernetes-masters'] + groups['loadbalancer-nodes']
