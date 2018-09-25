@@ -49,11 +49,6 @@
     src: printIface.sh
     dest: /root/printIface.sh
 
-- name: Retrieve information for Public (3rd) interface
-  shell: bash /root/printIface.sh 3
-  register: pubInterface
-  ignore_errors: yes
-
 - name: Retrieve information for OVN (2nd) interface
   shell: bash /root/printIface.sh 2
   register: ovnInterface
