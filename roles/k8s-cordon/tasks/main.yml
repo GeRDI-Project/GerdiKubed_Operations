@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Cordon node, if master
-  shell: bash kubectl cordon {{ inventory_hostname }}
+- name: Cordon node, if master or loadbalancer
+  shell: kubectl cordon {{ inventory_hostname }}
   when: inventory_hostname in groups['kubernetes-masters'] + groups['loadbalancer-nodes']
+  environment:
+    KUBECONFIG: '{{ K8S_KUBECONFIG }}'
