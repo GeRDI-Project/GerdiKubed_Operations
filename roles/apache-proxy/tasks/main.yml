@@ -95,7 +95,18 @@
 - name: Install cert and key for kubectl client auth
   assemble:
     remote_src: yes
-    backup: yes
     regexp: "admin.*"
     src: '/opt/k8s/kubectlCredentials'
     dest: '/opt/k8s/certs/admin.crtAndKey.pem'
+
+- name: Prepare the crt and key file (1)
+  lineinfile:
+    path: '/opt/k8s/certs/admin.crtAndKey.pem'
+    state: absent
+    regexp: '^\s+|^Certificate:'
+
+- name: Prepare the crt and key file (2)
+  replace:
+    path: '/opt/k8s/certs/admin.crtAndKey.pem'
+    regexp: '(PRIVATE KEY-----)$'
+    replace: 'RSA \1'
