@@ -77,3 +77,36 @@
     dest: "/etc/shibboleth/shibboleth2.xml"
   notify:
     - restart shibd
+
+- name: Create directory for kubectl client auth cert and key
+  file:
+    path: /opt/k8s/kubectlCredentials
+    state: directory
+
+- name: Prepare directory for kubectl client auth cert and key
+  file:
+    src: "/opt/k8s/{{item.src}}"
+    dest: "/opt/k8s/kubectlCredentials/{{item.dest}}"
+    state: link
+  with_items:
+    - { src:  'certs/admin.crt.pem', dest: 'admin.crt.pem' }
+    - { src:  'keys/admin.key', dest: 'admin.key' }
+
+- name: Install cert and key for kubectl client auth
+  assemble:
+    remote_src: yes
+    regexp: "admin.*"
+    src: '/opt/k8s/kubectlCredentials'
+    dest: '/opt/k8s/certs/admin.crtAndKey.pem'
+
+- name: Prepare the crt and key file (1)
+  lineinfile:
+    path: '/opt/k8s/certs/admin.crtAndKey.pem'
+    state: absent
+    regexp: '^\s+|^Certificate:'
+
+- name: Prepare the crt and key file (2)
+  replace:
+    path: '/opt/k8s/certs/admin.crtAndKey.pem'
+    regexp: '(PRIVATE KEY-----)$'
+    replace: 'RSA \1'
