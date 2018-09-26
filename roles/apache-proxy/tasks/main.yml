@@ -85,14 +85,12 @@
 
 - name: Prepare directory for kubectl client auth cert and key
   file:
-    src: "{item.src}"
-    dest: "{item.dest}"
+    src: "/opt/k8s/{{item.src}}"
+    dest: "/opt/k8s/kubectlCredentials/{{item.dest}}"
     state: link
   with_items:
-    - { src:  '/opt/k8s/certs/admin.crt.pem',
-        dest: '/opt/k8s/kubectlCredentials/admin.crt.pem' }
-    - { src:  '/opt/k8s/keys/admin.key',
-        dest: '/opt/k8s/kubectlCredentials/admin.key' }
+    - { src:  'certs/admin.crt.pem', dest: 'admin.crt.pem' }
+    - { src:  'keys/admin.key', dest: 'admin.key' }
 
 - name: Install cert and key for kubectl client auth
   assemble:
