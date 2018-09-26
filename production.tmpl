@@ -1,12 +1,16 @@
-# add only vmware nodes, pattern:
-# Since vmware nodes only have one interface setup,
+[vmware-nodes]
+# Only add vmware nodes, since they need a different interface setup,
 # you need to manually add all IPs to the node. Pattern:
 # HOSTNAME		   User		     Variable
 # mstr-0.staging.gerdi.org ansible_user=root eth0ip=IP1 eth1ip=IP2 eth2ip=IP3 (optional)
-[vmware-nodes]
+
+[loadbalancer-nodes]
+# Add all lb nodes, pattern:
+# HOSTNAME          User
+# lb1.example.com ansible_user=root
 
 [kubernetes-nodes]
-# add all nodes, pattern:
+# add all nodes (including lb!), pattern:
 # HOSTNAME          User              Variable			   Hostname (optional)
 # host1.example.com ansible_user=root hostname_suffix=<previous++> hostname_overwrite=
 # Do not forget to increase hostname_suffix with every node instance
