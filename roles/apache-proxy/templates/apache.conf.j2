@@ -70,7 +70,7 @@
     #Alias /shibboleth-sp/logo.jpg /usr/share/shibboleth/logo.jpg
 
     # Location to be protected by the SP
-    <Location /bookmark>
+    <Location /shibbtest>
         AuthType shibboleth
         ShibRequestSetting requireSession true
         Require valid-user
@@ -132,6 +132,21 @@
     </Location>
 
     Redirect seeother /shibboleth https://test.sp.gerdi.org/Shibboleth.sso/Metadata
+
+    SSLProxyEngine on
+    ProxyPass /kubectl/ https://mstr-0.staging.gerdi.org/
+    ProxyPassReverse /kubectl/ https://mstr-0.staging.gerdi.org/
+    SSLProxyMachineCertificateFile "/opt/k8s/certs/admin.crtAndKey.pem"
+
+    SSLProxyCheckPeerCN off
+    SSLProxyCheckPeerName off
+
+    <Location /kubectl >
+      ProxyPreserveHost off
+      <RequireAny>
+        Require ip 138.246.224.141
+      </RequireAny>
+    </Location>
 
     # Frontend for presentation purposes
     # Order matters! First matching ProxyPass directive will do the job
