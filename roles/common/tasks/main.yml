@@ -129,3 +129,4 @@
     src: /mnt/nfs/{{ K8S_DEPLOYMENT_CONTEXT}}
     dest: /local/nfs
     state: link
+  ignore_errors: yes
