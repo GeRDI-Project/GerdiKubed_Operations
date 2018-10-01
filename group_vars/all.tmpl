@@ -73,6 +73,8 @@ CNI_VERSION: v0.4.0
 CNI_DOWNLOAD_URL: "https://github.com/containernetworking/cni/releases/download/{{ CNI_VERSION }}/cni-{{ CNI_VERSION }}.tgz"
 CNI_DIR: "{{ K8S_BASE_DIR }}/cni-{{ CNI_VERSION }}"
 CNI_CONF_DIR: /etc/cni/net.d
+CNI_SUBNET_IP_PRE:     "10.221"
+CNI_SUBNET:            "{{ CNI_SUBNET_IP_PRE }}.1.0/24"
 
 ################################################################################
 # Configuration for the following roles:
