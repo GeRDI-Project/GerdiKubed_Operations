@@ -29,6 +29,9 @@ ansible-playbook -i production k8s-master.yml
 
 # setup nodes
 ansible-playbook -i production k8s-node.yml
+
+# setup loadbalancer (requires valid certificates for k8s domain namespace)
+ansible-playbook -i production k8s-lb.yml
 ```
 
 # Requirements
@@ -38,7 +41,8 @@ ansible-playbook -i production k8s-node.yml
 * Pub key in .ssh/authorized\_keys in roots's home on the remote machines
 * Python > 2.6
 * Ansible >= 2.4.2.0 (on the control machine, only linux distros are supported!)
-* at least two network interface for k8s-nodes and master
+* Two private network interfaces for k8s-nodes and k8s-master. Two private and one public interface for load balancer nodes.
+* The playbooks assume the following order: First interface = sshd listening interface, Second interface = OVN overlay network interface and (for load balancer nodes): Third interface = internet endpoint)
 * All nodes must have valid DNS-Records (configured in production). IP-Addresses are no longer supported.
   If this condition is not fulfilled the k8s-mgmt.yml-playbook will fail.
 
@@ -126,7 +130,3 @@ The repository is now checked by a CI-Task in Bamboo (push to bitbucket)
 This playbook makes sure the latest GeRDI version is deployed on a cron basis
 
 This playbook will only work if a file "registry_config" is on the root of the system (needed to seed the registry credentials as a secret to k8s). See [Pull an Image from a Private Registry](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/).
-
-## k8s-proxyworkaround.yml
-
-Right now we don't have a loadbalancer to terminate TLS encryption. This playbook is a workaround in setting up a nginx webserver to redirect URLs to fixed K8s IPs and to terminate TLS.
