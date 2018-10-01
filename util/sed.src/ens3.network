@@ -1,5 +1,0 @@
-[Match]
-Name=ens3
-
-[Network]
-DHCP=yes
