@@ -48,8 +48,8 @@ ansible-playbook -i production k8s-lb.yml
 Interface setup (iface1-2 are private interfaces, iface3 is public): 
 
        +--------------+
-       |k8s|master    |
-       +----------+ +-+
+       |k8s-master    |
+       +--------------+
        |              |
 SSH+---+    iface1    |
        |    iface2    +-----+
@@ -58,7 +58,7 @@ SSH+---+    iface1    |
        +--------------+     |
                             |
        +--------------+     |
-       |k8s|node(s)   |     |
+       |k8s-node(s)   |     |
        +--------------+     |
        |              |     |
 SSH+---+    iface1    |     |
@@ -68,7 +68,7 @@ SSH+---+    iface1    |     |
        +--------------+     |
                             |
        +--------------+     |
-       |k8s|lb        |     |
+       |k8s-lb        |     |
        +--------------+     |
        |              |     |
 SSH+---+    iface1    |     |
