@@ -41,10 +41,42 @@ ansible-playbook -i production k8s-lb.yml
 * Pub key in .ssh/authorized\_keys in roots's home on the remote machines
 * Python > 2.6
 * Ansible >= 2.4.2.0 (on the control machine, only linux distros are supported!)
-* Two private network interfaces for k8s-nodes and k8s-master. Two private and one public interface for load balancer nodes.
-* The playbooks assume the following order: First interface = sshd listening interface, Second interface = OVN overlay network interface and (for load balancer nodes): Third interface = internet endpoint)
 * All nodes must have valid DNS-Records (configured in production). IP-Addresses are no longer supported.
   If this condition is not fulfilled the k8s-mgmt.yml-playbook will fail.
+* Two private network interfaces for k8s-nodes and k8s-master. Two private and one public interface for load balancer nodes.
+* The playbooks assume the following order: First interface = sshd listening interface, Second interface = OVN overlay network interface and (for load balancer nodes): Third interface = internet endpoint)
+Interface setup (iface1-2 are private interfaces, iface3 is public): 
+
+       +--------------+
+       |k8s|master    |
+       +----------+ +-+
+       |              |
+SSH+---+    iface1    |
+       |    iface2    +-----+
+       |              |     |
+       |              |     |
+       +--------------+     |
+                            |
+       +--------------+     |
+       |k8s|node(s)   |     |
+       +--------------+     |
+       |              |     |
+SSH+---+    iface1    |     |
+       |    iface2    +----OVN (hijacked)
+       |              |     |
+       |              |     |
+       +--------------+     |
+                            |
+       +--------------+     |
+       |k8s|lb        |     |
+       +--------------+     |
+       |              |     |
+SSH+---+    iface1    |     |
+       |    iface2    +-----+          +-----------+
+       |    iface3    +----------------+  Internet |
+       |              |                +-----------+
+       +--------------+
+
 
 # Documentation
 
