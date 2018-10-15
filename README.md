@@ -46,7 +46,7 @@ ansible-playbook -i production k8s-lb.yml
 * Two private network interfaces for k8s-nodes and k8s-master. Two private and one public interface for load balancer nodes.
 * The playbooks assume the following order: First interface = sshd listening interface, Second interface = OVN overlay network interface and (for load balancer nodes): Third interface = internet endpoint)
 Interface setup (iface1-2 are private interfaces, iface3 is public): 
-\
+```
        +--------------+
        |k8s-master    |
        +--------------+
@@ -76,7 +76,7 @@ SSH+---+    iface1    |     |
        |    iface3    +----------------+  Internet |
        |              |                +-----------+
        +--------------+
-\
+```
 
 # Documentation
 
