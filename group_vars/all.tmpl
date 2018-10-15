@@ -1,6 +1,14 @@
 ########################################
 # Start: Change the values
 ########################################
+# Name of the cluster
+# Example: "staging" or "test"
+# Used as:
+# - Prefix for master domain
+# - NFS symlink directory location
+# - kubeconfig: cluster-name & current-context
+# - controller-manager: --cluster-name
+# - apache.conf: subdomain name
 K8S_DEPLOYMENT_CONTEXT: "test"
 K8S_VERSION: "vx.y.z"
 K8S_GLOBAL_LOG_LEVEL: "v=2"
