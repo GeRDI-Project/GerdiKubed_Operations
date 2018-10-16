@@ -82,23 +82,25 @@ Created using: http://asciiflow.com/
 ## Role Overview
 Note: For readability purposes, not in order of execution!
 
-|  k8s-management-machine             |  k8s-master                |  k8s-node                  |  k8s-lb      |
-|---	                |---	                     |---	                      |---	         |
-| [cert-infrastructure](#cert-infrastructure)  	| [vmware-node OR nebula-node](#vmware-node) | [vmware-node OR nebula-node](#vmware-node) | [apache-proxy](#apache-proxy) |
-|  	                    | [common](#common)                     | [common](#common)                     |              |
-|  	                    | [ufw](#ufw)  	                     | [ufw](#ufw)            	          |   	         |
-|  	                    | [docker](#docker)  	                 | [docker](#docker)         	          |   	         |
-|  	                    | [k8s-binaries](#k8s-binaries)  	         | [k8s-binaries](#k8s-binaries)  	          |   	         |
-|  	                    | [kubelet](#kubelet)  	                 | [kubelet](#kubelet)        	          |   	         |
-|  	                    | [kube-proxy](#kube-proxy)  	             | [kube-proxy](#kube-proxy)     	          |   	         |
-|                   	| [network\_ovn](#network-ovn)               | [network\_ovn](#network-ovn)               |   	         |
-|  	                    | [k8s-cordon](#k8s-cordon)  	             | [k8s-cordon](#k8s-cordon)                 |   	         |
-|  	                    | [apiserver](#apiserver)  	             |                            |              |
-|                   	| [scheduler](#scheduler)  	             |                            |              |
-|  	                    | [controller-manager](#controller-manager)  	     |                            |   	         |
-|  	                    | [etcd](#etcd)  	                 |                            |              |
-|  	                    | [k8s-addons](#k8s-addons)  	             |                            |              |
-|  	                    | [cni](#cni)  	                     |                            |              |
+|               |  k8s-master                |  k8s-node                  |  k8s-lb      |   k8s-management-machine |
+|---	                |---	                     |---	                      |---	         |---
+| [cert-infrastructure](#cert-infrastructure)  	| [vmware-node OR nebula-node](#vmware-node) | [vmware-node OR nebula-node](#vmware-node) | [apache-proxy](#apache-proxy) ||
+|  	                    | [common](#common)                     |                      |              ||
+|  	                    | [common](#common)                     |                      |              ||
+|  	                    | [common](#common)                     |                      |              ||
+|  	                    | [ufw](#ufw)  	                     | [ufw](#ufw)            	          |   	         ||
+|  	                    | [docker](#docker)  	                 | [docker](#docker)         	          |   	         ||
+|  	                    | [k8s-binaries](#k8s-binaries)  	         | [k8s-binaries](#k8s-binaries)  	          |   	         ||
+|  	                    | [kubelet](#kubelet)  	                 | [kubelet](#kubelet)        	          |   	         ||
+|  	                    | [kube-proxy](#kube-proxy)  	             | [kube-proxy](#kube-proxy)     	          |   	         ||
+|                   	| [network\_ovn](#network-ovn)               | [network\_ovn](#network-ovn)               |   	         ||
+|  	                    | [k8s-cordon](#k8s-cordon)  	             | [k8s-cordon](#k8s-cordon)                 |   	         ||
+|  	                    | [apiserver](#apiserver)  	             |                            |              ||
+|                   	| [scheduler](#scheduler)  	             |                            |              ||
+|  	                    | [controller-manager](#controller-manager)  	     |                            |   	         ||
+|  	                    | [etcd](#etcd)  	                 |                            |              ||
+|  	                    | [k8s-addons](#k8s-addons)  	             |                            |              ||
+|  	                    | [cni](#cni)  	                     |                            |              ||
 
 ## Role Descriptions
 
