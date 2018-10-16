@@ -84,7 +84,7 @@ Note: For readability purposes, not in order of execution!
 
 |  k8s-management-machine             |  k8s-master                |  k8s-node                  |  k8s-lb      |
 |---	                |---	                     |---	                      |---	         |
-| cert-infrastructure  	| vmware-node OR nebula-node | vmware-node OR nebula-node | apache-proxy |
+| [cert-infrastructure](#cert-infrastructure)  	| vmware-node OR nebula-node | vmware-node OR nebula-node | apache-proxy |
 |  	                    | common                     | common                     |              |
 |  	                    | ufw  	                     | ufw            	          |   	         |
 |  	                    | docker  	                 | docker         	          |   	         |
@@ -97,22 +97,43 @@ Note: For readability purposes, not in order of execution!
 |                   	| scheduler  	             |                            |              |
 |  	                    | controller-manager  	     |                            |   	         |
 |  	                    | etcd  	                 |                            |              |
-|  	                    | [k8s-addons](#markdown-header-k8s-addons)  	             |                            |              |
+|  	                    | [k8s-addons](#k8s-addons)  	             |                            |              |
 |  	                    | [cni](#cni)  	                     |                            |              |
+
+<table>
+ <tr>
+  <th>Name</th>
+  <th>Favorite Color</th>
+ </tr>
+ <tr>
+  <td>Bob</td>
+  <td>Yellow</td>
+ </tr>
+ <tr>
+  <td>Michelle</td>
+  <td>Purple</td>
+ </tr>
+</table>
+
+
+Read more: https://html.com/tables/#ixzz5U5nC2KU4
 
 
 
 ## Role Descriptions
 
+<a name="apache-proxy"></a> 
 ### apache-proxy
 
 Handles the setup of the SSL termination infrastructure involving an apache proxy webserver.
 
+<a name="apiserver"></a> 
 ### apiserver
 
 The apiserver is the management interface of the k8s cluster.
 You can choose to run the apiserver as a systemd-service (set APISERVER\_AS\_SERVICE to "True") or as a pod (APISERVER\_AS\_POD to "True"). At least and at most one of these options has to be true.
 
+<a name="cert-infrastructure"></a> 
 ### cert-infrastructure
 
 This role creates a ca ready infrastructure on a trusted host the localhost should be the default.
@@ -129,60 +150,73 @@ These subdirs shouldn't be altered in group\_vars/all template (they are here fo
 
 It also creates a number of certificates (both server and client) to handle authorization inside the k8s cluster (e.g. etcd <-> apiserver).
 
+<a name="common"></a> 
 ### common
 
 This role sets up all machines (install packages, set hostname, create directories etc.).
 
+<a name="controller-manager"></a> 
 ### controller-manager
 
 The controller-manager runs on all master instances and distributes the deployments and pods to the kubelets running on the node instances.
 
 You can choose to run the controller-manager as a systemd-service (set CONTROLER\_MANAGER\_AS\_SERVICE to "True") or as a pod (CONTROLER\_MANAGER\_AS\_POD to "True"). At least and at most one of these options has to be true.
 
-###<a name="cni"></a> cni
+<a name="cni"></a> 
+### cni
 
 This role handles the setup of the network cni plugin used by kubernetes.
 
+<a name="docker"></a> 
 ### docker
 
 Docker is the container engine running on both the nodes and the master.
 
+<a name="etcd"></a> 
 ### etcd
 
 Etcd is a distributed key-value store to persist the k8s configuration serviced by the apiserver. It is also used to synchronize several masters (and therefore several apiservers).
 
+<a name="k8s-addons"></a> 
 ### k8s-addons
 
 This role sets up the kubernetes addon manager and handles the creation of the kube-dns service.
 
+<a name="k8s-binaries"></a> 
 ### k8s-binaries
 
 This role fetches the kubernetes binaries in a version defined by K8S\_VERSION.
 It also creates a kubeconfig that is used system wide to configure the k8s components with the whereabouts of and the credentials to the other components
 
+<a name="k8s-cordon"></a> 
 ### k8s-cordon
 
 This role makes sure that the kubernetes master and loadbalancer are excluded from having pods scheduled upon them.
 
+<a name="kubelet"></a> 
 ### kubelet
 
 The kubelet component is the interface to the docker daemon which makes sure the Deployments and Pods are translated into running docker containers.
 Kubelet will run as a systemd-service on all node and master instances.
 
+<a name="kube-proxy"></a> 
 ### kube-proxy
 
 The kube-proxy takes care of proxying request inside the k8s cluster.
 Kube-proxy will run a s systemd-service on all nodes.
 
+<a name="network-ovn"></a> 
 ### network\_ovn
 
 OVN/OVS is one of the possible k8s network driver (see [k8s network model](https://kubernetes.io/docs/concepts/cluster-administration/networking/#kubernetes-model). All additional network driver should be named alongside the pattern network\_*.
 
+<a name="scheduler"></a> 
 ### scheduler
 
 The scheduler runs scheduled pods.
 You can choose to run the scheduler as a systemd-service (set SCHEDULER\_AS\_SERVICE to "True") or as a pod (SCHEDULER\_AS\_POD to "True"). At least and at most one of these options has to be true.
 
+<a name="ufw"></a> 
 ### ufw
 
 This role sets up the uncomplicated firewall (ufw). Depending on which node it's executed on it will vary the port openings, for example the load balancer will receive additional openings at 80 and 443. 
