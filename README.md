@@ -114,84 +114,81 @@ Note: For readability purposes, not in order of execution!
   </tr>
   <tr>
     <td></td>
+    <td colspan="2"><a href="#common">common</a></td>
     <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td colspan="2"><a href="#ufw">ufw</a></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td colspan="2"><a href="#docker">docker</a></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td colspan="2"><a href="#k8s-binaries">k8s-binaries</a></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td colspan="2"><a href="#kubelet">kubelet</a></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td colspan="2"><a href="#kube-proxy">kube-proxy</a></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td colspan="2"><a href="#network-ovn">network\_ovn</a></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td colspan="2"><a href="#k8s-cordon">k8s-cordon</a></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><a href="#apiserver">apiserver</a></td>
     <td></td>
     <td></td>
   </tr>
   <tr>
     <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td></td>
+    <td><a href="#scheduler">scheduler</a></td>
     <td></td>
     <td></td>
   </tr>
   <tr>
     <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td></td>
+    <td><a href="#controller-manager">controller-manager</a></td>
     <td></td>
     <td></td>
   </tr>
   <tr>
     <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td></td>
+    <td><a href="#etcd">etcd</a></td>
     <td></td>
     <td></td>
   </tr>
   <tr>
     <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td></td>
+    <td><a href="#k8s-addons">k8s-addons</a></td>
     <td></td>
     <td></td>
   </tr>
   <tr>
     <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td></td>
+    <td><a href="#cni">cni</a></td>
     <td></td>
     <td></td>
   </tr>
 </table>
-
 
 ## Role Descriptions
 
