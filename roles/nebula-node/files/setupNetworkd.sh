@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# NOTE: This is a slighly different script that also makes sure networkd is setup
+# NOTE: OpenNebula !specific! script that handles the setup of systemd-networkd and systemd-resolved
 # Get all attached ips
 # Make sure to only seperate by newline;
 # Also get rid of loopback IP
