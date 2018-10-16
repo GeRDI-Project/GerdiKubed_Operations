@@ -84,7 +84,7 @@ Note: For readability purposes, not in order of execution!
 
 |  k8s-management-machine             |  k8s-master                |  k8s-node                  |  k8s-lb      |
 |---	                |---	                     |---	                      |---	         |
-| [cert-infrastructure](#cert-infrastructure)  	| [vmware-node] OR [nebula-node] | [vmware-node] OR [nebula-node] | [apache-proxy] |
+| [cert-infrastructure](#cert-infrastructure)  	| [vmware-node OR nebula-node](#vmware-node) | [vmware-node OR nebula-node](#vmware-node) | [apache-proxy](#apache-proxy) |
 |  	                    | [common](#common)                     | [common](#common)                     |              |
 |  	                    | [ufw](#ufw)  	                     | [ufw](#ufw)            	          |   	         |
 |  	                    | [docker](#docker)  	                 | [docker](#docker)         	          |   	         |
@@ -200,6 +200,11 @@ You can choose to run the scheduler as a systemd-service (set SCHEDULER\_AS\_SER
 ### ufw
 
 This role sets up the uncomplicated firewall (ufw). Depending on which node it's executed on it will vary the port openings, for example the load balancer will receive additional openings at 80 and 443. 
+
+<a name="vmware-node"></a> 
+### vmware-node OR nebula-node
+
+These roles are both tailored to machines running on LRZ infrastructure. Depending on the node, different steps have to be performed to bring the cluster into a state that allows the other roles to function properly.
 
 # CI
 
