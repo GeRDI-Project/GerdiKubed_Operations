@@ -83,7 +83,7 @@ Created using: http://asciiflow.com/
 Note: For readability purposes, not in order of execution!
 
 |  k8s-management-machine             |  k8s-master                |  k8s-node                  |  k8s-lb      |
-|:-:	                |:-:	                     |:-:	                      |:-:	         |
+|---	                |---	                     |---	                      |---	         |
 | cert-infrastructure  	| vmware-node OR nebula-node | vmware-node OR nebula-node | apache-proxy |
 |  	                    | common                     | common                     |              |
 |  	                    | ufw  	                     | ufw            	          |   	         |
