@@ -84,111 +84,21 @@ Note: For readability purposes, not in order of execution!
 
 |  k8s-management-machine             |  k8s-master                |  k8s-node                  |  k8s-lb      |
 |---	                |---	                     |---	                      |---	         |
-| [cert-infrastructure](#cert-infrastructure)  	| vmware-node OR nebula-node | vmware-node OR nebula-node | apache-proxy |
-|  	                    | common                     | common                     |              |
-|  	                    | ufw  	                     | ufw            	          |   	         |
-|  	                    | docker  	                 | docker         	          |   	         |
-|  	                    | k8s-binaries  	         | k8s-binaries  	          |   	         |
-|  	                    | kubelet  	                 | kubelet        	          |   	         |
-|  	                    | kube-proxy  	             | kube-proxy     	          |   	         |
-|                   	| network\_ovn               | network\_ovn               |   	         |
-|  	                    | k8s-cordon  	             | k8s-cordon                 |   	         |
-|  	                    | apiserver  	             |                            |              |
-|                   	| scheduler  	             |                            |              |
-|  	                    | controller-manager  	     |                            |   	         |
-|  	                    | etcd  	                 |                            |              |
+| [cert-infrastructure](#cert-infrastructure)  	| [vmware-node] OR [nebula-node] | [vmware-node] OR [nebula-node] | [apache-proxy] |
+|  	                    | [common](#common)                     | [common](#common)                     |              |
+|  	                    | [ufw](#ufw)  	                     | [ufw](#ufw)            	          |   	         |
+|  	                    | [docker](#docker)  	                 | [docker](#docker)         	          |   	         |
+|  	                    | [k8s-binaries](#k8s-binaries)  	         | [k8s-binaries](#k8s-binaries)  	          |   	         |
+|  	                    | [kubelet](#kubelet)  	                 | [kubelet](#kubelet)        	          |   	         |
+|  	                    | [kube-proxy](#kube-proxy)  	             | [kube-proxy](#kube-proxy)     	          |   	         |
+|                   	| [network\_ovn](#network-ovn)               | [network\_ovn](#network-ovn)               |   	         |
+|  	                    | [k8s-cordon](#k8s-cordon)  	             | [k8s-cordon](#k8s-cordon)                 |   	         |
+|  	                    | [apiserver](#apiserver)  	             |                            |              |
+|                   	| [scheduler](#scheduler)  	             |                            |              |
+|  	                    | [controller-manager](#controller-manager)  	     |                            |   	         |
+|  	                    | [etcd](#etcd)  	                 |                            |              |
 |  	                    | [k8s-addons](#k8s-addons)  	             |                            |              |
 |  	                    | [cni](#cni)  	                     |                            |              |
-
-<table>
-  <tr>
-    <th>k8s-management-machine</th>
-    <th>k8s-master</th>
-    <th>k8s-node</th>
-    <th>k8s-lb</th>
-  </tr>
-  <tr>
-  	<td style="text-align: center; vertical-align: middle;"><a href="#cert-infrastructure">cert-infrastructure</a></td>
-    <td colspan="2" style="text-align: center; vertical-align: middle;">vmware-node OR nebula-node</td>
-    <td style="text-align: center; vertical-align: middle;"><a href="#apache-proxy">apache-proxy</a></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td colspan="2"><a href="#common">common</a></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td colspan="2"><a href="#ufw">ufw</a></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td colspan="2"><a href="#docker">docker</a></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td colspan="2"><a href="#k8s-binaries">k8s-binaries</a></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td colspan="2"><a href="#kubelet">kubelet</a></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td colspan="2"><a href="#kube-proxy">kube-proxy</a></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td colspan="2"><a href="#network-ovn">network\_ovn</a></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td colspan="2"><a href="#k8s-cordon">k8s-cordon</a></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td><a href="#apiserver">apiserver</a></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td><a href="#scheduler">scheduler</a></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td><a href="#controller-manager">controller-manager</a></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td><a href="#etcd">etcd</a></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td><a href="#k8s-addons">k8s-addons</a></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td><a href="#cni">cni</a></td>
-    <td></td>
-    <td></td>
-  </tr>
-</table>
 
 ## Role Descriptions
 
