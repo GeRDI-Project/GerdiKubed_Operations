@@ -100,7 +100,7 @@ Note: For readability purposes, not in order of execution!
 |  	                    | [k8s-addons](#k8s-addons)  	             |                            |              |
 |  	                    | [cni](#cni)  	                     |                            |              |
 
-<table style="float:center">
+<table>
   <tr>
     <th>k8s-management-machine</th>
     <th>k8s-master</th>
@@ -108,9 +108,9 @@ Note: For readability purposes, not in order of execution!
     <th>k8s-lb</th>
   </tr>
   <tr>
-  	<td><a href="#cert-infrastructure">cert-infrastructure</a></td>
-    <td colspan="2">vmware-node OR nebula-node</td>
-    <td><a href="#apache-proxy">apache-proxy</a></td>
+  	<td style="text-align: center; vertical-align: middle;"><a href="#cert-infrastructure">cert-infrastructure</a></td>
+    <td colspan="2" style="text-align: center; vertical-align: middle;">vmware-node OR nebula-node</td>
+    <td style="text-align: center; vertical-align: middle;"><a href="#apache-proxy">apache-proxy</a></td>
   </tr>
   <tr>
     <td></td>
