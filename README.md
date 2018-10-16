@@ -108,9 +108,9 @@ Note: For readability purposes, not in order of execution!
     <th>k8s-lb</th>
   </tr>
   <tr>
-    <td>[cert-infrastructure](#cert-infrastructure)</td>
+  	<td><a href="#cert-infrastructure">cert-infrastructure</a></td>
     <td colspan="2">vmware-node OR nebula-node</td>
-    <td></td>
+    <td><a href="#apache-proxy">apache-proxy</a></td>
   </tr>
   <tr>
     <td></td>
