@@ -98,7 +98,7 @@ Note: For readability purposes, not in order of execution!
 |  	                    | controller-manager  	     |                            |   	         |
 |  	                    | etcd  	                 |                            |              |
 |  	                    | [k8s-addons](#markdown-header-k8s-addons)  	             |                            |              |
-|  	                    | [cni](#markdown-header-cni)  	                     |                            |              |
+|  	                    | [cni](#cni)  	                     |                            |              |
 
 
 
@@ -139,7 +139,7 @@ The controller-manager runs on all master instances and distributes the deployme
 
 You can choose to run the controller-manager as a systemd-service (set CONTROLER\_MANAGER\_AS\_SERVICE to "True") or as a pod (CONTROLER\_MANAGER\_AS\_POD to "True"). At least and at most one of these options has to be true.
 
-### cni
+###<a name="cni"></a> cni
 
 This role handles the setup of the network cni plugin used by kubernetes.
 
