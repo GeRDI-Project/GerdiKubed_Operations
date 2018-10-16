@@ -204,7 +204,7 @@ This role sets up the uncomplicated firewall (ufw). Depending on which node it's
 <a name="vmware-node"></a> 
 ### vmware-node OR nebula-node
 
-These roles are both tailored to machines running on LRZ infrastructure. Depending on the node, different steps have to be performed to bring the cluster into a state that allows the other roles to function properly.
+These roles are both tailored to machines running on LRZ infrastructure. Depending on the node, different steps have to be performed to bring the cluster into a state that allows the other roles to be executed properly.
 
 # CI
 
