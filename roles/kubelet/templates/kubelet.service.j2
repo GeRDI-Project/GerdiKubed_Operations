@@ -25,6 +25,7 @@ ExecStart=/usr/bin/kubelet \
       --node-ip={{ internalIP }} \
       --pod-manifest-path=/etc/kubernetes/manifests \
       --port=10250 \
+      --resolv-conf=/run/systemd/resolve/resolv.conf \
       --register-node \
       --tls-cert-file={{ K8S_CERT_FILES_DIR }}/{{ inventory_hostname }}.crt.pem \
       --tls-private-key-file={{ K8S_KEY_FILES_DIR }}/{{ inventory_hostname }}.key
