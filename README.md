@@ -98,7 +98,7 @@ Note: For readability purposes, not in order of execution!
 |  	                    | controller-manager  	     |                            |   	         |
 |  	                    | etcd  	                 |                            |              |
 |  	                    | [k8s-addons](#markdown-header-k8s-addons)  	             |                            |              |
-|  	                    | [cni](#markdown-header-cni)  	                     |                            |              |
+|  	                    | [cni](#cni)  	                     |                            |              |
 
 
 
