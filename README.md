@@ -100,7 +100,7 @@ Note: For readability purposes, not in order of execution!
 |  	                    | [k8s-addons](#k8s-addons)  	             |                            |              |
 |  	                    | [cni](#cni)  	                     |                            |              |
 
-<table>
+<table style="float:center">
   <tr>
     <th>k8s-management-machine</th>
     <th>k8s-master</th>
