@@ -101,23 +101,96 @@ Note: For readability purposes, not in order of execution!
 |  	                    | [cni](#cni)  	                     |                            |              |
 
 <table>
- <tr>
-  <th>Name</th>
-  <th>Favorite Color</th>
- </tr>
- <tr>
-  <td>Bob</td>
-  <td>Yellow</td>
- </tr>
- <tr>
-  <td>Michelle</td>
-  <td>Purple</td>
- </tr>
+  <tr>
+    <th>k8s-management-machine</th>
+    <th>k8s-master</th>
+    <th>k8s-node</th>
+    <th>k8s-lb</th>
+  </tr>
+  <tr>
+    <td>[cert-infrastructure](#cert-infrastructure)</td>
+    <td colspan="2">vmware-node OR nebula-node</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
 </table>
-
-
-Read more: https://html.com/tables/#ixzz5U5nC2KU4
-
 
 
 ## Role Descriptions
