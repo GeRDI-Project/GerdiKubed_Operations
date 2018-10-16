@@ -18,7 +18,7 @@
     dest: /root/setupNetworkd.sh
 
 - name: Set up networkd interfaces
-  shell: bash /root/setupNetworkd.sh
+  shell: bash /root/setupNetworkd.sh {{ K8S_INTERNAL_ROUTING_TABLE }} {{ lookup('dig', NFS_SERVER_DOMAIN, 'qtype=A') }}
 
 - name: Set hostname to {{ inventory_hostname }}
   hostname:

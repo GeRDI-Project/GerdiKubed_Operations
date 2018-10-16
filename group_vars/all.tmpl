@@ -1,14 +1,20 @@
 ########################################
 # Start: Change the values
 ########################################
-K8S_CLUSTER_NAME: "nibi" # this MUST NOT include UPPERCASE chars!
-# K8S_CLUSTER_NAME is deprecated! Do not use it anymore! Use instead:
-K8S_DEPLOYMENT_CONTEXT: "test" # will replace K8S_CLUSTER_NAME sometimes
+# Name of the cluster
+# Example: "staging" or "test"
+# Used as:
+# - Prefix for master domain
+# - NFS symlink directory location
+# - kubeconfig: cluster-name & current-context
+# - controller-manager: --cluster-name
+# - apache.conf: subdomain name
+K8S_DEPLOYMENT_CONTEXT: "test"
 K8S_VERSION: "vx.y.z"
 K8S_GLOBAL_LOG_LEVEL: "v=2"
 # Certificates will be created with both DNS-names and IP-Adresses in the alternative names.
 # DNS-names in certs will comply to the following pattern:
-# {{ K8S_CLUSTER_NAME }}-[mstr|node]-{{ hostname_suffix }}.{{ K8S_DOMAIN_NAMESPACE }}
+# {{ K8S_DEPLOYMENT_CONTEXT }}-[mstr|node]-{{ hostname_suffix }}.{{ K8S_DOMAIN_NAMESPACE }}
 K8S_DOMAIN_NAMESPACE: "example.com"
 # You will find the cert infrastructure (e.g. ca-key and cert and all other stuff) here:
 # Do not use ~ or relative paths, please spell out absolute path
@@ -24,9 +30,8 @@ CONTROL_BASE_DIR:   "<some_dir>"
 ################################################################################
 # Global configuration
 ################################################################################
-K8S_MASTER_DOMAIN: "{{ K8S_CLUSTER_NAME + '-mstr-0.' + K8S_DOMAIN_NAMESPACE }}"
+K8S_MASTER_DOMAIN: "{{ K8S_DEPLOYMENT_CONTEXT + '-mstr-0.' + K8S_DOMAIN_NAMESPACE }}"
 K8S_MASTER_IP: "{{ lookup('dig', K8S_MASTER_DOMAIN) }}"
-K8S_APISERVER: "https://{{K8S_MASTER_IP}}"
 # Base dir on all machines (except CONTROL_MACHINE)
 K8S_BASE_DIR: /opt/k8s
 # Directories in which the k8s binaries reside
@@ -76,6 +81,8 @@ CNI_VERSION: v0.4.0
 CNI_DOWNLOAD_URL: "https://github.com/containernetworking/cni/releases/download/{{ CNI_VERSION }}/cni-{{ CNI_VERSION }}.tgz"
 CNI_DIR: "{{ K8S_BASE_DIR }}/cni-{{ CNI_VERSION }}"
 CNI_CONF_DIR: /etc/cni/net.d
+CNI_SUBNET_IP_PRE:     "10.221"
+CNI_SUBNET:            "{{ CNI_SUBNET_IP_PRE }}.1.0/24"
 
 ################################################################################
 # Configuration for the following roles:
