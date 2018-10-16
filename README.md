@@ -84,8 +84,6 @@ Note: For readability purposes, not in order of execution!
 
 | Role             							 |  k8s-master |  k8s-node  |  k8s-lb  |   k8s-management-machine |
 |---	                					 |---	       |---	        |---	   |---						  |
-| [cert-infrastructure](#cert-infrastructure)|  		   |  			|  		   |			x			  |
-| [apache-proxy](#apache-proxy) 	         |             |            |    x     |						  |
 | [vmware-node OR nebula-node](#vmware-node) |      x      |     x      |          |						  |
 | [common](#common) 	                     |      x      |     x      |          |					      |
 | [ufw](#ufw) 	                    		 |   	x      |     x   	|   	   |						  |
@@ -101,6 +99,8 @@ Note: For readability purposes, not in order of execution!
 | [etcd](#etcd)  	  	                     |      x      |            |          |						  |
 | [k8s-addons](#k8s-addons)  	             |  	x      |            |          |						  |
 | [cni](#cni)  	                    		 |  	x      |            |          |						  |
+| [apache-proxy](#apache-proxy) 	         |             |            |    x     |						  |
+| [cert-infrastructure](#cert-infrastructure)|  		   |  			|  		   |			x			  |
 
 ## Role Descriptions
 
