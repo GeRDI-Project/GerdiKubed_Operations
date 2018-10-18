@@ -178,8 +178,11 @@ if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
         echo 'DHCP=no'; \
         echo 'DNS=129.187.5.1'; \
         echo 'Address='$IP_INTERNAL'/'$CIDR; \
+        echo 'Gateway='$CURRENT_GATEWAY; \
         echo 'IPForward=kernel'; \
-        echo ''; \
+      } > /etc/systemd/network/$DEV_NAME.network
+      if [ ${#PUBLIC_IPS[@]} -eq 1 ]; then
+      { \
         echo '[Route]'; \
         echo 'Gateway='$CURRENT_GATEWAY; \
         echo 'Table='$ROUTING_TABLE_INT; \
@@ -188,7 +191,8 @@ if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
         echo 'Gateway='$CURRENT_GATEWAY; \
         echo 'Destination='$NETWORK_ADDRESS'/'$CIDR; \
         echo 'Table='$ROUTING_TABLE_INT; \
-      } > /etc/systemd/network/$DEV_NAME.network
+      } >> /etc/systemd/network/$DEV_NAME.network
+      fi
       echo "Writting "$DEV_NAME".network"
     elif [ $COUNTER -eq 1 ]; then
       SUBNET_MASK=$(cidr_to_netmask $(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $2;}'))
@@ -213,11 +217,10 @@ else
   exit 1;
 fi
 
-# We always use the first private ip for OVN and the second for internal
+# We always use the first private ip for SSH and the second for OVN
 IP_INT=$(echo ${PRIVATE_IPS[0]} | awk '{print $1}')
 
 rm /etc/resolv.conf
-#apt-get purge -y resolvconf
 
 # Start systemd networking
 systemctl enable --now systemd-networkd.service > /dev/null 2>&1
