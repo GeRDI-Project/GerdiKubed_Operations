@@ -14,11 +14,12 @@
 ---
 - name: Install apache as a proxy
   apt:
-    pkg: "{{ item }}"
+    name: "{{ packages }}"
     state: latest
-  with_items:
-    - apache2
-    - libapache2-mod-shib2
+  vars:
+    packages:
+      - apache2
+      - libapache2-mod-shib2
 
 - name: Enable necessary apache modules
   apache2_module:

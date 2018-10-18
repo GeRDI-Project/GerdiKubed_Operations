@@ -14,11 +14,12 @@
 ---
 - name: Install conntrack
   apt:
-    pkg: "{{ item }}"
+    name: "{{ packages }}"
     state: latest
-  with_items:
-    - conntrack
-    - conntrackd
+  vars:
+    packages:
+      - conntrack
+      - conntrackd
 
 - name: Flush iptables rules
   iptables:
