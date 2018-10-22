@@ -203,10 +203,9 @@ if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
         echo ''; \
         echo '[Network]'; \
         echo 'DHCP=no'; \
-        echo 'DNS=129.187.5.1'; \
+        echo ''; \
+        echo '[Address]'; \
         echo 'Address='$IP_INTERNAL'/'$CIDR; \
-        echo 'Gateway='$CURRENT_GATEWAY; \
-        echo 'IPForward=kernel'; \
       } > /etc/systemd/network/$DEV_NAME.network
       echo "Writting "$DEV_NAME".network"
     fi
@@ -237,6 +236,8 @@ systemctl restart systemd-resolved.service > /dev/null 2>&1
 
 rm -f /etc/systemd/network/wired.network
 systemctl daemon-reload
+
+systemctl restart systemd-networkd
 
 sed -i 's/#ListenAddress 0.0.0.0/ListenAddress '$IP_INT'/
   s/#AddressFamily.*/AddressFamily inet/;' /etc/ssh/sshd_config
