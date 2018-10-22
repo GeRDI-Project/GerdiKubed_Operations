@@ -1,0 +1,92 @@
+########################################
+# Start: Change the values
+########################################
+K8S_DEPLOYMENT_CONTEXT: "staging"
+K8S_VERSION: "v1.11.3"
+K8S_GLOBAL_LOG_LEVEL: "v=2"
+# Certificates will be created with both DNS-names and IP-Adresses in the alternative names.
+# DNS-names in certs will comply to the following pattern:
+# {{ K8S_DEPLOYMENT_CONTEXT }}-[mstr|node]-{{ hostname_suffix }}.{{ K8S_DOMAIN_NAMESPACE }}
+K8S_DOMAIN_NAMESPACE: "example.org"
+# You will find the cert infrastructure (e.g. ca-key and cert and all other stuff) here:
+# Do not use ~ or relative paths, please spell out absolute path
+CONTROL_BASE_DIR:   "/home/myuser/certs"
+########################################
+# End: Change the values
+########################################
+
+# Please only overwrite the following, if you know what you are doing
+# You will furthermore find configuration that is only specific to one role in
+# the according directory (e.g. roles/apiserver/vars/main.yml)
+
+################################################################################
+# Global configuration
+################################################################################
+K8S_MASTER_DOMAIN: "{{ 'mstr-0.' + K8S_DEPLOYMENT_CONTEXT + '.' + K8S_DOMAIN_NAMESPACE }}"
+K8S_MASTER_IP: "{{ lookup('dig', K8S_MASTER_DOMAIN) }}"
+# Base dir on all machines (except CONTROL_MACHINE)
+K8S_BASE_DIR: /opt/k8s
+# Directories in which the k8s binaries reside
+K8S_K8S_DIR: "{{ K8S_BASE_DIR }}/kubernetes"
+K8S_SERVER_BIN_DIR: "{{ K8S_K8S_DIR }}/server/kubernetes/server/bin"
+# Intercluster addresses, authorization and authentication information
+K8S_KUBECONFIG: "{{ K8S_BASE_DIR }}/kubeconfig"
+K8S_DOWNLOAD_URL: "https://github.com/kubernetes/kubernetes/releases/download/{{K8S_VERSION}}/kubernetes.tar.gz"
+
+################################################################################
+# Configuration for cert-infrastructure role
+################################################################################
+CONTROL_MACHINE:    "127.0.0.1"
+CONTROL_CERT_DIR:   "{{ CONTROL_BASE_DIR }}/certs"
+CONTROL_KEY_DIR:    "{{ CONTROL_BASE_DIR }}/keys"
+CONTROL_CONFIG_DIR: "{{ CONTROL_BASE_DIR }}/configs"
+CONTROL_CSR_DIR:    "{{ CONTROL_BASE_DIR }}/csrs"
+CONTROL_CA_DIR:     "{{ CONTROL_BASE_DIR }}/ca"
+
+################################################################################
+# Configuration for the following roles:
+# apiserver, common, controller-manager, etcd, k8s-binaries kubelet, network_ovn
+################################################################################
+K8S_CERT_FILES_DIR: "{{ K8S_BASE_DIR }}/certs"
+K8S_KEY_FILES_DIR: "{{ K8S_BASE_DIR }}/keys"
+K8S_AUTH_FILES_DIR: "{{ K8S_BASE_DIR }}/tokens"
+
+################################################################################
+# Configuration for the following roles:
+# apiserver, cert-infrastructure, controller-manager, kube-proxy, network_ovn
+################################################################################
+# this is an example:
+# We will have 255 class-c nets for the same number of nodes
+# 10.220.hostname_suffix.0/24 IPs for each nodes
+# 10.221.0.0/16 IPs service ports
+K8S_CLUSTER_IP_PRE:    "10.220"
+K8S_CLUSTER_IP_SUBNET: "{{ K8S_CLUSTER_IP_PRE }}.0.0/15"
+K8S_SERVICE_IP_PRE:    "10.222"
+K8S_SERVICE_IP_SUBNET: "{{ K8S_SERVICE_IP_PRE }}.0.0/16"
+K8S_DNS_IP: "{{ K8S_SERVICE_IP_PRE }}.0.10"
+
+################################################################################
+# Configuration for the following roles:
+# cni, kubelet, network_ovn
+################################################################################
+CNI_VERSION: v0.4.0
+CNI_DOWNLOAD_URL: "https://github.com/containernetworking/cni/releases/download/{{ CNI_VERSION }}/cni-{{ CNI_VERSION }}.tgz"
+CNI_DIR: "{{ K8S_BASE_DIR }}/cni-{{ CNI_VERSION }}"
+CNI_CONF_DIR: /etc/cni/net.d
+CNI_SUBNET_IP_PRE:     "10.221"
+CNI_SUBNET:            "{{ CNI_SUBNET_IP_PRE }}.1.0/24"
+
+################################################################################
+# Configuration for the following roles:
+# apiserver, network_ovn
+################################################################################
+OVN_API_TOKEN: "someValue"
+
+################################################################################
+# NFS configuration
+# Note: Your machine has to be whitelisted by the NFS provider
+################################################################################
+K8S_INTERNAL_ROUTING_TABLE: 180485
+NFS_SERVER_DOMAIN: "internal05.example.org"
+NFS_MOUNT_PATH: "/mnt/nfs"
+NFS_VOLUME_PATH: "{{ NFS_SERVER_DOMAIN }}:internal/nfs1"
