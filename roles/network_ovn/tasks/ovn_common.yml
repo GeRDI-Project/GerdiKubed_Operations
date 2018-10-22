@@ -58,6 +58,11 @@
   pip:
     requirements: "{{ OVN_K8S_DIR }}/requirements.txt"
 
+- name: Upgrade to correct version of urllib3
+  pip:
+    name: urllib3
+    version: 1.22
+
 - name: Install k8s ovn integration scripts
   shell: "pip install ."
   args:
