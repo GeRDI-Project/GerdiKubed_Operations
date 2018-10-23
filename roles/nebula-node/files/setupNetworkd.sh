@@ -182,12 +182,7 @@ if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
         echo 'IPForward=kernel'; \
       } > /etc/systemd/network/$DEV_NAME.network
       if [ ${#PUBLIC_IPS[@]} -eq 1 ]; then
-      # This is a 3 interface machine;
-      # Get rid of previous Gateway
-      sed -i '0,/Gateway=/{/Gateway=/d;}' /etc/systemd/network/$DEV_NAME.network
-      # Append Route logic
       { \
-        echo ''; \
         echo '[Route]'; \
         echo 'Gateway='$CURRENT_GATEWAY; \
         echo 'Table='$ROUTING_TABLE_INT; \
