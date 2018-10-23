@@ -15,15 +15,16 @@
 # based on https://docs.docker.com/engine/installation/linux/docker-ce/debian/
 - name: purge any older docker server
   apt:
-    pkg={{ item }}
-    state=absent
-    purge=yes
-    force=yes
-  with_items:
-    - docker.io
-    - lxc-docker
-    - docker-engine
-    - docker
+    pkg: "{{ packages }}"
+    state: absent
+    purge: yes
+    force: yes
+  vars:
+    packages:
+      - docker.io
+      - lxc-docker
+      - docker-engine
+      - docker
 
 - name: update repository cache
   apt:
@@ -31,13 +32,14 @@
 
 - name: install requirements for adding new deb-repo packages
   apt:
-    pkg={{ item }}
-    state=present
-  with_items:
-    - apt-transport-https
-    - ca-certificates
-    - curl
-    - software-properties-common
+    name: "{{ packages}}"
+    state: present
+  vars:
+    packages:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
 
 - name: add the new gpg key
   apt_key:

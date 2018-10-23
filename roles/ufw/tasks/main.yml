@@ -13,10 +13,13 @@
 # limitations under the License.
 # ---
 - name: Install iptables and ufw
-  apt: name={{ item }} state=latest
-  with_items:
-    - iptables
-    - ufw
+  apt:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+      - iptables
+      - ufw
 
 - name: Setup master iptables
   import_tasks: setup_mastertables.yml

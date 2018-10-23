@@ -24,26 +24,15 @@
 
 - name: Install ovn dependencies
   apt:
-    pkg: "{{ item }}"
+    name: "{{ packages }}"
     state: present
     update_cache: yes
-  with_items:
-    - git
-    - openvswitch-switch
-    - python-pip
-    - virtualenv
-
-#- name: Install ovn controller systemd unit file
-#  template:
-#    src: ovn-controller.service.j2
-#    dest: /etc/systemd/system/ovn-controller.service
-#
-#- name: Reload systemd daemon and start ovn controller
-#  systemd:
-#    state: started
-#    name: ovn-controller
-#    enabled: yes
-#    daemon-reload: yes
+  vars:
+    packages:
+      - git
+      - openvswitch-switch
+      - python-pip
+      - virtualenv
 
 - name: Set db entries on both masters and nodes
   shell: ovs-vsctl set Open_vSwitch . external_ids:{{item}}
@@ -68,6 +57,11 @@
 - name: Install python requirements for k8s ovn integration scripts
   pip:
     requirements: "{{ OVN_K8S_DIR }}/requirements.txt"
+
+- name: Upgrade to correct version of urllib3
+  pip:
+    name: urllib3
+    version: 1.22
 
 - name: Install k8s ovn integration scripts
   shell: "pip install ."

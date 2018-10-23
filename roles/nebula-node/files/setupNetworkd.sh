@@ -178,7 +178,15 @@ if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
         echo 'DHCP=no'; \
         echo 'DNS=129.187.5.1'; \
         echo 'Address='$IP_INTERNAL'/'$CIDR; \
+        echo 'Gateway='$CURRENT_GATEWAY; \
         echo 'IPForward=kernel'; \
+      } > /etc/systemd/network/$DEV_NAME.network
+      if [ ${#PUBLIC_IPS[@]} -eq 1 ]; then
+      # This is a 3 interface machine;
+      # Get rid of previous Gateway
+      sed -i '0,/Gateway=/{/Gateway=/d;}' /etc/systemd/network/$DEV_NAME.network
+      # Append Route logic
+      { \
         echo ''; \
         echo '[Route]'; \
         echo 'Gateway='$CURRENT_GATEWAY; \
@@ -188,7 +196,8 @@ if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
         echo 'Gateway='$CURRENT_GATEWAY; \
         echo 'Destination='$NETWORK_ADDRESS'/'$CIDR; \
         echo 'Table='$ROUTING_TABLE_INT; \
-      } > /etc/systemd/network/$DEV_NAME.network
+      } >> /etc/systemd/network/$DEV_NAME.network
+      fi
       echo "Writting "$DEV_NAME".network"
     elif [ $COUNTER -eq 1 ]; then
       SUBNET_MASK=$(cidr_to_netmask $(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $2;}'))
@@ -199,10 +208,9 @@ if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
         echo ''; \
         echo '[Network]'; \
         echo 'DHCP=no'; \
-        echo 'DNS=129.187.5.1'; \
+        echo ''; \
+        echo '[Address]'; \
         echo 'Address='$IP_INTERNAL'/'$CIDR; \
-        echo 'Gateway='$CURRENT_GATEWAY; \
-        echo 'IPForward=kernel'; \
       } > /etc/systemd/network/$DEV_NAME.network
       echo "Writting "$DEV_NAME".network"
     fi
@@ -213,11 +221,10 @@ else
   exit 1;
 fi
 
-# We always use the first private ip for OVN and the second for internal
+# We always use the first private ip for SSH and the second for OVN
 IP_INT=$(echo ${PRIVATE_IPS[0]} | awk '{print $1}')
 
 rm /etc/resolv.conf
-#apt-get purge -y resolvconf
 
 # Start systemd networking
 systemctl enable --now systemd-networkd.service > /dev/null 2>&1
@@ -234,6 +241,8 @@ systemctl restart systemd-resolved.service > /dev/null 2>&1
 
 rm -f /etc/systemd/network/wired.network
 systemctl daemon-reload
+
+systemctl restart systemd-networkd
 
 sed -i 's/#ListenAddress 0.0.0.0/ListenAddress '$IP_INT'/
   s/#AddressFamily.*/AddressFamily inet/;' /etc/ssh/sshd_config

@@ -1,0 +1,31 @@
+# add only vmware nodes, pattern:
+# Since vmware nodes only have one interface setup,
+# you need to manually add all IPs to the node
+# HOSTNAME		   User		Variable
+[vmware-nodes]
+mstr-0.staging.example.org ansible_user=root eth0ip=1.2.3.4 eth1ip=1.2.3.5 eth2ip=
+nd-0.staging.example.org ansible_user=root eth0ip=2.3.4.5 eth1ip=2.3.4.6 eth2ip=
+nd-1.staging.example.org ansible_user=root eth0ip=3.4.5.6 eth1ip=3.4.5.7 eth2ip=
+lb-0.staging.example.org ansible_user=root eth0ip=4.5.6.7 eth1ip=4.5.6.8 eth2ip=4.3.2.1
+
+[loadbalancer-nodes]
+# add all lb nodes, pattern:
+# HOSTNAME	       User
+lb-0.staging.example.org ansible_user=root
+
+[kubernetes-nodes]
+# add all nodes, pattern:
+# HOSTNAME          User              Variable
+nd-0.staging.example.org ansible_user=root hostname_suffix=2 hostname_overwrite=node0
+nd-1.staging.example.org ansible_user=root hostname_suffix=3 hostname_overwrite=node1
+lb-0.staging.example.org ansible_user=root hostname_suffix=4 hostname_overwrite=loadbalancer0
+
+[kubernetes-masters]
+# add all masters, pattern :
+# mst1.example.com ansible_user=root hostname_suffix=<previous++>
+# Do not forget to increase hostname_suffix with every master instance
+# Please use FQDNs for the hosts, IP addresses are not supported anymore
+mstr-0.staging.example.org ansible_user=root hostname_suffix=1 hostname_overwrite=master0
+
+[kubernetes-management]
+localhost ansible_user=myuser

@@ -15,9 +15,10 @@
 # Common tasks on every host
 - name: Install additional requirements
   apt:
-      pkg: "{{ item }}"
+      name: "{{ packages }}"
       state: latest
-  with_items:
+  vars:
+    packages:
       - apt-transport-https
       - bash-completion
       - ca-certificates
