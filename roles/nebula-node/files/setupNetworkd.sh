@@ -59,7 +59,7 @@ done <<< "$IP_ARRAY"
 # Loadbalancer & Old Nodes: 1 Public, 2 Private (1 OVN, 1 SSH) -> Setup required
 # Loadbalancer & Old Nodes after OVN setup: 1 Public, 1 Private (1 hijacked by OVN, 1 SSH) -> No Setup required
 # New Nodes: 0 Public, 2 Private (1 OVN, 1 SSH) -> Setup required
-# New Nodes after OVN setup: 0 Public, 1 Private (1 hijacked by OVN, 1 SSH) -> No Setup required
+# New Nodes after OVN setup: 0 Public, 1 Private (1 hijacked by OVN, 1 SSH) -> Setup required
 echo "${#PUBLIC_IPS[@]} Public & ${#PRIVATE_IPS[@]} Private IPs detected."
 
 # Error states
@@ -74,7 +74,7 @@ if [ ${#PUBLIC_IPS[@]} -eq 1 ] && [ $EXIST -eq 0 ]; then
 fi
 
 # Cases: 1 Private & 1 Public OR 1 Private & 0 Public -> Assume we are already set up -> Exit script
-if [[ ${#PRIVATE_IPS[@]} -eq 1 && ${#PUBLIC_IPS[@]} -eq 1 ]] || [[ ${#PRIVATE_IPS[@]} -eq 1 && ${#PUBLIC_IPS[@]} -eq 0 ]]; then
+if [[ ${#PRIVATE_IPS[@]} -eq 1 && ${#PUBLIC_IPS[@]} -eq 1 ]]; then
   echo "Nothing to do"
   exit 0
 fi
@@ -159,7 +159,7 @@ elif [ ${#PUBLIC_IPS[@]} -gt 1 ]; then
   exit 1;
 fi
 
-if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
+if [ ${#PRIVATE_IPS[@]} -le 2 ]; then
   COUNTER=0
   for IP in "${PRIVATE_IPS[@]}" ; do
     # Two private interfaces; First is gonna be SSH; Second OVN

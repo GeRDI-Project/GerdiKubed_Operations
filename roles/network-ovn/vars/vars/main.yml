@@ -12,24 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Create {{ CNI_DIR }}
-  file:
-    path: "{{ CNI_DIR }}"
-    state: directory
-
-- name: Create {{ CNI_CONF_DIR }}
-  file:
-    path: "{{ CNI_CONF_DIR }}"
-    state: directory
-
-- name: Create cni config
-  template:
-    src: 10-net.conf.j2
-    dest: "{{ CNI_CONF_DIR }}/10-net.conf"
-
-- name: Fetch cni binaries
-  unarchive:
-    src:  "{{ CNI_DOWNLOAD_URL }}"
-    dest: "{{ CNI_DIR }}"
-    copy: no
-    creates: "{{ CNI_DIR }}/cnitool"
+# role: network_ovn#
+OVN_ENCAP_TYPE: geneve
+OVN_K8S_DIR: "{{ K8S_BASE_DIR }}/ovn-kubernetes"
