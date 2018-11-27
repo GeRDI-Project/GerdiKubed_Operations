@@ -32,6 +32,8 @@ K8S_SERVER_BIN_DIR: "{{ K8S_K8S_DIR }}/server/kubernetes/server/bin"
 # Intercluster addresses, authorization and authentication information
 K8S_KUBECONFIG: "{{ K8S_BASE_DIR }}/kubeconfig"
 K8S_DOWNLOAD_URL: "https://github.com/kubernetes/kubernetes/releases/download/{{K8S_VERSION}}/kubernetes.tar.gz"
+# Nameserver Docker should use to resolve
+DOCKER_NAMESERVER: "8.8.8.8"
 
 ################################################################################
 # Configuration for cert-infrastructure role
