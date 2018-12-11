@@ -20,6 +20,14 @@
 # Also get rid of loopback IP
 # IPs are stored as IP_ARRAY[0] = IP[[:space:]]CIDR[[:space:]]BROADCAST[[:space:]]DEVICENAME
 #      Example: 141.40.254.115 23 141.40.255.255 ens3
+# Test if we are already set up
+DIRECTORYTEST=$(find /etc/systemd/network -name "*.network" | wc -l)
+
+if [ "$DIRECTORYTEST" -eq "$#" ]; then
+  echo "Networkd already setup. Nothing to do here."
+  exit 0;
+fi
+
 IFS=$'\n'
 # Filter out ipv4 ips
 # Remove loopback, filter by device ens0-9
