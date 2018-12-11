@@ -12,6 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+
+# This is dirty, but necessary.
+- name: Wait for start of k8s-addons
+  shell: kubectl get pods -n kube-system | grep -c "Running"
+  register: result
+  until: result.stdout.find("2") != -1
+  retries: 10
+  delay: 5
+  when: inventory_hostname in groups['kubernetes-masters']
+
 - name: Cordon node, if master or loadbalancer
   shell: kubectl cordon {{ inventory_hostname }}
   when: inventory_hostname in groups['kubernetes-masters'] + groups['loadbalancer-nodes']
