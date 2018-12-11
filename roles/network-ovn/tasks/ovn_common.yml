@@ -59,7 +59,8 @@
 
 - name: Pull latest ovn kubernetes source
   git:
-    repo: 'https://github.com/openvswitch/ovn-kubernetes'
+    #repo: 'https://github.com/openvswitch/ovn-kubernetes'
+    repo: 'https://github.com/CM2Walki/ovn-kubernetes'
     dest: "{{ OVN_K8S_DIR }}"
 
 # This would be nicer using the make module, but it doesn't load the .profile context
@@ -72,3 +73,19 @@
   shell: source ~/.profile && cd "{{ OVN_K8S_DIR }}/go-controller" && make install
   args:
     executable: /bin/bash
+
+# Taken from:
+# https://github.com/openvswitch/ovn-kubernetes/blob/f7051630b8630ab3d592ca964e6e3d7ee07ae680/contrib/roles/linux/kubernetes/tasks/prepare_minion.yml
+- name: Ensure /etc/hosts is updated
+  lineinfile:
+    path: /etc/hosts
+    line: "{{ internalIP }} {{ inventory_hostname }}"
+
+# Gets rid of $OVS_CTL_OPTS in service file ExecStart
+# Fixes issue:
+# ovs-ctl[259]: /usr/share/openvswitch/scripts/ovs-ctl: exactly one non-option argument required (use --help for help)
+- name: Fix openvswitch-nonetwork.service to make it succeed on reboot
+  replace:
+    path: /lib/systemd/system/openvswitch-nonetwork.service
+    regexp: '\-\-system\-id\=random \$OVS_CTL_OPTS'
+    replace: '--system-id=random'
