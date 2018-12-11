@@ -31,14 +31,20 @@
     - k8s-ca-certificate={{ K8S_CERT_FILES_DIR }}/ca.crt.pem
     - k8s-api-token="{{ OVN_API_TOKEN }}"
 
-- name: Install ovn-k8s-init as a service
+- name: Install ovn-k8s-node as a service
   template:
-    src: ovn-k8s-init.service.j2
-    dest: /etc/systemd/system/ovn-k8s-init.service
+    src: ovn-k8s-node.service.j2
+    dest: /etc/systemd/system/ovn-k8s-node.service
 
-- name: Register ovn-k8s-init to systemd and start it
+- name: Register ovn-k8s-node to systemd and start it
   systemd:
-    name: ovn-k8s-init.service
+    name: ovn-k8s-node.service
     enabled: yes
     state: restarted
     daemon-reload: yes
+
+- name: Restart ovn-k8s-master if master
+  systemd:
+    name: ovn-k8s-master.service
+    state: restarted
+  when: inventory_hostname in groups['kubernetes-masters']

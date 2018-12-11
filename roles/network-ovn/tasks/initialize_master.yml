@@ -28,14 +28,14 @@
 - name: Set the k8s api server address in the Open vSwitch database
   shell: ovs-vsctl set Open_vSwitch . external_ids:k8s-api-server="https://{{ internalIP }}:443"
 
-- name: Install ovn-k8s-watcher as a service
+- name: Install ovn-k8s-master as a service
   template:
-    src: ovn-k8s-watcher.service.j2
-    dest: /etc/systemd/system/ovn-k8s-watcher.service
+    src: ovn-k8s-master.service.j2
+    dest: /etc/systemd/system/ovn-k8s-master.service
 
-- name: Register ovn-k8s-init to systemd and start it
+- name: Register ovn-k8s-master to systemd and start it
   systemd:
-    name: ovn-k8s-watcher.service
+    name: ovn-k8s-master.service
     enabled: yes
     state: restarted
     daemon-reload: yes
