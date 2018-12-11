@@ -117,11 +117,8 @@
         Require         valid-user
     </Location>
 
-    <Location /admin>
-        AuthType        Basic
-        AuthName        "Restricted"
-        AuthUserFile    /etc/apache2/.htpasswd
-        Require         valid-user
+    <Location /admin/logs>
+       RequestHeader set X-Graylog-Server-URL expr=https://%{HTTP_HOST}/admin/logs/api
     </Location>
 
     <Location /api/v1/collections>
@@ -195,8 +192,8 @@
     ProxyPassReverse  /store              http://10.222.21.102/store
     ProxyPass         /bookmark           http://10.222.21.23/bookmark
     ProxyPassReverse  /bookmark           http://10.222.21.23/bookmark
-    ProxyPass         /admin/logs         http://10.222.21.25:9000/
-    ProxyPassReverse  /admin/logs         http://10.222.21.25:9000/
+    ProxyPass         /admin/logs         http://10.222.21.25:9000/admin/logs
+    ProxyPassReverse  /admin/logs         http://10.222.21.25:9000/admin/logs
     ProxyPass         /                   http://10.222.21.9/
     ProxyPassReverse  /                   http://10.222.21.9/
 </VirtualHost>
