@@ -117,6 +117,10 @@
         Require         valid-user
     </Location>
 
+    <Location /admin/logs>
+        RequestHeader set X-Graylog-Server-URL expr=https://%{HTTP_HOST}/admin/logs/api
+    </Location>
+
     <Location /api/v1/collections>
         Header set Access-Control-Allow-Origin "*"
         Header set Access-Control-Allow-Methods "OPTIONS, DELETE, PUT, POST, GET"
@@ -124,11 +128,11 @@
     </Location>
 
     <Location /harvest/hccenter>
-      AuthType      None
-      Require all granted
-      RequestHeader set X-Forwarded-Proto 'https' env=HTTPS
-      RequestHeader set X-SCRIPT-NAME /harvest/hccenter
-      RequestHeader set X-SCHEME https
+        AuthType      None
+        Require all granted
+        RequestHeader set X-Forwarded-Proto 'https' env=HTTPS
+        RequestHeader set X-SCRIPT-NAME /harvest/hccenter
+        RequestHeader set X-SCHEME https
     </Location>
 
     Redirect seeother /shibboleth https://test.sp.gerdi.org/Shibboleth.sso/Metadata
@@ -188,6 +192,8 @@
     ProxyPassReverse  /store              http://10.222.21.102/store
     ProxyPass         /bookmark           http://10.222.21.23/bookmark
     ProxyPassReverse  /bookmark           http://10.222.21.23/bookmark
+    ProxyPass         /admin/logs         http://10.222.21.25:9000/admin/logs
+    ProxyPassReverse  /admin/logs         http://10.222.21.25:9000/admin/logs
     ProxyPass         /                   http://10.222.21.9/
     ProxyPassReverse  /                   http://10.222.21.9/
 </VirtualHost>
