@@ -1,6 +1,11 @@
 [Unit]
-Description=Open virtual net kubernetes gateway helper
+Description=OVN-Kubernetes node init
 Documentation=https://github.com/openvswitch/ovn-kubernetes/README.md
+{% if inventory_hostname in groups['kubernetes-masters'] %}
+Requires=ovn-k8s-master.service
+After=ovn-k8s-master.service
+{% endif %}
+Requires=openvswitch-switch.service
 
 [Service]
 ExecStart=/usr/bin/ovnkube \
@@ -12,9 +17,10 @@ ExecStart=/usr/bin/ovnkube \
  -k8s-apiserver "https://{{ K8S_MASTER_IP }}:443" \
  -service-cluster-ip-range "{{ K8S_SERVICE_IP_SUBNET }}" \
  -nodeport \
- -init-gateways \
+ -init-gateways -gateway-localnet \
  -nb-address="tcp://{{ K8S_MASTER_IP }}:6641" \
  -sb-address="tcp://{{ K8S_MASTER_IP }}:6642"
+ExecStartPost=-/usr/bin/ovn-kube-util nics-to-bridge {{ iface1.name }}
 Restart=on-failure
 RestartSec=10
 WorkingDirectory=/root/

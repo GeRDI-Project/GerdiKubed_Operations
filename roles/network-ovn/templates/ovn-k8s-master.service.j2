@@ -1,8 +1,13 @@
 [Unit]
-Description=OVN watches the Kubernetes API
+Description=OVN-Kubernetes Master Init
 Documentation=https://github.com/openvswitch/ovn-kubernetes#watchers-on-master-node
+Requires=apiserver.service
+After=apiserver.service
+Requires=openvswitch-switch.service
 
 [Service]
+ExecStartPre=/usr/bin/ovn-nbctl --if-exists lr-del {{ inventory_hostname }}
+ExecStartPre=/usr/bin/ovn-nbctl --if-exists lr-del GR_{{ inventory_hostname }}
 ExecStart=/usr/bin/ovnkube \
  -k8s-kubeconfig /opt/k8s/kubeconfig \
  -init-master "{{ inventory_hostname }}" \
