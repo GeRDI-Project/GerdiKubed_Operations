@@ -36,8 +36,8 @@
     - kubelet
     - kube-proxy
     - apiserver
-    - network-ovn
     - scheduler
     - controller-manager
+    - network-ovn
     - k8s-addons
     - k8s-cordon
