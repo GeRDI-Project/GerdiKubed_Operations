@@ -69,3 +69,10 @@
     dest: "/etc/docker/daemon.json"
   notify:
     - restart docker
+
+- name: Added docker nameserver
+  lineinfile:
+    path: /etc/environment
+    line: 'DOCKER_OPTS="-dns {{ DOCKER_NAMESERVER }}"'
+  notify:
+    - restart docker
