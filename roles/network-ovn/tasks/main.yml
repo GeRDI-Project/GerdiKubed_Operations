@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-# These task follow the description made here:
+# These tasks follow the description made here:
 # https://github.com/openvswitch/ovn-kubernetes
-# commit 601c5b3 (2017/09/21)
+# commit 65fb624 (2018/12/12)
 
 - name: Common tasks on master and nodes
   import_tasks: ovn_common.yml
