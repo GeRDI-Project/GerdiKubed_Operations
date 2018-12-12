@@ -17,7 +17,11 @@ ExecStart=/usr/bin/ovnkube \
  -k8s-apiserver "https://{{ K8S_MASTER_IP }}:443" \
  -service-cluster-ip-range "{{ K8S_SERVICE_IP_SUBNET }}" \
  -nodeport \
+{% if inventory_hostname not in groups['loadbalancer-nodes'] %}
  -init-gateways -gateway-localnet \
+{% else %}
+ -init-gateways -gateway-interface=ens3 -gateway-nexthop="{{ iface1.gw }}"
+{% endif %}
  -nb-address="tcp://{{ K8S_MASTER_IP }}:6641" \
  -sb-address="tcp://{{ K8S_MASTER_IP }}:6642"
 ExecStartPost=-/usr/bin/ovn-kube-util nics-to-bridge {{ iface1.name }}
