@@ -11,17 +11,17 @@ Requires=openvswitch-switch.service
 ExecStartPre=/usr/bin/ovn-nbctl --if-exists lr-del {{ inventory_hostname }}
 ExecStartPre=/usr/bin/ovn-nbctl --if-exists lr-del GR_{{ inventory_hostname }}
 ExecStart=/usr/bin/ovnkube \
- -k8s-kubeconfig /opt/k8s/kubeconfig \
- -init-master "{{ inventory_hostname }}" \
- -cluster-subnet "{{ K8S_CLUSTER_IP_SUBNET }}" \
- -service-cluster-ip-range "{{ K8S_SERVICE_IP_SUBNET }}" \
- -nodeport \
- -net-controller \
- -k8s-token {{ OVN_API_TOKEN }} \
- -k8s-cacert {{ K8S_CERT_FILES_DIR }}/ca.crt.pem \
- -k8s-apiserver "https://{{ internalIP }}:443" \
- -nb-address="tcp://127.0.0.1:6641" \
- -sb-address="tcp://127.0.0.1:6642"
+  -k8s-kubeconfig /opt/k8s/kubeconfig \
+  -init-master "{{ inventory_hostname }}" \
+  -cluster-subnet "{{ K8S_CLUSTER_IP_SUBNET }}" \
+  -service-cluster-ip-range "{{ K8S_SERVICE_IP_SUBNET }}" \
+  -nodeport \
+  -net-controller \
+  -k8s-token {{ OVN_API_TOKEN }} \
+  -k8s-cacert {{ K8S_CERT_FILES_DIR }}/ca.crt.pem \
+  -k8s-apiserver "https://{{ internalIP }}:443" \
+  -nb-address="tcp://127.0.0.1:6641" \
+  -sb-address="tcp://127.0.0.1:6642"
 Restart=on-failure
 RestartSec=10
 WorkingDirectory=/root/
