@@ -5,6 +5,8 @@ Requires=apiserver.service
 After=apiserver.service
 Requires=openvswitch-switch.service
 
+# This is a workaround to make ovn-kubernetes reboot persistent
+# Delete the previous logical routers and force a recreation of them on reboots
 [Service]
 ExecStartPre=/usr/bin/ovn-nbctl --if-exists lr-del {{ inventory_hostname }}
 ExecStartPre=/usr/bin/ovn-nbctl --if-exists lr-del GR_{{ inventory_hostname }}
