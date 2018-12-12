@@ -14,6 +14,8 @@
 ---
 
 # This is dirty, but necessary.
+# Wait for the kube-dns and kube-addon-manager to enter running state
+# Otherwise the cordon node will force it to be stuck in pending state
 - name: Wait for start of k8s-addons
   shell: kubectl get pods -n kube-system | grep -c "Running"
   register: result
