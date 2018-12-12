@@ -61,6 +61,7 @@
   git:
     #repo: 'https://github.com/openvswitch/ovn-kubernetes'
     repo: 'https://github.com/CM2Walki/ovn-kubernetes'
+    version: "689008b461f55cd268eccb108ba90f23968b91fa"
     dest: "{{ OVN_K8S_DIR }}"
 
 # This would be nicer using the make module, but it doesn't load the .profile context
