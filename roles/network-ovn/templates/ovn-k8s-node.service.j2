@@ -20,7 +20,7 @@ ExecStart=/usr/bin/ovnkube \
 {% if inventory_hostname not in groups['loadbalancer-nodes'] %}
  -init-gateways -gateway-localnet \
 {% else %}
- -init-gateways -gateway-interface=ens3 -gateway-nexthop="{{ iface1.gw }} \"
+ -init-gateways -gateway-interface={{ iface1.name }} -gateway-nexthop="{{ iface1.gw }}" \
 {% endif %}
  -nb-address="tcp://{{ K8S_MASTER_IP }}:6641" \
  -sb-address="tcp://{{ K8S_MASTER_IP }}:6642"
