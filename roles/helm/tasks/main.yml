@@ -12,33 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Setup VMWare nodes
-  hosts: kubernetes-masters:&vmware-nodes
-  remote_user: root
-  roles:
-    - vmware-node
+# mstr + nodes
+- name: Install dependencies for helm
+  apt:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+      - socat
 
-- name: Setup OpenNebula nodes
-  hosts: kubernetes-masters:!vmware-nodes
-  roles:
-    - nebula-node
+- name: Download and Unpack helm
+  unarchive:
+    src: "{{ HELM_DOWNLOAD_URL }}"
+    dest: "{{ HELM_BASE_DIR }}"
+    copy: no
+    creates: "{{ HELM_BASE_DIR }}/helm"
 
-- name: Initialize kubernetes nodes
-  hosts: kubernetes-masters
-  remote_user: root
-  roles:
-    - common
-    - ufw
-    - etcd
-    - k8s-binaries
-    - docker
-    - cni
-    - kubelet
-    - kube-proxy
-    - apiserver
-    - scheduler
-    - controller-manager
-    - network_ovn
-    - k8s-addons
-    - k8s-cordon
-    - helm
+- name: Install helm client
+  file:
+    src: "{{ HELM_BASE_DIR }}/helm"
+    dest: "/usr/local/bin/helm"
+    state: link
+
+- name: Install helm server (tiller)
+  shell: helm --init

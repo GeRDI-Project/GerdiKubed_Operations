@@ -12,33 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Setup VMWare nodes
-  hosts: kubernetes-masters:&vmware-nodes
-  remote_user: root
-  roles:
-    - vmware-node
-
-- name: Setup OpenNebula nodes
-  hosts: kubernetes-masters:!vmware-nodes
-  roles:
-    - nebula-node
-
-- name: Initialize kubernetes nodes
-  hosts: kubernetes-masters
-  remote_user: root
-  roles:
-    - common
-    - ufw
-    - etcd
-    - k8s-binaries
-    - docker
-    - cni
-    - kubelet
-    - kube-proxy
-    - apiserver
-    - scheduler
-    - controller-manager
-    - network_ovn
-    - k8s-addons
-    - k8s-cordon
-    - helm
+# role: apiserver
+# Only one, but also at least one of these should be set to True.
+HELM_VERSION: "v2.12.0"
+HELM_DOWNLOAD_URL: "https://storage.googleapis.com/kubernetes-helm/helm-{{ HELM_VERSION }}-linux-amd64.tar.gz"
+HELM_BASE_DIR: "/opt/helm"
