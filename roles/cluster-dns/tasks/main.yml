@@ -12,11 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Initialize loadbalancer nodes
-  hosts: loadbalancer-nodes
-  remote_user: root
-  roles:
-    - common
-    - ufw
-    - cluster-dns
-    - apache-proxy
+- name: Install necessary packages for access to k8s-dns
+  apt:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+      - dnsmasq
+      - resolvconf
+  notify:
+    - restart dnsmasq
+
+- name: Create configurationfile for access to k8s-dns
+  template:
+    src: k8s.conf
+    dest: /etc/dnsmasq.d/k8s.conf
+  notify:
+    - restart dnsmasq
