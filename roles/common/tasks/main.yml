@@ -50,21 +50,6 @@
     src: printIface.sh
     dest: /root/printIface.sh
 
-- name: Retrieve information for OVN (2nd) interface
-  shell: bash /root/printIface.sh 2
-  register: ovnInterface
-  ignore_errors: yes
-
-- name: Get facts for OVN (2nd) interface
-  set_fact:
-    iface2:
-      name: "{{ ovnInterface.stdout.split(' ')[0] }}"
-      ipv4: "{{ ovnInterface.stdout.split(' ')[1] }}"
-      gw:   "{{ ovnInterface.stdout.split(' ')[2] }}"
-      nw:   "{{ ovnInterface.stdout.split(' ')[3] }}"
-      mask: "{{ ovnInterface.stdout.split(' ')[4] }}"
-  when: ovnInterface.rc == 0
-
 - name: Retrieve information for SSH (1st) interface
   shell: bash /root/printIface.sh 1
   register: internalInterface
