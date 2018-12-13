@@ -128,7 +128,7 @@ if [ ${#PUBLIC_IPS[@]} -eq 1 ]; then
   # Taken from Gerdi GIT (gerdikubed/util/sed.src/repairRoutes.sh)
   { \
     echo '#!/bin/bash'; \
-    echo "ip route | egrep '"$DEV_INT|br$DEV_INT"' | \\" ; \
+    echo "ip route | egrep '"$DEV_INT"|br"$DEV_INT"' | \\" ; \
     echo 'while read line'; \
     echo 'do'; \
     echo '  ip route delete $line'; \
@@ -197,6 +197,9 @@ if [ ${#PRIVATE_IPS[@]} -eq 1 ]; then
       echo 'Destination='$NETWORK_ADDRESS'/'$CIDR; \
       echo 'Table='$ROUTING_TABLE_INT; \
     } >> /etc/systemd/network/$DEV_NAME.network
+    # Setup networkd for ovn kubernetes bridge
+    cp /etc/systemd/network/$DEV_NAME.network /etc/systemd/network/br$DEV_NAME.network
+    sed -i "s/Name=$DEV_NAME/Name=br$DEV_NAME/g" /etc/systemd/network/br$DEV_NAME.network
     fi
     echo "Writting "$DEV_NAME".network"
   done
