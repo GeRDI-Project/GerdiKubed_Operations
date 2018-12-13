@@ -19,3 +19,4 @@
     - secrets
     - helm
     - jhub
+    - persistent-volumes
