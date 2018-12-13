@@ -117,6 +117,10 @@
         Require         valid-user
     </Location>
 
+    <Location /admin/logs>
+        RequestHeader set X-Graylog-Server-URL expr=https://%{HTTP_HOST}/admin/logs/api
+    </Location>
+
     <Location /api/v1/collections>
         Header set Access-Control-Allow-Origin "*"
         Header set Access-Control-Allow-Methods "OPTIONS, DELETE, PUT, POST, GET"
@@ -124,11 +128,11 @@
     </Location>
 
     <Location /harvest/hccenter>
-      AuthType      None
-      Require all granted
-      RequestHeader set X-Forwarded-Proto 'https' env=HTTPS
-      RequestHeader set X-SCRIPT-NAME /harvest/hccenter
-      RequestHeader set X-SCHEME https
+        AuthType      None
+        Require all granted
+        RequestHeader set X-Forwarded-Proto 'https' env=HTTPS
+        RequestHeader set X-SCRIPT-NAME /harvest/hccenter
+        RequestHeader set X-SCHEME https
     </Location>
 
     Redirect seeother /shibboleth https://test.sp.gerdi.org/Shibboleth.sso/Metadata
@@ -147,47 +151,49 @@
         Require ip 138.246.224.141
       </RequireAny>
     </Location>
-
     # Frontend for presentation purposes
     # Order matters! First matching ProxyPass directive will do the job
-    ProxyPass         /api/get            http://10.222.21.10:9200/gerdi/_all
-    ProxyPassReverse  /api/get            http://10.222.21.10:9200/gerdi/_all
-    ProxyPass         /api/search         http://10.222.21.10:9200/gerdi/_search
-    ProxyPassReverse  /api/search         http://10.222.21.10:9200/gerdi/_search
-    ProxyPass         /api/index          http://10.222.21.10:9200/gerdi/metadata
-    ProxyPassReverse  /api/index          http://10.222.21.10:9200/gerdi/metadata
-    ProxyPass         /harvest/arcgis     http://10.222.21.11:8080/arcgis/harvest
-    ProxyPassReverse  /harvest/arcgis     http://10.222.21.11:8080/arcgis/harvest
-    ProxyPass         /harvest/faostat    http://10.222.21.12:8080/faostat/harvest
-    ProxyPassReverse  /harvest/faostat    http://10.222.21.12:8080/faostat/harvest
-    ProxyPass         /harvest/pangaea    http://10.222.21.13:8080/oaipmh/harvest
-    ProxyPassReverse  /harvest/pangaea    http://10.222.21.13:8080/oaipmh/harvest
-    ProxyPass         /harvest/oceantea   http://10.222.21.14:8080/oceantea/harvest
-    ProxyPassReverse  /harvest/oceantea   http://10.222.21.14:8080/oceantea/harvest
-    ProxyPass         /harvest/seaaroundus http://10.222.21.15:8080/seaaroundus/harvest
-    ProxyPassReverse  /harvest/seaaroundus http://10.222.21.15:8080/seaaroundus/harvest
-    ProxyPass         /harvest/ena        http://10.222.21.16:8080/ena/harvest
-    ProxyPassReverse  /harvest/ena        http://10.222.21.16:8080/ena/harvest
-    ProxyPass         /harvest/alpendac   http://10.222.21.17:8080/oaipmh/harvest
-    ProxyPassReverse  /harvest/alpendac   http://10.222.21.17:8080/oaipmh/harvest
-    ProxyPass         /harvest/soep       http://10.222.21.18:8080/soep/harvest
-    ProxyPassReverse  /harvest/soep       http://10.222.21.18:8080/soep/harvest
-    ProxyPass         /harvest/zenodo     http://10.222.21.19:8080/oaipmh/harvest
-    ProxyPassReverse  /harvest/zenodo     http://10.222.21.19:8080/oaipmh/harvest
-    ProxyPass         /harvest/opendatalmu  http://10.222.21.20:8080/oaipmh/harvest
-    ProxyPassReverse  /harvest/opendatalmu  http://10.222.21.20:8080/oaipmh/harvest
-    ProxyPass         /harvest/hccenter   http://10.222.21.22
-    ProxyPassReverse  /harvest/hccenter   http://10.222.21.22
-    ProxyPass         /api/v1/hccenter    http://10.222.21.22/v1
-    ProxyPassReverse  /api/v1/hccenter    http://10.222.21.22/v1
-    ProxyPass         /api/v1/store       http://10.222.21.101:5678
-    ProxyPassReverse  /api/v1/store       http://10.222.21.101:5678
-    ProxyPass         /api/v1/collections http://10.222.21.100:4567/api/v1/collections
-    ProxyPassReverse  /api/v1/collections http://10.222.21.100:4567/api/v1/collections
-    ProxyPass         /store              http://10.222.21.102/store
-    ProxyPassReverse  /store              http://10.222.21.102/store
-    ProxyPass         /bookmark           http://10.222.21.23/bookmark
-    ProxyPassReverse  /bookmark           http://10.222.21.23/bookmark
-    ProxyPass         /                   http://10.222.21.9/
-    ProxyPassReverse  /                   http://10.222.21.9/
+    ProxyPass         /api/get            http://elasticsearch-data.default.svc.cluster.local:9200/gerdi/_all
+    ProxyPassReverse  /api/get            http://elasticsearch-data.default.svc.cluster.local:9200/gerdi/_all
+    ProxyPass         /api/search         http://elasticsearch-data.default.svc.cluster.local:9200/gerdi/_search
+    ProxyPassReverse  /api/search         http://elasticsearch-data.default.svc.cluster.local:9200/gerdi/_search
+    ProxyPass         /api/index          http://elasticsearch-data.default.svc.cluster.local:9200/gerdi/metadata
+    ProxyPassReverse  /api/index          http://elasticsearch-data.default.svc.cluster.local:9200/gerdi/metadata
+    ProxyPass         /harvest/arcgis     http://arcgis-harvester.default.svc.cluster.local:8080/arcgis/harvest
+    ProxyPassReverse  /harvest/arcgis     http://arcgis-harvester.default.svc.cluster.local:8080/arcgis/harvest
+    ProxyPass         /harvest/faostat    http://faostat-harvester.default.svc.cluster.local:8080/faostat/harvest
+    ProxyPassReverse  /harvest/faostat    http://faostat-harvester.default.svc.cluster.local:8080/faostat/harvest
+    ProxyPass         /harvest/pangaea    http://pangaea-harvester.default.svc.cluster.local:8080/oaipmh/harvest
+    ProxyPassReverse  /harvest/pangaea    http://pangaea-harvester.default.svc.cluster.local:8080/oaipmh/harvest
+    ProxyPass         /harvest/oceantea   http://oceantea-harvester.default.svc.cluster.local:8080/oceantea/harvest
+    ProxyPassReverse  /harvest/oceantea   http://oceantea-harvester.default.svc.cluster.local:8080/oceantea/harvest
+    ProxyPass         /harvest/seaaroundus http://seaaroundus-harvester.default.svc.cluster.local:8080/seaaroundus/harvest
+    ProxyPassReverse  /harvest/seaaroundus http://seaaroundus-harvester.default.svc.cluster.local:8080/seaaroundus/harvest
+    ProxyPass         /harvest/ena        http://ena-harvester.default.svc.cluster.local:8080/ena/harvest
+    ProxyPassReverse  /harvest/ena        http://ena-harvester.default.svc.cluster.local:8080/ena/harvest
+    ProxyPass         /harvest/alpendac   http://alpendac-harvester.default.svc.cluster.local:8080/oaipmh/harvest
+    ProxyPassReverse  /harvest/alpendac   http://alpendac-harvester.default.svc.cluster.local:8080/oaipmh/harvest
+    ProxyPass         /harvest/soep       http://soep-harvester.default.svc.cluster.local:8080/soep/harvest
+    ProxyPassReverse  /harvest/soep       http://soep-harvester.default.svc.cluster.local:8080/soep/harvest
+    ProxyPass         /harvest/zenodo     http://zenodo-harvester.default.svc.cluster.local:8080/oaipmh/harvest
+    ProxyPassReverse  /harvest/zenodo     http://zenodo-harvester.default.svc.cluster.local:8080/oaipmh/harvest
+    ProxyPass         /harvest/opendatalmu  http://opendatalmu-harvester.default.svc.cluster.local:8080/oaipmh/harvest
+    ProxyPassReverse  /harvest/opendatalmu  http://opendatalmu-harvester.default.svc.cluster.local:8080/oaipmh/harvest
+    ProxyPass         /harvest/hccenter   http://hccenter.default.svc.cluster.local
+    ProxyPassReverse  /harvest/hccenter   http://hccenter.default.svc.cluster.local
+    ProxyPass         /api/v1/hccenter    http://hccenter.default.svc.cluster.local/v1
+    ProxyPassReverse  /api/v1/hccenter    http://hccenter.default.svc.cluster.local/v1
+    ProxyPass         /api/v1/store       http://webdav-store.default.svc.cluster.local:5678
+    ProxyPassReverse  /api/v1/store       http://webdav-store.default.svc.cluster.local:5678
+    ProxyPass         /api/v1/collections http://bookmark-persistence-api.default.svc.cluster.local:4567/api/v1/collections
+    ProxyPassReverse  /api/v1/collections http://bookmark-persistence-api.default.svc.cluster.local:4567/api/v1/collections
+    ProxyPass         /store              http://webdav-store-ui.default.svc.cluster.local/store
+    ProxyPassReverse  /store              http://webdav-store-ui.default.svc.cluster.local/store
+    ProxyPass         /bookmark           http://bookmark-frontend.default.svc.cluster.local/bookmark
+    ProxyPassReverse  /bookmark           http://bookmark-frontend.default.svc.cluster.local/bookmark
+    ProxyPass         /admin/logs         http://graylog-web.default.svc.cluster.local:9000/admin/logs
+    ProxyPassReverse  /admin/logs         http://graylog-web.default.svc.cluster.local:9000/admin/logs
+    ProxyPass         /                   http://search-frontend.default.svc.cluster.local/
+    ProxyPassReverse  /                   http://search-frontend.default.svc.cluster.local/
+
 </VirtualHost>

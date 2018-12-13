@@ -12,11 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Initialize loadbalancer nodes
-  hosts: loadbalancer-nodes
-  remote_user: root
-  roles:
-    - common
-    - ufw
-    - cluster-dns
-    - apache-proxy
+- name: restart dnsmasq
+  service:
+    name: dnsmasq
+    state: restarted
