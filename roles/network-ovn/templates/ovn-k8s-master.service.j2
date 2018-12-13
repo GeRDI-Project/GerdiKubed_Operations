@@ -3,7 +3,8 @@ Description=OVN-Kubernetes Master Init
 Documentation=https://github.com/openvswitch/ovn-kubernetes#watchers-on-master-node
 Requires=apiserver.service
 After=apiserver.service
-Requires=openvswitch-switch.service
+Requires=ovn-central.service
+After=ovn-central.service
 
 # This is a workaround to make ovn-kubernetes reboot persistent
 # Delete the previous logical routers and force a recreation of them on reboots

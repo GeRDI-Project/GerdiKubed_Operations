@@ -2,7 +2,7 @@
 Description=OVN-Kubernetes node init
 Documentation=https://github.com/openvswitch/ovn-kubernetes/README.md
 {% if inventory_hostname in groups['kubernetes-masters'] %}
-Requires=ovn-k8s-master.service
+Wants=ovn-k8s-master.service
 After=ovn-k8s-master.service
 {% endif %}
 Requires=openvswitch-switch.service
