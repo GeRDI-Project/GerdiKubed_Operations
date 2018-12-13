@@ -15,11 +15,10 @@
 
 - name: Helm install persistent volume chart
   shell: >
-    helm install 
-    --name nfs-test 
+    helm install
+    --name nfs-test
     --set nfs.server="{{ NFS_SERVER_DOMAIN }}"
     --set nfs.path= "{{ NFS_VOLUME_PATH }}/nfs-{{ K8S_DEPLOYMENT_CONTEXT}}""
-    --set storageClass.defaultClass=true 
-    --set storageClass.name=managed-nfs-storage 
+    --set storageClass.defaultClass=true
+    --set storageClass.name=managed-nfs-storage
     --set rbac.create=false stable/nfs-client-provisioner
-

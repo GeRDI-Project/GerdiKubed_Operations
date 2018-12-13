@@ -36,4 +36,3 @@
 
 - name: Install helm server (tiller)
   shell: helm --init
-
