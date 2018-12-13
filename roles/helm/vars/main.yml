@@ -12,11 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Initialize loadbalancer nodes
-  hosts: loadbalancer-nodes
-  remote_user: root
-  roles:
-    - common
-    - ufw
-    - cluster-dns
-    - apache-proxy
+# role: apiserver
+# Only one, but also at least one of these should be set to True.
+HELM_VERSION: "v2.12.0"
+HELM_DOWNLOAD_URL: "https://storage.googleapis.com/kubernetes-helm/helm-{{ HELM_VERSION }}-linux-amd64.tar.gz"
+HELM_BASE_DIR: "/opt/helm"

@@ -12,11 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Initialize loadbalancer nodes
-  hosts: loadbalancer-nodes
-  remote_user: root
-  roles:
-    - common
-    - ufw
-    - cluster-dns
-    - apache-proxy
+# mstr + nodes
+- name: Install dependencies for helm
+  apt:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+      - socat
+
+- name: Download and Unpack helm
+  unarchive:
+    src: "{{ HELM_DOWNLOAD_URL }}"
+    dest: "{{ HELM_BASE_DIR }}"
+    copy: no
+    creates: "{{ HELM_BASE_DIR }}/helm"
+
+- name: Install helm client
+  file:
+    src: "{{ HELM_BASE_DIR }}/helm"
+    dest: "/usr/local/bin/helm"
+    state: link
+
+- name: Install helm server (tiller)
+  shell: helm --init

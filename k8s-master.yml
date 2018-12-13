@@ -41,3 +41,4 @@
     - network_ovn
     - k8s-addons
     - k8s-cordon
+    - helm
