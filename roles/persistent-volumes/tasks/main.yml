@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 
-- name: Helm Install Persistent Volume Chart
+- name: Helm install persistent volume chart
   shell: >
     helm install 
     --name nfs-test 
