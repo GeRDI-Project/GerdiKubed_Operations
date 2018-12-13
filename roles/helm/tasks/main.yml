@@ -12,7 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-# mstr + nodes
+- name: Create helm directory
+  file:
+    path: "/opt/helm"
+    state: directory
+    mode: '0755'
+
 - name: Install dependencies for helm
   apt:
     name: "{{ packages }}"
@@ -26,13 +31,13 @@
     src: "{{ HELM_DOWNLOAD_URL }}"
     dest: "{{ HELM_BASE_DIR }}"
     copy: no
-    creates: "{{ HELM_BASE_DIR }}/helm"
+    creates: "{{ HELM_BASE_DIR }}/linux-amd64/helm"
 
 - name: Install helm client
   file:
-    src: "{{ HELM_BASE_DIR }}/helm"
+    src: "{{ HELM_BASE_DIR }}/linux-amd64/helm"
     dest: "/usr/local/bin/helm"
     state: link
 
 - name: Install helm server (tiller)
-  shell: helm --init
+  shell: helm init --upgrade

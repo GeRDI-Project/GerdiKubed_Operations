@@ -193,7 +193,10 @@
     ProxyPassReverse  /bookmark           http://bookmark-frontend.default.svc.cluster.local/bookmark
     ProxyPass         /admin/logs         http://graylog-web.default.svc.cluster.local:9000/admin/logs
     ProxyPassReverse  /admin/logs         http://graylog-web.default.svc.cluster.local:9000/admin/logs
+    ProxyPassMatch    "/analyze/(user/[^/])/(api/kernels/[^/]+/channels|terminals/websocket)(.)" ws://proxy-public.jhub.svc.cluster.local/analyze/$1/$2$3
+    ProxyPassReverse  /analyze/user/      ws://proxy-public.jhub.svc.cluster.local/analyze/user
+    ProxyPass         /analyze            http://proxy-public.jhub.svc.cluster.local/analyze
+    ProxyPassReverse  /analyze            http://proxy-public.jhub.svc.cluster.local/analyze
     ProxyPass         /                   http://search-frontend.default.svc.cluster.local/
     ProxyPassReverse  /                   http://search-frontend.default.svc.cluster.local/
-
 </VirtualHost>

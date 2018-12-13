@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Initialize kubernetes nodes
+- name: Initialize gerdi
   hosts: kubernetes-masters
   remote_user: root
   roles:
-    - nibi
     - secrets
+    - helm
+    - jhub
