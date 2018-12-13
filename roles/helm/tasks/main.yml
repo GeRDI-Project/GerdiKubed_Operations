@@ -36,3 +36,6 @@
 
 - name: Install helm server (tiller)
   shell: helm --init
+
+- name: Install persitent volume chart
+  shell: helm install --name nfs-test --set nfs.server=intern05.nas.lrz.de --set nfs.path=/intern/gerdi01/nfs-test --set storageClass.defaultClass=true --set storageClass.name=managed-nfs-storage --set rbac.create=false stable/nfs-client-provisioner
