@@ -7,8 +7,10 @@ Requires=ovn-central.service
 After=ovn-central.service
 
 # This is a workaround to make ovn-kubernetes reboot persistent
-# Delete the previous logical routers and force a recreation of them on reboots
+# Delete the previous logical routers & switches and force a recreation of them on reboots
 [Service]
+ExecStartPre=/usr/bin/ovn-nbctl --if-exists ls-del {{ inventory_hostname }}
+ExecStartPre=/usr/bin/ovn-nbctl --if-exists ls-del ext_{{ inventory_hostname }}
 ExecStartPre=/usr/bin/ovn-nbctl --if-exists lr-del {{ inventory_hostname }}
 ExecStartPre=/usr/bin/ovn-nbctl --if-exists lr-del GR_{{ inventory_hostname }}
 ExecStart=/usr/bin/ovnkube \
@@ -18,6 +20,7 @@ ExecStart=/usr/bin/ovnkube \
   -service-cluster-ip-range "{{ K8S_SERVICE_IP_SUBNET }}" \
   -nodeport \
   -net-controller \
+  -init-gateways -gateway-localnet \
   -k8s-token {{ OVN_API_TOKEN }} \
   -k8s-cacert {{ K8S_CERT_FILES_DIR }}/ca.crt.pem \
   -k8s-apiserver "https://{{ internalIP }}:443" \
