@@ -84,6 +84,8 @@
         name: "{{ lookup('dig', item, 'qtype=A') }}"
       - type: "IP"
         name: "{{ K8S_SERVICE_IP_PRE }}.0.1"
+      - type: "IP"
+        name: "{{ K8S_CLUSTER_IP_PRE }}.0.2"
   with_items:
     - "{{ groups['kubernetes-masters'] }}"
     - "{{ groups['kubernetes-nodes'] }}"
