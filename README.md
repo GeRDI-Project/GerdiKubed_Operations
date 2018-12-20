@@ -43,38 +43,39 @@ ansible-playbook -i production k8s-lb.yml
 * Ansible >= 2.4.2.0 (on the control machine, only linux distros are supported!)
 * All nodes must have valid DNS-Records (configured in production). IP-Addresses are no longer supported.
   If this condition is not fulfilled the k8s-mgmt.yml-playbook will fail.
-* Two private network interfaces for k8s-nodes and k8s-master. Two private and one public interface for load balancer nodes.
-* The playbooks assume the following order: First interface = sshd listening interface, Second interface = OVN overlay network interface and (for load balancer nodes): Third interface = internet endpoint)
+* One private network interface for k8s-nodes and k8s-master. One private and one public interface for load balancer nodes.
+* The playbooks assume the following order: First interface = SSHD listening & OVN overlay network interface (and for load balancer nodes: Second interface = internet endpoint)
 
-Interface setup (iface1-2 are private interfaces, iface3 is public):
+Interface setup (iface1 is a private interface, iface2 is public):
 ```
       +--------------+
-      |k8s-master    |
+      |k8s|master    |
       +--------------+
       |              |
-SSH+--+    iface1    |
-      |    iface2    +----+
+SSH+--+    iface1    +----+
+      |              |    |
       |              |    |
       +--------------+    |
                           |
       +--------------+    |
-      |k8s-node(s)   |    |
+      |k8s|node(s)   |    |
       +--------------+    |
       |              |    |
-SSH+--+    iface1    |    |
-      |    iface2    +---OVN (hijacked)
+SSH+--+    iface1    +---OVN
+      |              |    |
       |              |    |
       +--------------+    |
                           |
       +--------------+    |
-      |k8s-lb        |    |
+      |k8s|lb        |    |
       +--------------+    |
       |              |    |
-SSH+--+    iface1    |    |
-      |    iface2    +----+          +------------+
-      |    iface3    +---------------+  Internet  |
+SSH+--+    iface1    +----+
+      |              |               +------------+
+      |    iface2    +---------------+  Internet  |
       |              |               +------------+
       +--------------+
+
 ```
 Created using: http://asciiflow.com/
 # Documentation
@@ -91,7 +92,7 @@ Note: For readability purposes, not in order of execution!
 | [k8s-binaries](#k8s-binaries) 	         |   	x      | 	 x		| 		   |						  |
 | [kubelet](#kubelet) 	                     |   	x      |	 x		|	   	   |						  |
 | [kube-proxy](#kube-proxy) 	             |   	x      |     x	    |   	   |						  |
-| [network\_ovn](#network-ovn)               |      x      | 	 x		|   	   |						  |
+| [network-ovn](#network-ovn)               |      x      | 	 x		|   	   |						  |
 | [k8s-cordon](#k8s-cordon) 	             |   	x      | 	 x		|   	   |						  |
 | [apiserver](#apiserver)  	                 |  	x      |            |          |						  |
 | [scheduler](#scheduler)                  	 |  	x      |            |          |						  |
@@ -188,7 +189,7 @@ The kube-proxy takes care of proxying request inside the k8s cluster.
 Kube-proxy will run a s systemd-service on all nodes.
 
 <a name="network-ovn"></a> 
-### network\_ovn
+### network-ovn
 
 OVN/OVS is one of the possible k8s network driver (see [k8s network model](https://kubernetes.io/docs/concepts/cluster-administration/networking/#kubernetes-model). All additional network driver should be named alongside the pattern network\_*.
 
