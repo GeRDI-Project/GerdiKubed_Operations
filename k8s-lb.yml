@@ -12,10 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+- name: Setup VMWare lb nodes
+  hosts: vmware-nodes:&loadbalancer-nodes
+  remote_user: root
+  roles:
+    - vmware-node
+
+- name: Setup OpenNebula lb nodes
+  hosts: loadbalancer-nodes:!vmware-nodes
+  roles:
+    - nebula-node
+
+# common: Installs certificates
+# ufw: Opens port 443 and 80
+# k8s-binaries: Installs kube-proxy
+# kube-proxy: Setups kube-proxy
+# network-ovn: Joins the overlay pod network
 - name: Initialize loadbalancer nodes
   hosts: loadbalancer-nodes
   remote_user: root
   roles:
-    - k8s-cordon
+    - common
+    - ufw
+    - k8s-binaries
+    - kube-proxy
+    - network-ovn
     - cluster-dns
     - apache-proxy
