@@ -1,16 +1,14 @@
 [Unit]
 Description=OVN-Kubernetes node init
 Documentation=https://github.com/openvswitch/ovn-kubernetes/README.md
-{% if inventory_hostname in groups['kubernetes-masters'] %}
-Wants=ovn-k8s-master.service
-After=ovn-k8s-master.service
-{% endif %}
 Requires=openvswitch-switch.service
 
 [Service]
 ExecStart=/usr/bin/ovnkube \
   -k8s-kubeconfig /opt/k8s/kubeconfig \
+{% if inventory_hostname not in groups['loadbalancer-nodes'] %}
   -init-node "{{ inventory_hostname }}" \
+{% endif %}
   -cluster-subnet "{{ K8S_CLUSTER_IP_SUBNET }}" \
   -k8s-token "{{ OVN_API_TOKEN }}" \
   -k8s-cacert {{ K8S_CERT_FILES_DIR }}/ca.crt.pem \
