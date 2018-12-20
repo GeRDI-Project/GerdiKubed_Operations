@@ -47,7 +47,7 @@
     enabled: yes
     daemon-reload: yes
 
-- name: Allow forwarding from extern IPs to NodeIPs
+- name: Allow forwarding from external IPs to NodeIPs
   iptables:
     chain: FORWARD
     policy: ACCEPT
