@@ -89,3 +89,4 @@
   with_items:
     - "{{ groups['kubernetes-masters'] }}"
     - "{{ groups['kubernetes-nodes'] }}"
+    - "{{ groups['loadbalancer-nodes'] }}"
