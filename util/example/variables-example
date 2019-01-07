@@ -4,9 +4,6 @@
 K8S_DEPLOYMENT_CONTEXT: "staging"
 K8S_VERSION: "v1.11.3"
 K8S_GLOBAL_LOG_LEVEL: "v=2"
-# Certificates will be created with both DNS-names and IP-Adresses in the alternative names.
-# DNS-names in certs will comply to the following pattern:
-# {{ K8S_DEPLOYMENT_CONTEXT }}-[mstr|node]-{{ hostname_suffix }}.{{ K8S_DOMAIN_NAMESPACE }}
 K8S_DOMAIN_NAMESPACE: "example.org"
 # You will find the cert infrastructure (e.g. ca-key and cert and all other stuff) here:
 # Do not use ~ or relative paths, please spell out absolute path
@@ -75,8 +72,6 @@ CNI_VERSION: v0.4.0
 CNI_DOWNLOAD_URL: "https://github.com/containernetworking/cni/releases/download/{{ CNI_VERSION }}/cni-{{ CNI_VERSION }}.tgz"
 CNI_DIR: "{{ K8S_BASE_DIR }}/cni-{{ CNI_VERSION }}"
 CNI_CONF_DIR: /etc/cni/net.d
-CNI_SUBNET_IP_PRE:     "10.221"
-CNI_SUBNET:            "{{ CNI_SUBNET_IP_PRE }}.1.0/24"
 
 ################################################################################
 # Configuration for the following roles:
