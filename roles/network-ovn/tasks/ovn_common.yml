@@ -62,7 +62,8 @@
 - name: Pull latest ovn kubernetes source
   git:
     repo: 'https://github.com/openvswitch/ovn-kubernetes'
-    version: "f05757a5f6593b157d666c93e763dcd0436fae6e"
+    #repo: 'https://github.com/CM2Walki/ovn-kubernetes'
+    #version: "port-already-exists-fix"
     dest: "{{ OVN_K8S_DIR }}"
 
 # This would be nicer using the make module, but it doesn't load the .profile context
@@ -91,3 +92,8 @@
     path: /lib/systemd/system/openvswitch-nonetwork.service
     regexp: '\-\-system\-id\=random \$OVS_CTL_OPTS'
     replace: '--system-id=random'
+
+- name: Create OVN configuration
+  template:
+    src: ovn_k8s.conf.j2
+    dest: /etc/openvswitch/ovn_k8s.conf

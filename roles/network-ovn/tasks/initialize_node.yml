@@ -19,11 +19,6 @@
   with_items:
     - ovn-host
 
-- name: Create OVN configuration
-  template:
-    src: ovn_k8s.conf.j2
-    dest: /etc/openvswitch/ovn_k8s.conf
-
 - name: Secure connection to k8s API server
   shell: ovs-vsctl set Open_vSwitch . external_ids:{{item}}
   with_items:
