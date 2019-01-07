@@ -22,6 +22,13 @@ ExecStart=/usr/bin/ovnkube \
   -nb-address="tcp://127.0.0.1:6641" \
   -sb-address="tcp://127.0.0.1:6642"
 ExecStartPost=-/usr/bin/ovn-kube-util nics-to-bridge {{ iface1.name }}
+# Remove below workaround when this is fixed for linux: https://github.com/openvswitch/ovn-kubernetes/issues/531
+# Right now, the KubeDNS pods will never reach "running" state after reboots. We need to kill the existing pods and
+# new ones will be successfully created.
+ExecStartPost=-/usr/bin/kubectl uncordon {{ inventory_hostname }}
+ExecStartPost=-/usr/bin/kubectl delete pod --force --grace-period=0 --namespace kube-system --selector k8s-app=kube-dns
+ExecStartPost=/bin/sleep 10
+ExecStartPost=-/usr/bin/kubectl cordon {{ inventory_hostname }}
 Restart=on-failure
 RestartSec=10
 WorkingDirectory=/root/
