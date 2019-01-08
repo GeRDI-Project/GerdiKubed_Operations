@@ -1,0 +1,13 @@
+[Unit]
+Description=Makes sure kube-dns and kube-addon-manager are running
+Requires=ovn-k8s-master.service
+After=ovn-k8s-master.service
+Requires=ovn-k8s-node.service
+After=ovn-k8s-node.service
+
+[Service]
+Type=oneshot
+ExecStart=/etc/kubernetes/fix-k8s-addons.sh
+
+[Install]
+WantedBy=multi-user.target

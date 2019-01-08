@@ -16,16 +16,14 @@ lb-0.staging.example.org ansible_user=root
 [kubernetes-nodes]
 # add all nodes, pattern:
 # HOSTNAME          User              Variable
-nd-0.staging.example.org ansible_user=root hostname_suffix=2 hostname_overwrite=node0
-nd-1.staging.example.org ansible_user=root hostname_suffix=3 hostname_overwrite=node1
-lb-0.staging.example.org ansible_user=root hostname_suffix=4 hostname_overwrite=loadbalancer0
+nd-0.staging.example.org ansible_user=root hostname_overwrite=node0
+nd-1.staging.example.org ansible_user=root hostname_overwrite=node1
 
 [kubernetes-masters]
 # add all masters, pattern :
-# mst1.example.com ansible_user=root hostname_suffix=<previous++>
-# Do not forget to increase hostname_suffix with every master instance
+# mst1.example.com ansible_user=root
 # Please use FQDNs for the hosts, IP addresses are not supported anymore
-mstr-0.staging.example.org ansible_user=root hostname_suffix=1 hostname_overwrite=master0
+mstr-0.staging.example.org ansible_user=root hostname_overwrite=master0
 
 [kubernetes-management]
 localhost ansible_user=myuser
