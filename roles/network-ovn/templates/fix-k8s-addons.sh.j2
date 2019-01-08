@@ -31,8 +31,9 @@ while true; do
     # Check if Kube-Addon-Manager is stuck in MatchNodeSelector
     MANAGERSTATUS=$(kubectl get pods -n kube-system | grep "kube-addon-manager" | grep -c "MatchNodeSelector")
     if [ "$MANAGERSTATUS" -eq "1" ]; then
-      # Force delete pods
-      kubectl delete pod --force --grace-period=0 --namespace kube-system --selector k8s-app=kube-addon-manager
+      # Force delete
+      kubectl delete -f {{ K8S_BASE_DIR }}/kube-addon-manager.yml
+      kubectl apply -f {{ K8S_BASE_DIR }}/kube-addon-manager.yml
     fi
   fi
   sleep 3s
