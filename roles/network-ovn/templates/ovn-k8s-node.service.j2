@@ -2,22 +2,22 @@
 Description=OVN-Kubernetes node init
 Documentation=https://github.com/openvswitch/ovn-kubernetes/README.md
 Requires=openvswitch-switch.service
+{% if inventory_hostname in groups['kubernetes-masters'] %}
+Requires=ovn-k8s-master.service
+After=ovn-k8s-master.service
+{% endif %}
 
 [Service]
 ExecStart=/usr/bin/ovnkube \
   -k8s-kubeconfig /opt/k8s/kubeconfig \
   -init-node "{{ inventory_hostname }}" \
   -cluster-subnet "{{ K8S_CLUSTER_IP_SUBNET }}" \
-  -k8s-token "{{ OVN_API_TOKEN }}" \
+  -k8s-token {{ OVN_API_TOKEN }} \
   -k8s-cacert {{ K8S_CERT_FILES_DIR }}/ca.crt.pem \
   -k8s-apiserver "https://{{ K8S_MASTER_IP }}:443" \
   -service-cluster-ip-range "{{ K8S_SERVICE_IP_SUBNET }}" \
   -nodeport \
-{% if inventory_hostname not in groups['loadbalancer-nodes'] %}
-  -init-gateways -gateway-localnet \
-{% else %}
   -init-gateways -gateway-interface={{ iface1.name }} -gateway-nexthop="{{ iface1.gw }}" \
-{% endif %}
   -nb-address="tcp://{{ K8S_MASTER_IP }}:6641" \
   -sb-address="tcp://{{ K8S_MASTER_IP }}:6642"
 ExecStartPost=-/usr/bin/ovn-kube-util nics-to-bridge {{ iface1.name }}

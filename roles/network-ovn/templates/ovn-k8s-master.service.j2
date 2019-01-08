@@ -10,25 +10,14 @@ After=ovn-central.service
 ExecStart=/usr/bin/ovnkube \
   -k8s-kubeconfig /opt/k8s/kubeconfig \
   -init-master "{{ inventory_hostname }}" \
-  -init-node "{{ inventory_hostname }}" \
   -cluster-subnet "{{ K8S_CLUSTER_IP_SUBNET }}" \
   -service-cluster-ip-range "{{ K8S_SERVICE_IP_SUBNET }}" \
-  -nodeport \
   -net-controller \
-  -init-gateways \
   -k8s-token {{ OVN_API_TOKEN }} \
   -k8s-cacert {{ K8S_CERT_FILES_DIR }}/ca.crt.pem \
   -k8s-apiserver "https://{{ internalIP }}:443" \
   -nb-address="tcp://127.0.0.1:6641" \
   -sb-address="tcp://127.0.0.1:6642"
-ExecStartPost=-/usr/bin/ovn-kube-util nics-to-bridge {{ iface1.name }}
-# Remove below workaround when this is fixed for linux: https://github.com/openvswitch/ovn-kubernetes/issues/531
-# Right now, the KubeDNS pods will never reach "running" state after reboots. We need to kill the existing pods and
-# new ones will be successfully created.
-ExecStartPost=-/usr/bin/kubectl uncordon {{ inventory_hostname }}
-ExecStartPost=-/usr/bin/kubectl delete pod --force --grace-period=0 --namespace kube-system --selector k8s-app=kube-dns
-ExecStartPost=/bin/sleep 10
-ExecStartPost=-/usr/bin/kubectl cordon {{ inventory_hostname }}
 Restart=on-failure
 RestartSec=10
 WorkingDirectory=/root/
