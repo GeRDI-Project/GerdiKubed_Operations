@@ -39,6 +39,3 @@
     enabled: yes
     state: restarted
     daemon-reload: yes
-
-- name: Uncordon node to make sure kube-dns will start
-  shell: kubectl uncordon {{ inventory_hostname }}
