@@ -64,7 +64,7 @@ K8S_AUTH_FILES_DIR: "{{ K8S_BASE_DIR }}/tokens"
 ################################################################################
 # this is an example:
 # We will have 255 class-c nets for the same number of nodes
-# 10.220.hostname_suffix.0/24 IPs for each nodes
+# 10.220.0.0/24 IPs for each nodes
 # 10.221.0.0/16 IPs service ports
 K8S_CLUSTER_IP_PRE:    "10.220"
 K8S_CLUSTER_IP_SUBNET: "{{ K8S_CLUSTER_IP_PRE }}.0.0/15"

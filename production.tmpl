@@ -10,16 +10,14 @@
 # lb1.example.com ansible_user=root
 
 [kubernetes-nodes]
-# add all nodes (including lb!), pattern:
-# HOSTNAME          User              Variable			   Hostname (optional)
-# host1.example.com ansible_user=root hostname_suffix=<previous++> hostname_overwrite=
-# Do not forget to increase hostname_suffix with every node instance
+# add all nodes (excluding lb), pattern:
+# HOSTNAME          User              Hostname (optional)
+# host1.example.com ansible_user=root hostname_overwrite=
 # Please use FQDNs for the hosts, IP addresses are not supported anymore
 
 [kubernetes-masters]
 # add all masters, pattern :
-# mst1.example.com ansible_user=root hostname_suffix=<previous++>
-# Do not forget to increase hostname_suffix with every master instance
+# mst1.example.com ansible_user=root 
 # Please use FQDNs for the hosts, IP addresses are not supported anymore
 
 [kubernetes-management]

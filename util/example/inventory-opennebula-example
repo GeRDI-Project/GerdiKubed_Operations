@@ -6,23 +6,22 @@
 
 [loadbalancer-nodes]
 # add all lb nodes, pattern:
-# HOSTNAME          User              Variable                     Hostname (optional)
-# lb1.example.com ansible_user=root hostname_suffix=<previous++> hostname_overwrite=
+# HOSTNAME          User            Hostname (optional)
+# lb1.example.com ansible_user=root hostname_overwrite=
 lb-0.staging.example.org ansible_user=root
 
 [kubernetes-nodes]
 # add all nodes (lb as well if required), pattern:
 # HOSTNAME          User              Variable
-nd-0.staging.example.org ansible_user=root hostname_suffix=2
-nd-1.staging.example.org ansible_user=root hostname_suffix=3
-lb-0.staging.example.org ansible_user=root hostname_suffix=4
+nd-0.staging.example.org ansible_user=root
+nd-1.staging.example.org ansible_user=root
+lb-0.staging.example.org ansible_user=root
 
 [kubernetes-masters]
 # add all masters, pattern :
-# mst1.example.com ansible_user=root hostname_suffix=<previous++>
-# Do not forget to increase hostname_suffix with every master instance
+# mst1.example.com ansible_user=root
 # Please use FQDNs for the hosts, IP addresses are not supported anymore
-mstr-0.staging.example.org ansible_user=root hostname_suffix=1
+mstr-0.staging.example.org ansible_user=root
 
 [kubernetes-management]
 localhost ansible_user=myuser
