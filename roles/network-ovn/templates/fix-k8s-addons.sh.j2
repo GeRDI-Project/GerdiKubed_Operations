@@ -34,8 +34,25 @@ while true; do
   # Check how many deployments are in running state
   STATUS=$(kubectl get pods -n kube-system | grep -c "Running")
   if [ "$STATUS" -eq "2" ]; then
-    # Both are; Break
-    break
+    # Both are; Check if kube-dns is alive or stuck in 2/3 Running
+    # Get kube-dns pod ip
+    HEALTHIP=$(kubectl describe pods --namespace=kube-system -l k8s-app=kube-dns | grep ip_address | sed -e 's/.*ip_address":"\(.*\)\/24",.*/\1/')
+    # Send http to healthz port
+    RESPONSE=$(curl --write-out %{http_code} --silent --output /dev/null http://$HEALTHIP:8081/readiness)
+    if [ "$RESPONSE" -eq "200" ]; then
+      # kube-dns is healthy (3/3 Running); Check Kube-Addon-Manager again
+      MANAGERSTATUS=$(kubectl get pods -n kube-system | grep "kube-addon-manager" | grep -c "MatchNodeSelector")
+      if [ "$MANAGERSTATUS" -eq "1" ]; then
+        # Force delete
+	kubectl delete -f {{ K8S_BASE_DIR }}/kube-addon-manager.yml
+	kubectl apply -f {{ K8S_BASE_DIR }}/kube-addon-manager.yml
+      fi
+      break
+    fi
+    # Give it a grace period to startup
+    sleep 20s
+    # Force delete kube-dns pods
+    kubectl delete pod --force --grace-period=0 --namespace kube-system --selector k8s-app=kube-dns
   elif [ "$STATUS" -eq "1" ]; then
     # Check if Kube-Addon-Manager is stuck in MatchNodeSelector
     MANAGERSTATUS=$(kubectl get pods -n kube-system | grep "kube-addon-manager" | grep -c "MatchNodeSelector")
