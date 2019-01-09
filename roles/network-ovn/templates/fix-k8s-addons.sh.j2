@@ -17,6 +17,15 @@
 # Right now, the KubeDNS pods will never reach "running" state after reboots. We need to kill the existing pods and
 # new ones will be successfully created.
 
+# Wait for apiserver to be reachable
+while true; do
+  RESPONSE=$(curl --write-out %{http_code} --silent --output /dev/null http://localhost:8080)
+  if [ "$RESPONSE" -eq "200" ]; then
+    break
+  fi
+  sleep 3s
+done
+
 # Uncordon master
 kubectl uncordon {{ inventory_hostname }}
 # Force delete kube-dns pods
