@@ -70,3 +70,4 @@ while true; do
 done
 # Recordon master
 kubectl cordon {{ inventory_hostname }} | systemd-cat -p info -t "$0"
+echo "k8s-addons successfully initialized." | systemd-cat -p info -t "$0"

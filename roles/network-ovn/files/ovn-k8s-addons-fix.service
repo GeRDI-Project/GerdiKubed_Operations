@@ -6,8 +6,7 @@ Requires=ovn-k8s-node.service
 After=ovn-k8s-node.service
 
 [Service]
-Type=oneshot
-ExecStart=/etc/kubernetes/fix-k8s-addons.sh
+ExecStart=/bin/bash /etc/kubernetes/fix-k8s-addons.sh
 Restart=on-failure
 RestartSec=5
 
