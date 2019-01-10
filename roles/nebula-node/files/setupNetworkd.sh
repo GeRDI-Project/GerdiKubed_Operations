@@ -23,7 +23,7 @@
 # Test if we are already set up
 DIRECTORYTEST=$(find /etc/systemd/network -name "*.network" | wc -l)
 
-if [ "$DIRECTORYTEST" -eq "$#" ]; then
+if [ "$DIRECTORYTEST" -ge "1" ]; then
   echo "Networkd already setup. Nothing to do here."
   exit 0;
 fi
