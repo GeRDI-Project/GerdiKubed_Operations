@@ -121,6 +121,13 @@
         RequestHeader set X-Graylog-Server-URL expr=https://%{HTTP_HOST}/admin/logs/api
     </Location>
 
+    <Location /admin/kafka>
+        AuthType        Basic
+        AuthName        "Restricted"
+        AuthUserFile    /etc/apache2/.htpasswd
+        Require         valid-user
+    </Location>
+
     <Location /admin/kibana/>
         AuthType	Basic
         AuthName	"Restricted"
@@ -206,6 +213,8 @@
     ProxyPassReverse  /admin/kibana/      http://kibana.default.svc.cluster.locak:5601/
     ProxyPass         /admin/logs         http://graylog-web.default.svc.cluster.local:9000/admin/logs
     ProxyPassReverse  /admin/logs         http://graylog-web.default.svc.cluster.local:9000/admin/logs
+    ProxyPass         /admin/kafka        http://kafka-manager.default.svc.cluster.local:9000/admin/kafka
+    ProxyPassReverse  /admin/kafka        http://kafka-manager.default.svc.cluster.local:9000/admin/kafka
     ProxyPass         /                   http://search-frontend.default.svc.cluster.local/
     ProxyPassReverse  /                   http://search-frontend.default.svc.cluster.local/
 
