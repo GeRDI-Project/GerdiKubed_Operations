@@ -20,6 +20,9 @@
 # Also get rid of loopback IP
 # IPs are stored as IP_ARRAY[0] = IP[[:space:]]CIDR[[:space:]]BROADCAST[[:space:]]DEVICENAME
 #      Example: 141.40.254.115 23 141.40.255.255 ens3
+# Delete previous default OpenNebula setup (happens on multi NIC machines)
+rm /etc/systemd/network/wired.network > /dev/null 2>&1 
+
 # Test if we are already set up
 DIRECTORYTEST=$(find /etc/systemd/network -name "*.network" | wc -l)
 
