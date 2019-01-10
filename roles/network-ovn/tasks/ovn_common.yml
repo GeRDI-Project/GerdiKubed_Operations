@@ -62,8 +62,7 @@
 - name: Pull latest ovn kubernetes source
   git:
     repo: 'https://github.com/openvswitch/ovn-kubernetes'
-    #repo: 'https://github.com/CM2Walki/ovn-kubernetes'
-    #version: "port-already-exists-fix"
+    version: "263952c21afec80e89b1048d8a6369c480540ec0"
     dest: "{{ OVN_K8S_DIR }}"
 
 # This would be nicer using the make module, but it doesn't load the .profile context
