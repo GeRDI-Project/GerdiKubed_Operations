@@ -11,10 +11,11 @@
 lb-0.staging.example.org ansible_user=root
 
 [kubernetes-nodes]
-# add all nodes (excluding lb), pattern:
+# add all nodes (including lb), pattern:
 # HOSTNAME          User              Variable
 nd-0.staging.example.org ansible_user=root
 nd-1.staging.example.org ansible_user=root
+lb-0.staging.example.org ansible_user=root
 
 [kubernetes-masters]
 # add all masters, pattern :
