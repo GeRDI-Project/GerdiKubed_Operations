@@ -46,8 +46,8 @@ while true; do
       MANAGERSTATUS=$(kubectl get pods -n kube-system | grep "kube-addon-manager" | grep -c "MatchNodeSelector")
       if [ "$MANAGERSTATUS" -eq "1" ]; then
         # Force delete
-	kubectl delete -f {{ K8S_BASE_DIR }}/kube-addon-manager.yml | systemd-cat -p info -t "$0"
-	kubectl apply -f {{ K8S_BASE_DIR }}/kube-addon-manager.yml | systemd-cat -p info -t "$0"
+        kubectl delete -f {{ K8S_BASE_DIR }}/kube-addon-manager.yml | systemd-cat -p info -t "$0"
+        kubectl apply -f {{ K8S_BASE_DIR }}/kube-addon-manager.yml | systemd-cat -p info -t "$0"
       fi
       # Recheck if all kube-dns pods are running (3/3)
       RUNSTATUS=$(kubectl get pods -n kube-system | grep -c "3/3")
