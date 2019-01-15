@@ -12,7 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Install conntrack
+# Description:
+# The kube-proxy takes care of proxying request inside the k8s cluster. 
+# Kube-proxy will run a s systemd-service on all nodes.
+- name: kube-proxy common | Install conntrack
   apt:
     name: "{{ packages }}"
     state: latest
@@ -21,18 +24,18 @@
       - conntrack
       - conntrackd
 
-- name: Flush iptables rules
+- name: kube-proxy common | Flush iptables rules
   iptables:
     table: nat
     flush: yes
 
-- name: Symlink kube-proxy to /usr/bin
+- name: kube-proxy common | Symlink kube-proxy to /usr/bin
   file:
     src:    "{{ K8S_SERVER_BIN_DIR }}/kube-proxy"
     dest:   "/usr/bin/kube-proxy"
     state:  link
 
-- name: Create a systemd unit file
+- name: kube-proxy common | Create a systemd unit file
   template:
     src: kube-proxy.service.j2
     dest: /etc/systemd/system/kube-proxy.service
@@ -40,14 +43,14 @@
     - reload daemon
     - restart kube-proxy
 
-- name: Register kube-proxy to systemd
+- name: kube-proxy common | Register kube-proxy to systemd
   systemd:
     state: started
     name: kube-proxy
     enabled: yes
     daemon-reload: yes
 
-- name: Allow forwarding from external IPs to NodeIPs
+- name: kube-proxy common | Allow forwarding from external IPs to NodeIPs
   iptables:
     chain: FORWARD
     policy: ACCEPT

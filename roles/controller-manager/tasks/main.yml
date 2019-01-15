@@ -12,16 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Copy ca-key
+# Description:
+# The controller-manager runs on all master instances and distributes the 
+# deployments and pods to the kubelets running on the node instances.
+# You can choose to run the controller-manager as a systemd-service 
+# (set CONTROLER_MANAGER_AS_SERVICE to "True") or as a pod 
+# (CONTROLER_MANAGER_AS_POD to "True"). At least and at most one of these options has to be true.
+- name: controller-manager common | Copy ca-key
   copy:
     src:  "{{ CONTROL_KEY_DIR }}/ca.key"
     dest: "{{ K8S_KEY_FILES_DIR }}/ca.key"
     mode: 0400
 
-- name: Start controller-manager as a pod
+- name: controller-manager | Start controller-manager as a pod
   import_tasks: controllerManagerAsPod.yml
   when: CONTROLLER_MANAGER_AS_POD
 
-- name: Start controller-manager as a service
+- name: controller-manager | Start controller-manager as a service
   import_tasks: controllerManagerAsService.yml
   when: CONTROLLER_MANAGER_AS_SERVICE

@@ -12,19 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Create {{ CNI_DIR }}
+# Description:
+# This role handles the setup of the network cni plugin used by kubernetes.
+# Creates CNI directories;
+# Downloads & Unarchives cni binaries
+# Required by ovn-kubernetes (network-ovn) 
+- name: cni common | Create {{ CNI_DIR }}
   file:
     path: "{{ CNI_DIR }}"
     state: directory
 
-- name: Create {{ CNI_CONF_DIR }}
+- name: cni common | Create {{ CNI_CONF_DIR }}
   file:
     path: "{{ CNI_CONF_DIR }}"
     state: directory
 
-- name: Fetch cni binaries
+- name: cni common | Fetch cni binaries
   unarchive:
     src:  "{{ CNI_DOWNLOAD_URL }}"
     dest: "{{ CNI_DIR }}"
     copy: no
     creates: "{{ CNI_DIR }}/cnitool"
+  retries: 3
+  delay: 3

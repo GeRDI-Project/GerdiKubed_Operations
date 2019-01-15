@@ -12,28 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Label master machines
+# Description:
+# This role sets up the kubernetes addon manager and handles the creation of the kube-dns service.
+- name: k8s-addons | Label master machines
   shell: kubectl label nodes {{ inventory_hostname }} role=master --overwrite
 
-- name: Create addons dir
+- name: k8s-addons | Create addons dir
   file:
     path: /etc/kubernetes/addons
     state: directory
 
-- name: Create a yml-file to deploy kube-addon-manager
+- name: k8s-addons | Create a yml-file to deploy kube-addon-manager
   template:
     src: "kube-addon-manager.yml.j2"
     dest: "{{ K8S_BASE_DIR }}/kube-addon-manager.yml"
 
-- name: Create kube-addon-manager
+- name: k8s-addons | Create kube-addon-manager
   shell: kubectl apply -f "{{ K8S_BASE_DIR }}/kube-addon-manager.yml"
 
-- name: Create manifests for all addons
+- name: k8s-addons | Create manifests for all addons
   template:
     src:  "{{ item }}.yml.j2"
     dest: "/etc/kubernetes/addons/{{ item }}.yml"
   with_items:
     - "kube-dns"
 
-- name: Create kube-dns
+- name: k8s-addons | Create kube-dns
   shell: kubectl apply -f /etc/kubernetes/addons/kube-dns.yml

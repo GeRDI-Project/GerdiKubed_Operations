@@ -14,14 +14,13 @@
 ---
 
 # Allow access to workernode health check
-# TODO: source: should be MASTERIP or MASTERIPS
-- name: Allow kublet port
+- name: ufw node | Allow kublet port
   ufw:
     rule: allow
     port: 10250
     proto: tcp
 
-- name: Allow services running on node
+- name: ufw node | Allow services running on node
   ufw:
     rule: allow
     port: 30000:32767

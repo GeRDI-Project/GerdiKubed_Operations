@@ -200,6 +200,9 @@ if [ ${#PRIVATE_IPS[@]} -eq 1 ]; then
         echo 'Destination='$NETWORK_ADDRESS'/'$CIDR; \
         echo 'Table='$ROUTING_TABLE_INT; \
       } >> /etc/systemd/network/$DEV_NAME.network
+      # Setup networkd for ovn kubernetes bridge
+      cp /etc/systemd/network/$DEV_NAME.network /etc/systemd/network/br$DEV_NAME.network
+      sed -i "s/Name=$DEV_NAME/Name=br$DEV_NAME/g" /etc/systemd/network/br$DEV_NAME.network
     fi
     echo "Writting "$DEV_NAME".network"
   done
@@ -233,22 +236,3 @@ systemctl restart systemd-networkd
 
 sed -i 's/#ListenAddress 0.0.0.0/ListenAddress '$IP_INT'/
   s/#AddressFamily.*/AddressFamily inet/;' /etc/ssh/sshd_config
-
-############################### OVN Specific Setup ###############################
-# This has to happen after we did the initial setup
-# Create / Adapt config files that networkd understands for the bridges
-if [ ${#PRIVATE_IPS[@]} -eq 1 ]; then
-    DEV_NAME=$(echo ${PRIVATE_IPS[0]} | awk '{print $4}')
-    # Setup networkd for ovn kubernetes bridge
-    cp /etc/systemd/network/$DEV_NAME.network /etc/systemd/network/br$DEV_NAME.network
-    sed -i "s/Name=$DEV_NAME/Name=br$DEV_NAME/g" /etc/systemd/network/br$DEV_NAME.network
-    # Setup SSH interface without ip
-    { \
-      echo '[Match]'; \
-      echo 'Name='$DEV_NAME; \
-      echo ''; \
-      echo '[Network]'; \
-      echo 'DHCP=no'; \
-      echo 'DNS=129.187.5.1'; \
-    } > /etc/systemd/network/$DEV_NAME.network
-fi

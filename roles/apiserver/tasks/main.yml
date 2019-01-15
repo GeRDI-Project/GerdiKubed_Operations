@@ -12,21 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Create token file
+# Description:
+# The apiserver is the management interface of the k8s cluster. 
+# You can choose to run the apiserver as a systemd-service (set APISERVER_AS_SERVICE to "True") 
+# or as a pod (APISERVER_AS_POD to "True"). 
+# At least and at most one of these options has to be true.
+- name: apiserver common | Create token file
   template:
     src:  "known_tokens.csv.j2"
     dest: "{{ K8S_AUTH_FILES_DIR }}/known_tokens.csv"
 
-- name: Install public key
+- name: apiserver common | Install public key
   copy:
     src:  "{{ CONTROL_KEY_DIR }}/{{ inventory_hostname }}.pub"
     dest: "{{ K8S_KEY_FILES_DIR }}/{{ inventory_hostname }}.pub"
     mode: "0444"
 
-- name: Start apiserver as a pod
+- name: apiserver | Start apiserver as a pod
   import_tasks: apiserverAsPod.yml
   when: APISERVER_AS_POD
 
-- name: Start apiserver as a service
+- name: apiserver | Start apiserver as a service
   import_tasks: apiserverAsService.yml
   when: APISERVER_AS_SERVICE

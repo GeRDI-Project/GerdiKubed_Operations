@@ -20,6 +20,8 @@
     packages:
       - apache2
       - libapache2-mod-shib2
+  retries: 3
+  delay: 3
 
 - name: Enable necessary apache modules
   apache2_module:
@@ -32,6 +34,8 @@
     - rewrite
     - shib2
     - ssl
+  retries: 3
+  delay: 3
 
 - name: Install server configuration
   template:
@@ -39,7 +43,6 @@
     dest: "/etc/apache2/sites-enabled/{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}.conf"
   notify:
     - restart apache
-
 
 - name: Copy cert and key for apache2
   copy:
@@ -66,6 +69,8 @@
   get_url:
     url: https://www.aai.dfn.de/fileadmin/metadata/dfn-aai.g2.pem
     dest: /etc/ssl/dfn-aai.g2.pem
+  retries: 3
+  delay: 3
 
 - name: Copy .htpasswd
   copy:

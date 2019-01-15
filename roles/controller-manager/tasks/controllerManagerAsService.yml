@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Symlink controller-manager to /usr/bin
+- name: controller-manager service | Symlink controller-manager to /usr/bin
   file:
     src:    "{{ K8S_SERVER_BIN_DIR }}/kube-controller-manager"
     dest:   "/usr/bin/controller-manager"
     state:  link
 
-- name: Create a systemd unit file
+- name: controller-manager service | Create a systemd unit file
   template:
     src: controller-manager.service.j2
     dest: /etc/systemd/system/controller-manager.service
@@ -26,7 +26,7 @@
     - reload daemon
     - restart controller-manager
 
-- name: Register controller-manager to systemd
+- name: controller-manager service | Register controller-manager to systemd
   systemd:
     state: started
     name: controller-manager

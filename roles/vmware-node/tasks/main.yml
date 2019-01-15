@@ -12,18 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Script to setup NICs of VMware machine
+# Description:
+# Performs the network interface setup on vmware-nodes
+# Making sure it uses systemd-networkd
+
+- name: vmware-node | Script to setup NICs of VMware machine
   copy:
     src: setupNIC.sh
     dest: /root/setupNIC.sh
 
-- name: Setup NICs of VMware machine
+- name: vmware-node | Setup NICs of VMware machine
   shell: bash /root/setupNIC.sh {{ eth0ip }} {{ eth1ip }} {{ eth2ip }}
 
-- name: Script that sets up networkd
+- name: vmware-node | Script that sets up networkd
   copy:
     src: setupNetworkd.sh
     dest: /root/setupNetworkd.sh
 
-- name: Setup networkd
+- name: vmware-node | Setup networkd
   shell: bash /root/setupNetworkd.sh {{ K8S_INTERNAL_ROUTING_TABLE }} {{ lookup('dig', NFS_SERVER_DOMAIN, 'qtype=A') }}

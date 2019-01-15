@@ -12,10 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Start scheduler as a pod
+# Description:
+# The scheduler runs scheduled pods. You can choose to run the scheduler as a
+# systemd-service (set SCHEDULER_AS_SERVICE to "True") or as a pod (SCHEDULER_AS_POD to "True"). 
+# At least and at most one of these options has to be true.
+- name: scheduler | Start scheduler as a pod
   import_tasks: schedulerAsPod.yml
   when: SCHEDULER_AS_POD
 
-- name: Start scheduler as a service
+- name: scheduler | Start scheduler as a service
   import_tasks: schedulerAsService.yml
   when: SCHEDULER_AS_SERVICE
