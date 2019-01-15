@@ -13,8 +13,8 @@
 # limitations under the License.
 ---
 # Description:
-# This role fetches the kubernetes binaries in a version defined by K8S_VERSION. 
-# It also creates a kubeconfig that is used system wide to configure the k8s components 
+# This role fetches the kubernetes binaries in a version defined by K8S_VERSION.
+# It also creates a kubeconfig that is used system wide to configure the k8s components
 # with the whereabouts of and the credentials to the other components
 - name: k8s-binaries common | Download and Unpack k8s release
   unarchive:

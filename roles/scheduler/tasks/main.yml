@@ -14,7 +14,7 @@
 ---
 # Description:
 # The scheduler runs scheduled pods. You can choose to run the scheduler as a
-# systemd-service (set SCHEDULER_AS_SERVICE to "True") or as a pod (SCHEDULER_AS_POD to "True"). 
+# systemd-service (set SCHEDULER_AS_SERVICE to "True") or as a pod (SCHEDULER_AS_POD to "True").
 # At least and at most one of these options has to be true.
 - name: scheduler | Start scheduler as a pod
   import_tasks: schedulerAsPod.yml

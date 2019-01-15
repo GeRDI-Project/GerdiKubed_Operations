@@ -13,8 +13,8 @@
 # limitations under the License.
 ---
 # Description:
-# The kubelet component is the interface to the docker daemon which makes 
-# sure the Deployments and Pods are translated into running docker containers. 
+# The kubelet component is the interface to the docker daemon which makes
+# sure the Deployments and Pods are translated into running docker containers.
 # Kubelet will run as a systemd-service on all node and master instances.
 - name: kubelet common | Symlink kubelet to /usr/bin
   file:

@@ -16,7 +16,7 @@
 # This role handles the setup of the network cni plugin used by kubernetes.
 # Creates CNI directories;
 # Downloads & Unarchives cni binaries
-# Required by ovn-kubernetes (network-ovn) 
+# Required by ovn-kubernetes (network-ovn)
 - name: cni common | Create {{ CNI_DIR }}
   file:
     path: "{{ CNI_DIR }}"

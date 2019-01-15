@@ -13,9 +13,9 @@
 # limitations under the License.
 ---
 # Description:
-# The apiserver is the management interface of the k8s cluster. 
-# You can choose to run the apiserver as a systemd-service (set APISERVER_AS_SERVICE to "True") 
-# or as a pod (APISERVER_AS_POD to "True"). 
+# The apiserver is the management interface of the k8s cluster.
+# You can choose to run the apiserver as a systemd-service (set APISERVER_AS_SERVICE to "True")
+# or as a pod (APISERVER_AS_POD to "True").
 # At least and at most one of these options has to be true.
 - name: apiserver common | Create token file
   template:

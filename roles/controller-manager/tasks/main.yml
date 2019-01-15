@@ -13,10 +13,10 @@
 # limitations under the License.
 ---
 # Description:
-# The controller-manager runs on all master instances and distributes the 
+# The controller-manager runs on all master instances and distributes the
 # deployments and pods to the kubelets running on the node instances.
-# You can choose to run the controller-manager as a systemd-service 
-# (set CONTROLER_MANAGER_AS_SERVICE to "True") or as a pod 
+# You can choose to run the controller-manager as a systemd-service
+# (set CONTROLER_MANAGER_AS_SERVICE to "True") or as a pod
 # (CONTROLER_MANAGER_AS_POD to "True"). At least and at most one of these options has to be true.
 - name: controller-manager common | Copy ca-key
   copy:

@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 # Description:
-# The kube-proxy takes care of proxying request inside the k8s cluster. 
+# The kube-proxy takes care of proxying request inside the k8s cluster.
 # Kube-proxy will run a s systemd-service on all nodes.
 - name: kube-proxy common | Install conntrack
   apt:
