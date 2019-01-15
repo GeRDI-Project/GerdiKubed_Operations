@@ -20,7 +20,7 @@ ExecStart=/usr/bin/ovnkube \
   -init-gateways -gateway-interface={{ iface1.name }} -gateway-nexthop="{{ iface1.gw }}" \
   -nb-address="tcp://{{ K8S_MASTER_IP }}:6641" \
   -sb-address="tcp://{{ K8S_MASTER_IP }}:6642"
-ExecStartPost=-/usr/bin/ovn-kube-util nics-to-bridge {{ iface1.name }}
+ExecStartPost=/usr/bin/ovn-kube-util nics-to-bridge {{ iface1.name }}
 Restart=on-failure
 RestartSec=10
 WorkingDirectory=/root/
