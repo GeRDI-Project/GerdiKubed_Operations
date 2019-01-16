@@ -12,17 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Symlink kubelet to /usr/bin
+# Description:
+# The kubelet component is the interface to the docker daemon which makes
+# sure the Deployments and Pods are translated into running docker containers.
+# Kubelet will run as a systemd-service on all node and master instances.
+- name: kubelet common | Symlink kubelet to /usr/bin
   file:
     src:    "{{ K8S_SERVER_BIN_DIR }}/kubelet"
     dest:   "/usr/bin/kubelet"
     state:  link
 
 # Kubelet on vmware machines didn't find the config
-- name: export kubeconfig path
+- name: kubelet common | export kubeconfig path
   shell: export KUBECONFIG={{ K8S_KUBECONFIG }}
 
-- name: Create a systemd unit file
+- name: kubelet common | Create a systemd unit file
   template:
     src: kubelet.service.j2
     dest: /etc/systemd/system/kubelet.service
@@ -30,7 +34,7 @@
     - reload daemon
     - restart kubelet
 
-- name: Register kubelet to systemd
+- name: kubelet common | Register kubelet to systemd
   systemd:
     state: started
     name: kubelet

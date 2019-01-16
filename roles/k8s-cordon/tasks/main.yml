@@ -12,11 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-
+# Description:
+# This role makes sure that the kubernetes master and loadbalancer are excluded from having pods scheduled upon them.
+#
 # This is dirty, but necessary.
 # Wait for the kube-dns and kube-addon-manager to enter running state
 # Otherwise the cordon node will force it to be stuck in pending state
-- name: Wait for start of k8s-addons
+- name: k8s-cordon master | Wait for start of k8s-addons
   shell: kubectl get pods -n kube-system | grep -c "Running"
   register: result
   until: result.stdout.find("2") != -1
@@ -24,7 +26,7 @@
   delay: 5
   when: inventory_hostname in groups['kubernetes-masters']
 
-- name: Cordon node, if master or loadbalancer
+- name: k8s-cordon master & loadbalancer | Cordon node, if master or loadbalancer
   shell: kubectl cordon {{ inventory_hostname }}
   when: inventory_hostname in groups['kubernetes-masters'] + groups['loadbalancer-nodes']
   environment:

@@ -20,6 +20,9 @@
 # Also get rid of loopback IP
 # IPs are stored as IP_ARRAY[0] = IP[[:space:]]CIDR[[:space:]]BROADCAST[[:space:]]DEVICENAME
 #      Example: 141.40.254.115 23 141.40.255.255 ens3
+# Delete previous default OpenNebula setup (happens on multi NIC machines)
+rm /etc/systemd/network/wired.network > /dev/null 2>&1
+
 # Test if we are already set up
 DIRECTORYTEST=$(find /etc/systemd/network -name "*.network" | wc -l)
 
@@ -182,24 +185,24 @@ if [ ${#PRIVATE_IPS[@]} -eq 1 ]; then
       echo 'IPForward=kernel'; \
     } > /etc/systemd/network/$DEV_NAME.network
     if [ ${#PUBLIC_IPS[@]} -eq 1 ]; then
-    # This is a 2 interface machine;
-    # Get rid of previous Gateway
-    sed -i '0,/Gateway=/{/Gateway=/d;}' /etc/systemd/network/$DEV_NAME.network
-    # Append Route logic
-    { \
-      echo ''; \
-      echo '[Route]'; \
-      echo 'Gateway='$CURRENT_GATEWAY; \
-      echo 'Table='$ROUTING_TABLE_INT; \
-      echo ''; \
-      echo '[Route]'; \
-      echo 'Gateway='$CURRENT_GATEWAY; \
-      echo 'Destination='$NETWORK_ADDRESS'/'$CIDR; \
-      echo 'Table='$ROUTING_TABLE_INT; \
-    } >> /etc/systemd/network/$DEV_NAME.network
-    # Setup networkd for ovn kubernetes bridge
-    cp /etc/systemd/network/$DEV_NAME.network /etc/systemd/network/br$DEV_NAME.network
-    sed -i "s/Name=$DEV_NAME/Name=br$DEV_NAME/g" /etc/systemd/network/br$DEV_NAME.network
+      # This is a 2 interface machine;
+      # Get rid of previous Gateway
+      sed -i '0,/Gateway=/{/Gateway=/d;}' /etc/systemd/network/$DEV_NAME.network
+      # Append Route logic
+      { \
+        echo ''; \
+        echo '[Route]'; \
+        echo 'Gateway='$CURRENT_GATEWAY; \
+        echo 'Table='$ROUTING_TABLE_INT; \
+        echo ''; \
+        echo '[Route]'; \
+        echo 'Gateway='$CURRENT_GATEWAY; \
+        echo 'Destination='$NETWORK_ADDRESS'/'$CIDR; \
+        echo 'Table='$ROUTING_TABLE_INT; \
+      } >> /etc/systemd/network/$DEV_NAME.network
+      # Setup networkd for ovn kubernetes bridge
+      cp /etc/systemd/network/$DEV_NAME.network /etc/systemd/network/br$DEV_NAME.network
+      sed -i "s/Name=$DEV_NAME/Name=br$DEV_NAME/g" /etc/systemd/network/br$DEV_NAME.network
     fi
     echo "Writting "$DEV_NAME".network"
   done
