@@ -12,28 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: install ovs and ovn master packages
+- name: network-ovn master | install ovs and ovn master packages
   package:
     name={{ item }}
     state=present
   with_items:
     - ovn-central
 
-- name: open tcp ports for ovn databases
+- name: network-ovn master | open tcp ports for ovn databases
   shell: |
     ovn-nbctl set-connection ptcp:6641 &&
     ovn-sbctl set-connection ptcp:6642
   changed_when: false
 
-- name: Set the k8s api server address in the Open vSwitch database
-  shell: ovs-vsctl set Open_vSwitch . external_ids:k8s-api-server="https://{{ internalIP }}:443"
+- name: network-ovn master | Set the k8s api server address in the Open vSwitch database
+  shell: ovs-vsctl set Open_vSwitch . external_ids:k8s-api-server="https://{{ iface1.ipv4 }}:443"
 
-- name: Install ovn-k8s-master as a service
+- name: network-ovn master | Install ovn-k8s-master as a service
   template:
     src: ovn-k8s-master.service.j2
     dest: /etc/systemd/system/ovn-k8s-master.service
 
-- name: Register ovn-k8s-master to systemd and start it
+- name: network-ovn master | Register ovn-k8s-master to systemd and start it
   systemd:
     name: ovn-k8s-master.service
     enabled: yes

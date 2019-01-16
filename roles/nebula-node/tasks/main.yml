@@ -12,14 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Script to set up networkd interfaces
+# Description:
+# Performs the network setup on OpenNebula nodes
+# Making sure the node uses systemd-networkd
+- name: nebula-node | Script to set up networkd interfaces
   copy:
     src: setupNetworkd.sh
     dest: /root/setupNetworkd.sh
 
-- name: Set up networkd interfaces
+- name: nebula-node | Set up networkd interfaces
   shell: bash /root/setupNetworkd.sh {{ K8S_INTERNAL_ROUTING_TABLE }} {{ lookup('dig', NFS_SERVER_DOMAIN, 'qtype=A') }}
 
-- name: Set hostname to {{ inventory_hostname }}
+- name: nebula-node | Set hostname to {{ inventory_hostname }}
   hostname:
     name: "{{ inventory_hostname }}"

@@ -11,8 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# ---
-- name: Install iptables and ufw
+---
+# Description:
+# This role sets up the uncomplicated firewall (ufw).
+# Sets default policy and opens required ports depending on node type
+- name: ufw common | Install iptables and ufw
   apt:
     name: "{{ packages }}"
     state: latest
@@ -21,38 +24,38 @@
       - iptables
       - ufw
 
-- name: Setup master iptables
+- name: ufw common | Setup master iptables
   import_tasks: setup_mastertables.yml
   when: inventory_hostname in groups['kubernetes-masters']
 
-- name: Setup node iptables
+- name: ufw common | Setup node iptables
   import_tasks: setup_nodetables.yml
   when: inventory_hostname in groups['kubernetes-nodes']
 
-- name: Setup lb iptables
+- name: ufw common | Setup lb iptables
   import_tasks: setup_lbtables.yml
   when: inventory_hostname in groups['loadbalancer-nodes']
 
-# VMware nodes use gateways, so do not require this step
-- name: Allow & Limit SSH logins from everywhere
+# VMware nodes use gateways, so we don't require this step
+- name: ufw opennebula | Allow & Limit SSH logins from everywhere
   ufw:
     rule: limit
     port: ssh
     proto: tcp
   when: inventory_hostname not in groups['vmware-nodes']
 
-- name: Allow geneve (OVN) tunnel traffic
+- name: ufw common | Allow geneve (OVN) tunnel traffic
   ufw:
     rule: allow
     proto: udp
     port: 6081
 
-- name: Enable logging
+- name: ufw common | Enable logging
   ufw:
     logging: on
 
 # Reload for changes to take effect
-- name: Reload ufw
+- name: ufw common | Reload ufw
   ufw:
     state: enabled
     policy: reject

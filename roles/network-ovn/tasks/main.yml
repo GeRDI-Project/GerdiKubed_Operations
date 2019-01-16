@@ -15,14 +15,14 @@
 # These tasks follow the description made here:
 # https://github.com/openvswitch/ovn-kubernetes
 # commit 65fb624 (2018/12/12)
-
-- name: Common tasks on master and nodes
+# Description:
+# OVN/OVS is one of the possible k8s network driver (see k8s network model)
+- name: network-ovn | Common tasks on master and nodes
   import_tasks: ovn_common.yml
 
-- name: Initialize k8s master
+- name: network-ovn | Initialize k8s master
   import_tasks: initialize_master.yml
   when: inventory_hostname in groups['kubernetes-masters']
 
-- name: Initialize k8s node
+- name: network-ovn | Initialize k8s node
   import_tasks: initialize_node.yml
-  #when: inventory_hostname not in groups['kubernetes-masters']

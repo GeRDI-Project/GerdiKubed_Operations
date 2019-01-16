@@ -22,6 +22,8 @@
       - resolvconf
   notify:
     - restart dnsmasq
+  retries: 3
+  delay: 3
 
 - name: Create configurationfile for access to k8s-dns
   template:

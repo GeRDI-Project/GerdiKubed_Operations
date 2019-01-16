@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 curNum=0
-for link in `ip link | egrep '^[0-9]+:' | awk '{ print $2 }' | tr -d ':'`
+for link in `ip link | egrep '^[0-9]+:' | awk '{ print $2 }' | tr -d ':' | sort -V`
 do
   echo $link | egrep -q '^lo|^docker0|^k8s-' && continue
   ipv4WithMask=$(ip a list dev $link | egrep 'inet ' | awk '{ print $2 }' | tr -d '\n')

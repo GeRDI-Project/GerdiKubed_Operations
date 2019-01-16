@@ -16,6 +16,5 @@
   hosts: loadbalancer-nodes
   remote_user: root
   roles:
-    - k8s-cordon
     - cluster-dns
     - apache-proxy

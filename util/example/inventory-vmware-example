@@ -18,6 +18,7 @@ lb-0.staging.example.org ansible_user=root
 # HOSTNAME          User              Variable
 nd-0.staging.example.org ansible_user=root hostname_overwrite=node0
 nd-1.staging.example.org ansible_user=root hostname_overwrite=node1
+lb-0.staging.example.org ansible_user=root hostname_overwrite=lb0
 
 [kubernetes-masters]
 # add all masters, pattern :

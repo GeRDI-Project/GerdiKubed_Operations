@@ -13,8 +13,8 @@ After=ovn-k8s-master.service
 [Service]
 ExecStart=/usr/bin/ovnkube \
   -k8s-kubeconfig /opt/k8s/kubeconfig \
-  -init-node "{{ inventory_hostname }}" \
   -cluster-subnet "{{ K8S_CLUSTER_IP_SUBNET }}" \
+  -init-node "{{ inventory_hostname }}" \
   -k8s-token {{ OVN_API_TOKEN }} \
   -k8s-cacert {{ K8S_CERT_FILES_DIR }}/ca.crt.pem \
   -k8s-apiserver "https://{{ K8S_MASTER_IP }}:443" \
@@ -23,7 +23,7 @@ ExecStart=/usr/bin/ovnkube \
   -init-gateways -gateway-interface={{ iface1.name }} -gateway-nexthop="{{ iface1.gw }}" \
   -nb-address="tcp://{{ K8S_MASTER_IP }}:6641" \
   -sb-address="tcp://{{ K8S_MASTER_IP }}:6642"
-ExecStartPost=-/usr/bin/ovn-kube-util nics-to-bridge {{ iface1.name }}
+ExecStartPost=/usr/bin/ovn-kube-util nics-to-bridge {{ iface1.name }}
 Restart=on-failure
 RestartSec=10
 WorkingDirectory=/root/

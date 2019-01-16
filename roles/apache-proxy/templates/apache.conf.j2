@@ -179,6 +179,8 @@
     ProxyPassReverse  /harvest/zenodo     http://zenodo-harvester.default.svc.cluster.local:8080/oaipmh/harvest
     ProxyPass         /harvest/opendatalmu  http://opendatalmu-harvester.default.svc.cluster.local:8080/oaipmh/harvest
     ProxyPassReverse  /harvest/opendatalmu  http://opendatalmu-harvester.default.svc.cluster.local:8080/oaipmh/harvest
+    ProxyPass         /harvest/fishstatj  http://fishstatj-harvester.default.svc.cluster.local:8080/fishstatj/harvest
+    ProxyPassReverse  /harvest/fishstatj  http://fishstatj-harvester.default.svc.cluster.local:8080/fishstatj/harvest
     ProxyPass         /harvest/hccenter   http://hccenter.default.svc.cluster.local
     ProxyPassReverse  /harvest/hccenter   http://hccenter.default.svc.cluster.local
     ProxyPass         /api/v1/hccenter    http://hccenter.default.svc.cluster.local/v1
