@@ -16,5 +16,6 @@
   hosts: loadbalancer-nodes
   remote_user: root
   roles:
+    - secrets
     - cluster-dns
     - apache-proxy

@@ -36,4 +36,3 @@
     - kube-proxy
     - network-ovn
     - k8s-cordon
-    - secrets
