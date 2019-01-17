@@ -23,7 +23,11 @@ ExecStart=/usr/bin/ovnkube \
   -init-gateways -gateway-interface={{ iface1.name }} -gateway-nexthop="{{ iface1.gw }}" \
   -nb-address="tcp://{{ K8S_MASTER_IP }}:6641" \
   -sb-address="tcp://{{ K8S_MASTER_IP }}:6642"
+{% if inventory_hostname not in groups['loadbalancer-nodes'] %}
 ExecStartPost=/usr/bin/ovn-kube-util nics-to-bridge {{ iface1.name }}
+{% else %}
+ExecStartPost=-/usr/bin/ovn-kube-util nics-to-bridge {{ iface1.name }}
+{% endif %}
 Restart=on-failure
 RestartSec=10
 WorkingDirectory=/root/
