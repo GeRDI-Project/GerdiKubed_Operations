@@ -1,10 +1,10 @@
 [Unit]
 Description=OVN-Kubernetes node init
 Documentation=https://github.com/openvswitch/ovn-kubernetes/README.md
-Requires=openvswitch-switch.service
 After=openvswitch-switch.service
 Requires=ovn-host.service
 After=ovn-host.service
+After=sshd.service
 {% if inventory_hostname in groups['kubernetes-masters'] %}
 Requires=ovn-k8s-master.service
 After=ovn-k8s-master.service
