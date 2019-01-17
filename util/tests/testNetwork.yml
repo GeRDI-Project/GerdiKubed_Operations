@@ -19,7 +19,7 @@ metadata:
   labels:
     app: nettools
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: net-tools
@@ -30,7 +30,8 @@ spec:
     spec:
       containers:
         - name: net-tools
-          image: net-tools:latest
-          imagePullPolicy: Never
+          image: docker-registry.gerdi.research.lrz.de:5043/operations/net-tools:latest
           stdin: true
           tty: true
+      imagePullSecrets:
+        - name: lrz-docker-registry-secret

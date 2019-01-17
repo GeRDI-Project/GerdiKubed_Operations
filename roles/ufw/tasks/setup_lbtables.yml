@@ -14,19 +14,19 @@
 ---
 
 # Allow Apache access
-- name: Allow http port
+- name: ufw loadbalancer | Allow http port
   ufw:
     rule: allow
     port: 80
     proto: tcp
 
-- name: Allow https port
+- name: ufw loadbalancer | Allow https port
   ufw:
     rule: allow
     port: 443
     proto: tcp
 
-- name: Allow access from tx.lrz.de
+- name: ufw loadbalancer | Allow access from tx.lrz.de
   ufw:
     rule: allow
     port: 22

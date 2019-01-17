@@ -12,12 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: start ovn-k8s-init
-  service:
-    name: ovn-k8s-init
-    state: started
+# These tasks follow the description made here:
+# https://github.com/openvswitch/ovn-kubernetes
+# commit 65fb624 (2018/12/12)
+# Description:
+# OVN/OVS is one of the possible k8s network driver (see k8s network model)
+- name: network-ovn | Common tasks on master and nodes
+  import_tasks: ovn_common.yml
 
-- name: start ovn-k8s-watcher
-  service:
-    name: ovn-k8s-watcher
-    state: started
+- name: network-ovn | Initialize k8s master
+  import_tasks: initialize_master.yml
+  when: inventory_hostname in groups['kubernetes-masters']
+
+- name: network-ovn | Initialize k8s node
+  import_tasks: initialize_node.yml

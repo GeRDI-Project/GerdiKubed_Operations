@@ -38,6 +38,6 @@
     - apiserver
     - scheduler
     - controller-manager
-    - network_ovn
+    - network-ovn
     - k8s-addons
     - k8s-cordon

@@ -20,6 +20,17 @@
 # Also get rid of loopback IP
 # IPs are stored as IP_ARRAY[0] = IP[[:space:]]CIDR[[:space:]]BROADCAST[[:space:]]DEVICENAME
 #      Example: 141.40.254.115 23 141.40.255.255 ens3
+# Delete previous default OpenNebula setup (happens on multi NIC machines)
+rm /etc/systemd/network/wired.network > /dev/null 2>&1
+
+# Test if we are already set up
+DIRECTORYTEST=$(find /etc/systemd/network -name "*.network" | wc -l)
+
+if [ "$DIRECTORYTEST" -ge "1" ]; then
+  echo "Networkd already setup. Nothing to do here."
+  exit 0;
+fi
+
 IFS=$'\n'
 # Filter out ipv4 ips
 # Remove loopback, filter by device ens0-9
@@ -56,10 +67,8 @@ while read -r IP; do
 done <<< "$IP_ARRAY"
 
 # Check what state we are in
-# Loadbalancer & Old Nodes: 1 Public, 2 Private (1 OVN, 1 SSH) -> Setup required
-# Loadbalancer & Old Nodes after OVN setup: 1 Public, 1 Private (1 hijacked by OVN, 1 SSH) -> No Setup required
-# New Nodes: 0 Public, 2 Private (1 OVN, 1 SSH) -> Setup required
-# New Nodes after OVN setup: 0 Public, 1 Private (1 hijacked by OVN, 1 SSH) -> No Setup required
+# Loadbalancers: 1 Public & 1 Private -> Setup required
+# Nodes: 0 Public & 1 Private interface -> Setup required
 echo "${#PUBLIC_IPS[@]} Public & ${#PRIVATE_IPS[@]} Private IPs detected."
 
 # Error states
@@ -71,12 +80,6 @@ fi
 EXIST=`ip rule show $NFS_SERVER_DOMAIN | wc -l`
 if [ ${#PUBLIC_IPS[@]} -eq 1 ] && [ $EXIST -eq 0 ]; then
   ip rule add to $NFS_SERVER_DOMAIN table $ROUTING_TABLE_INT
-fi
-
-# Cases: 1 Private & 1 Public OR 1 Private & 0 Public -> Assume we are already set up -> Exit script
-if [[ ${#PRIVATE_IPS[@]} -eq 1 && ${#PUBLIC_IPS[@]} -eq 1 ]] || [[ ${#PRIVATE_IPS[@]} -eq 1 && ${#PUBLIC_IPS[@]} -eq 0 ]]; then
-  echo "Nothing to do"
-  exit 0
 fi
 
 # Taken from https://gist.github.com/kwilczynski/5d37e1cced7e76c7c9ccfdf875ba6c5b
@@ -95,7 +98,9 @@ ip_to_netaddr() {
   unset $IFS
 }
 
+# Does this machine have a public interface?
 if [ ${#PUBLIC_IPS[@]} -eq 1 ]; then
+  # Yes, setup route repair
   PRIVATEIP_COUNT=${#PRIVATE_IPS[@]}
   DEV_NAME=$(echo ${PUBLIC_IPS[0]} | awk '{print $4}')
   IP_INTERNAL=$(echo ${PUBLIC_IPS[0]} | awk '{print $1}')
@@ -126,7 +131,7 @@ if [ ${#PUBLIC_IPS[@]} -eq 1 ]; then
   # Taken from Gerdi GIT (gerdikubed/util/sed.src/repairRoutes.sh)
   { \
     echo '#!/bin/bash'; \
-    echo "ip route | egrep '"$DEV_INT"|"$DEV_OVN"' | \\" ; \
+    echo "ip route | egrep '"$DEV_INT"|br"$DEV_INT"' | \\" ; \
     echo 'while read line'; \
     echo 'do'; \
     echo '  ip route delete $line'; \
@@ -159,30 +164,28 @@ elif [ ${#PUBLIC_IPS[@]} -gt 1 ]; then
   exit 1;
 fi
 
-if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
-  COUNTER=0
+if [ ${#PRIVATE_IPS[@]} -eq 1 ]; then
   for IP in "${PRIVATE_IPS[@]}" ; do
     # Two private interfaces; First is gonna be SSH; Second OVN
-    DEV_NAME=$(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $4}')
-    IP_INTERNAL=$(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $1}')
-    CIDR=$(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $2}')
-    NETWORK_ADDRESS=$(ip_to_netaddr $(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $1;}') $(echo $SUBNET_MASK))
-    CURRENT_GATEWAY=$(echo "$GATEWAYS" | awk -v pos="$(($COUNTER+1))" '{print $pos}')
-    if [ $COUNTER -eq 0 ]; then
-      # Setup SSH interface
-      { \
-        echo '[Match]'; \
-        echo 'Name='$DEV_NAME; \
-        echo ''; \
-        echo '[Network]'; \
-        echo 'DHCP=no'; \
-        echo 'DNS=129.187.5.1'; \
-        echo 'Address='$IP_INTERNAL'/'$CIDR; \
-        echo 'Gateway='$CURRENT_GATEWAY; \
-        echo 'IPForward=kernel'; \
-      } > /etc/systemd/network/$DEV_NAME.network
-      if [ ${#PUBLIC_IPS[@]} -eq 1 ]; then
-      # This is a 3 interface machine;
+    DEV_NAME=$(echo ${PRIVATE_IPS[0]} | awk '{print $4}')
+    IP_INTERNAL=$(echo ${PRIVATE_IPS[0]} | awk '{print $1}')
+    CIDR=$(echo ${PRIVATE_IPS[0]} | awk '{print $2}')
+    NETWORK_ADDRESS=$(ip_to_netaddr $(echo ${PRIVATE_IPS[0]} | awk '{print $1;}') $(echo $SUBNET_MASK))
+    CURRENT_GATEWAY=$(echo "$GATEWAYS" | awk -v pos="1" '{print $pos}')
+    # Setup SSH interface
+    { \
+      echo '[Match]'; \
+      echo 'Name='$DEV_NAME; \
+      echo ''; \
+      echo '[Network]'; \
+      echo 'DHCP=no'; \
+      echo 'DNS=129.187.5.1'; \
+      echo 'Address='$IP_INTERNAL'/'$CIDR; \
+      echo 'Gateway='$CURRENT_GATEWAY; \
+      echo 'IPForward=kernel'; \
+    } > /etc/systemd/network/$DEV_NAME.network
+    if [ ${#PUBLIC_IPS[@]} -eq 1 ]; then
+      # This is a 2 interface machine;
       # Get rid of previous Gateway
       sed -i '0,/Gateway=/{/Gateway=/d;}' /etc/systemd/network/$DEV_NAME.network
       # Append Route logic
@@ -197,31 +200,18 @@ if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
         echo 'Destination='$NETWORK_ADDRESS'/'$CIDR; \
         echo 'Table='$ROUTING_TABLE_INT; \
       } >> /etc/systemd/network/$DEV_NAME.network
-      fi
-      echo "Writting "$DEV_NAME".network"
-    elif [ $COUNTER -eq 1 ]; then
-      SUBNET_MASK=$(cidr_to_netmask $(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $2;}'))
-      # Setup OVN interface
-      { \
-        echo '[Match]'; \
-        echo 'Name='$DEV_NAME; \
-        echo ''; \
-        echo '[Network]'; \
-        echo 'DHCP=no'; \
-        echo ''; \
-        echo '[Address]'; \
-        echo 'Address='$IP_INTERNAL'/'$CIDR; \
-      } > /etc/systemd/network/$DEV_NAME.network
-      echo "Writting "$DEV_NAME".network"
+      # Setup networkd for ovn kubernetes bridge
+      cp /etc/systemd/network/$DEV_NAME.network /etc/systemd/network/br$DEV_NAME.network
+      sed -i "s/Name=$DEV_NAME/Name=br$DEV_NAME/g" /etc/systemd/network/br$DEV_NAME.network
     fi
-    COUNTER=$((COUNTER+1))
+    echo "Writting "$DEV_NAME".network"
   done
 else
   >&2 echo "Too many private interfaces. I have no idea what to do!"
   exit 1;
 fi
 
-# We always use the first private ip for SSH and the second for OVN
+# We always use the private IP for SSH
 IP_INT=$(echo ${PRIVATE_IPS[0]} | awk '{print $1}')
 
 rm /etc/resolv.conf

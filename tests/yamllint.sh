@@ -13,4 +13,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 echo "check for unvalid yml"
-find -name "*.yml" -exec python -c "from yaml import load, Loader; load(open('{}'), Loader=Loader)" \;
+find -name "*.yml" -exec python -c "from yaml import load_all, Loader; load_all(open('{}'), Loader=Loader)" \;

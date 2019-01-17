@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+# Description:
+# This role creates a ca ready infrastructure on a trusted host the localhost should be the default.
+#
 # [SAI-584] Force a recreation of all certificates (same FQDNs, different IPS
 # will not be overwritten. Resulting in machines getting invalid certificates for their ips)
 - name: Delete previous directory if it exists
@@ -84,6 +87,8 @@
         name: "{{ lookup('dig', item, 'qtype=A') }}"
       - type: "IP"
         name: "{{ K8S_SERVICE_IP_PRE }}.0.1"
+      - type: "IP"
+        name: "{{ K8S_CLUSTER_IP_PRE }}.0.2"
   with_items:
     - "{{ groups['kubernetes-masters'] }}"
     - "{{ groups['kubernetes-nodes'] }}"

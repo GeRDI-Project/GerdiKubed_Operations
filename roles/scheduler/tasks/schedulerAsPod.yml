@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Create scheduler manifest and give it kubelet
+- name: scheduler pod | Create scheduler manifest and give it kubelet
   template:
     src:  "scheduler.json.j2"
     dest: "/etc/kubernetes/manifests/scheduler.json"
