@@ -110,7 +110,7 @@
 # Remove dependency on networking.service on lb nodes
 # Fixes issue:
 # network.target: Job network.target/start deleted to break ordering cycle starting with openvswitch-switch.service/start
-# (and therefor sshd service not starting)
+# (and therefore sshd service not starting)
 - name: network-ovn loadbalancer | Fix openvswitch-switch.service to make sshd boot properly
   lineinfile:
     path: /lib/systemd/system/openvswitch-switch.service
