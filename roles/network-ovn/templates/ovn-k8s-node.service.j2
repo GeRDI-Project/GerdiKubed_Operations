@@ -25,7 +25,10 @@ ExecStart=/usr/bin/ovnkube \
 # Move interface routes to bridge interface
 ExecStartPost=/usr/bin/ovn-kube-util nics-to-bridge {{ iface1.name }}
 {% else %}
-# Move interface routes to bridge interface, if required (can fail if bridge already exists)
+# Move interface routes to bridge interface, this doesn't affect ip rules!
+# For the LB these are defined by networkd (/etc/systemd/network/) this,
+# can lead to networkd setting up the bridge first, leading to a non-zero exit of ovn-kube-util
+# This is why we can ignore the exit code of ovn-kube-util on LBs
 ExecStartPost=-/usr/bin/ovn-kube-util nics-to-bridge {{ iface1.name }}
 {% endif %}
 Restart=on-failure
