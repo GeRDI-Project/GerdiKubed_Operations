@@ -15,9 +15,8 @@
 - name: network-ovn node | install ovs and ovn node packages
   package:
     name={{ item }}
-    state=present
   with_items:
-    - ovn-host
+    - ovn-host={{ OVN_HOST_VERSION }}
 
 - name: network-ovn node | Secure connection to k8s API server
   shell: ovs-vsctl set Open_vSwitch . external_ids:{{item}}

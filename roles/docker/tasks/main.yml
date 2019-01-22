@@ -63,8 +63,7 @@
 # TODO after testing this should not be latest but present with docker-ce=<tested_version>
 - name: docker common | install docker
   apt:
-    name: docker-ce
-    state: latest
+    name: docker-ce={{ DOCKER_VERSION }}
     install_recommends: yes
   retries: 3
   delay: 3

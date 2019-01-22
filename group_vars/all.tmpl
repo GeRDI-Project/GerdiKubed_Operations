@@ -45,6 +45,7 @@ K8S_KUBECONFIG: "{{ K8S_BASE_DIR }}/kubeconfig"
 K8S_DOWNLOAD_URL: "https://github.com/kubernetes/kubernetes/releases/download/{{K8S_VERSION}}/kubernetes.tar.gz"
 # Nameserver Docker should use to resolve
 DOCKER_NAMESERVER: "8.8.8.8"
+DOCKER_VERSION: "5:18.09.1~3-0~debian-stretch"
 
 ################################################################################
 # Configuration for cert-infrastructure role
@@ -88,6 +89,12 @@ CNI_CONF_DIR: /etc/cni/net.d
 # apiserver, network-ovn
 ################################################################################
 OVN_API_TOKEN: "someValue"
+# OVN Node Version
+OVN_HOST_VERSION: "2.10.0+2018.08.28+git.8ca7c82b7d+ds1-10"
+# OVN Master Version
+OVN_CENTRAL_VERSION: "2.10.0+2018.08.28+git.8ca7c82b7d+ds1-10"
+OPENVSWITCH_VERSION: "2.10.0+2018.08.28+git.8ca7c82b7d+ds1-10"
+GOLANG_VERSION: "go1.11.1"
 #Used by autoRepairRoutes.sh; Make sure number is unique
 K8S_INTERNAL_ROUTING_TABLE: "180485"
 
