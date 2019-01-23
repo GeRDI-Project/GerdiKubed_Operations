@@ -21,11 +21,13 @@ sudo ./util/createVMImage.sh \
   -p curl \
   -p conntrack \
   -p conntrackd \
+  -p dnsutils \
   -p dbus \
   -p git \
   -p grub-pc \
   -p ipcalc \
   -p iproute2 \
+  -p less \
   -p linux-image-amd64 \
   -p locales \
   -p netbase \
@@ -36,7 +38,8 @@ sudo ./util/createVMImage.sh \
   -p python-openssl \
   -p software-properties-common \
   -p systemd \
-  -p systemd-sysv
+  -p systemd-sysv \
+  -p vim
 
 # Test locally
 sudo qemu-system-x86_64 -hda $BUILDDIR/$IMAGE -m 1024 -device e1000,netdev=user.0 -netdev user,id=user.0,hostfwd=tcp::5555-:22

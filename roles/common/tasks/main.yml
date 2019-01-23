@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+# Description:
 # Common tasks on every host
-- name: Install additional requirements
+# This role sets up all machines (install packages, set hostname, create directories etc.).
+- name: common | Install additional requirements
   apt:
       name: "{{ packages }}"
       state: latest
@@ -32,8 +34,10 @@
       - python-dnspython
       - python-openssl
       - unzip
+  retries: 3
+  delay: 3
 
-- name: Create k8s directories
+- name: common | Create k8s directories
   file:
     path: "{{ item.path }}"
     state: directory
@@ -45,31 +49,16 @@
     - { path: "{{ K8S_KEY_FILES_DIR  }}", mode: '0700' }
     - { path: "/etc/kubernetes/manifests", mode: '0755' }
 
-- name: Install script to determine network configuration on runtime
+- name: common | Install script to determine network configuration on runtime
   copy:
     src: printIface.sh
     dest: /root/printIface.sh
 
-- name: Retrieve information for OVN (2nd) interface
-  shell: bash /root/printIface.sh 2
-  register: ovnInterface
-  ignore_errors: yes
-
-- name: Get facts for OVN (2nd) interface
-  set_fact:
-    iface2:
-      name: "{{ ovnInterface.stdout.split(' ')[0] }}"
-      ipv4: "{{ ovnInterface.stdout.split(' ')[1] }}"
-      gw:   "{{ ovnInterface.stdout.split(' ')[2] }}"
-      nw:   "{{ ovnInterface.stdout.split(' ')[3] }}"
-      mask: "{{ ovnInterface.stdout.split(' ')[4] }}"
-  when: ovnInterface.rc == 0
-
-- name: Retrieve information for SSH (1st) interface
+- name: common | Retrieve information for SSH (1st) interface
   shell: bash /root/printIface.sh 1
   register: internalInterface
 
-- name: Get facts for SSH (1st) interface
+- name: common | Get facts for SSH (1st) interface
   set_fact:
     iface1:
       name: "{{ internalInterface.stdout.split(' ')[0] }}"
@@ -78,12 +67,7 @@
       nw:   "{{ internalInterface.stdout.split(' ')[3] }}"
       mask: "{{ internalInterface.stdout.split(' ')[4] }}"
 
-- name: Set SSH (1st) interface / internalIP fact
-  set_fact:
-    internalIP: "{{ iface1.ipv4 }}"
-  when: internalInterface.rc == 0
-
-- name: Install server key and cert
+- name: common | Install server key and cert
   copy:
     src:  "{{ item.src  }}"
     dest: "{{ item.dest }}"
@@ -105,13 +89,13 @@
         dest: "{{ K8S_KEY_FILES_DIR }}/admin.key",
         mode: '0400' }
 
-- name: Set kernel param (max_map_count) higher for elasticsearch
+- name: common | Set kernel param (max_map_count) higher for elasticsearch
   sysctl:
     name: vm.max_map_count
     value: 262144
     state: present
 
-- name: Mount NFS-Volume
+- name: common | Mount NFS-Volume
   mount:
     path:   "{{ NFS_MOUNT_PATH }}"
     src:    "{{ NFS_VOLUME_PATH }}"
@@ -119,13 +103,13 @@
     opts:   tcp,nolock,rsize=65536,wsize=65536,timeo=600,intr
     state:  mounted
 
-- name: Create /local/nfs
+- name: common | Create /local/nfs
   file:
     path: /local
     state: directory
     mode: 0775
 
-- name: Create symlink from /mnt/nfs/{{ K8S_DEPLOYMENT_CONTEXT}} to /local/nfs
+- name: common | Create symlink from /mnt/nfs/{{ K8S_DEPLOYMENT_CONTEXT}} to /local/nfs
   file:
     src: /mnt/nfs/{{ K8S_DEPLOYMENT_CONTEXT}}
     dest: /local/nfs

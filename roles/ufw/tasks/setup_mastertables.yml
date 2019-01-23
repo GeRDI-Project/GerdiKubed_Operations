@@ -12,43 +12,43 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Allow access to apiserver
+- name: ufw master | Allow access to apiserver
   ufw:
     rule: allow
     port: 443
     proto: tcp
 
-- name: Allow access to ovsdb
+- name: ufw master | Allow access to ovsdb
   ufw:
     rule: allow
     port: 6641:6642
     proto: tcp
 
-- name: Allow access to etcd
+- name: ufw master | Allow access to etcd
   ufw:
     rule: allow
     port: 2379:2389
     proto: tcp
 
-- name: Allow access to kubelet; kube-controller-manager & kube-scheduler
+- name: ufw master | Allow access to kubelet; kube-controller-manager & kube-scheduler
   ufw:
     rule: allow
     port: 10250:10252
     proto: tcp
 
-- name: Allow access to kubedns
+- name: ufw master | Allow access to kubedns
   ufw:
     rule: allow
     port: 53
     proto: any
 
-- name: Allow access to kubedns
+- name: ufw master | Allow access to kubedns
   ufw:
     rule: allow
     port: 10053:10055
     proto: tcp
 
-- name: Allow access to kubedns
+- name: ufw master | Allow access to kubedns
   ufw:
     rule: allow
     port: 10053

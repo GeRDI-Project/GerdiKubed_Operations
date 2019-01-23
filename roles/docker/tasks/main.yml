@@ -13,7 +13,9 @@
 # limitations under the License.
 ---
 # based on https://docs.docker.com/engine/installation/linux/docker-ce/debian/
-- name: purge any older docker server
+# Description:
+# Installs the docker container engine; required by kubernetes on master and nodes
+- name: docker common | purge any older docker server
   apt:
     pkg: "{{ packages }}"
     state: absent
@@ -25,12 +27,10 @@
       - lxc-docker
       - docker-engine
       - docker
+  retries: 3
+  delay: 3
 
-- name: update repository cache
-  apt:
-    update_cache: yes
-
-- name: install requirements for adding new deb-repo packages
+- name: docker common | install requirements for adding new deb-repo packages
   apt:
     name: "{{ packages}}"
     state: present
@@ -41,31 +41,44 @@
       - curl
       - software-properties-common
 
-- name: add the new gpg key
+- name: docker common | add the new gpg key
   apt_key:
       url: https://download.docker.com/linux/debian/gpg
       id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
       state: present
+  retries: 3
+  delay: 3
 
-- name: add repo
+- name: docker common | add repo
   apt_repository:
     repo="deb [arch=amd64] https://download.docker.com/linux/debian {{ansible_distribution_release}}  stable"
     state=present
 
-- name: update repository cache
+- name: docker common | update repository cache
   apt:
     update_cache: yes
+  retries: 3
+  delay: 3
 
 # TODO after testing this should not be latest but present with docker-ce=<tested_version>
-- name: install docker
+- name: docker common | install docker
   apt:
-      name: docker-ce
-      state: latest
-      install_recommends: yes
+    name: docker-ce
+    state: latest
+    install_recommends: yes
+  retries: 3
+  delay: 3
 
-- name: Configure docker
+- name: docker common | Configure docker
   template:
     src:  "daemon.json.j2"
     dest: "/etc/docker/daemon.json"
+  notify:
+    - restart docker
+
+- name: docker common | Added docker nameserver
+  lineinfile:
+    path: /etc/environment
+    line: 'DOCKER_OPTS="-dns {{ DOCKER_NAMESERVER }}"'
   notify:
     - restart docker

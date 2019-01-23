@@ -34,6 +34,5 @@
     - k8s-binaries
     - kubelet
     - kube-proxy
-    - network_ovn
+    - network-ovn
     - k8s-cordon
-    - secrets

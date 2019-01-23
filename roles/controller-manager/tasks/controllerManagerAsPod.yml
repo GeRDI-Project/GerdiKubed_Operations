@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Create controller-manager manifest and give it kubelet
+- name: controller-manager pod | Create controller-manager manifest and give it kubelet
   template:
     src:  "controller-manager.json.j2"
     dest: "/etc/kubernetes/manifests/controller-manager.json"

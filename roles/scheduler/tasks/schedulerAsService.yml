@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Symlink scheduler to /usr/bin
+- name: scheduler service | Symlink scheduler to /usr/bin
   file:
     src:    "{{ K8S_SERVER_BIN_DIR }}/kube-scheduler"
     dest:   "/usr/bin/scheduler"
     state:  link
 
-- name: Create a systemd unit file
+- name: scheduler service | Create a systemd unit file
   template:
     src: scheduler.service.j2
     dest: /etc/systemd/system/scheduler.service
@@ -26,7 +26,7 @@
     - reload daemon
     - restart scheduler
 
-- name: Register scheduler to systemd
+- name: scheduler service | Register scheduler to systemd
   systemd:
     state: started
     name: scheduler

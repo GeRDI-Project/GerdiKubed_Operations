@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Symlink apiserver to /usr/bin
+- name: apiserver service | Symlink apiserver to /usr/bin
   file:
     src:    "{{ K8S_SERVER_BIN_DIR }}/kube-apiserver"
     dest:   "/usr/bin/apiserver"
     state:  link
 
-- name: Create a systemd unit file
+- name: apiserver service | Create a systemd unit file
   template:
     src: apiserver.service.j2
     dest: /etc/systemd/system/apiserver.service
@@ -26,7 +26,7 @@
     - reload daemon
     - restart apiserver
 
-- name: Register apiserver to systemd
+- name: apiserver service | Register apiserver to systemd
   systemd:
     state: started
     name: apiserver
