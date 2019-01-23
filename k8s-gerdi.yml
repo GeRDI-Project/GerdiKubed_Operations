@@ -18,5 +18,5 @@
   roles:
     - secrets
     - helm
-    - jhub
     - persistent-volumes
+    - jhub
