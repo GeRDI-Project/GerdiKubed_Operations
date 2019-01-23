@@ -215,7 +215,7 @@
     ProxyPassReverse  /bookmark           http://bookmark-frontend.default.svc.cluster.local/bookmark
 
     ProxyPass         /admin/kibana/      http://kibana.default.svc.cluster.local:5601/
-    ProxyPassReverse  /admin/kibana/      http://kibana.default.svc.cluster.locak:5601/
+    ProxyPassReverse  /admin/kibana/      http://kibana.default.svc.cluster.local:5601/
     ProxyPass         /admin/logs         http://graylog-web.default.svc.cluster.local:9000/admin/logs
     ProxyPassReverse  /admin/logs         http://graylog-web.default.svc.cluster.local:9000/admin/logs
     ProxyPass         /admin/kafka        http://kafka-manager.default.svc.cluster.local:9000/admin/kafka
