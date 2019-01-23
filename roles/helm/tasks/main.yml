@@ -14,7 +14,7 @@
 ---
 - name: Create helm directory
   file:
-    path: "/opt/helm"
+    path: "{{ HELM_BASE_DIR }}"
     state: directory
     mode: '0755'
 
