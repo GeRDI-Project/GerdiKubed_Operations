@@ -32,3 +32,4 @@
     port: 22
     proto: tcp
     from: 129.187.10.91
+  when: LRZ_INTERNAL
