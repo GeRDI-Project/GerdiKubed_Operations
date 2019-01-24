@@ -25,13 +25,6 @@
   retries: 3
   delay: 3
 
-# TODO: find a better place for this
-- name: Add dnsmasq to repairRoutes.sh
-  lineinfile:
-    path: /root/repairRoutes.sh
-    line: 'service dnsmasq restart'
-    state: present
-
 - name: Create configurationfile for access to k8s-dns
   template:
     src: k8s.conf
