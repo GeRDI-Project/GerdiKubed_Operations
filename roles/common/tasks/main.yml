@@ -33,6 +33,7 @@
       - python-dbus
       - python-dnspython
       - python-openssl
+      - socat
       - unzip
   retries: 3
   delay: 3
@@ -98,7 +99,7 @@
 - name: common | Mount NFS-Volume
   mount:
     path:   "{{ NFS_MOUNT_PATH }}"
-    src:    "{{ NFS_VOLUME_PATH }}"
+    src:    "{{ NFS_SERVER_PATH }}"
     fstype: nfs
     opts:   tcp,nolock,nofail,x-systemd.device-timeout=1,rsize=65536,wsize=65536,timeo=600,intr
     state:  mounted

@@ -21,7 +21,8 @@ K8S_DOMAIN_NAMESPACE: "example.com"
 CONTROL_BASE_DIR:   "<some_dir>"
 # Note: Your machine might need whitelisting
 NFS_SERVER_DOMAIN: "<domain>"
-NFS_VOLUME_PATH: "{{ NFS_SERVER_DOMAIN }}:<mountlocation>"
+NFS_VOLUME_PATH: "<path>"
+NFS_SERVER_PATH: "{{ NFS_SERVER_DOMAIN }}:{{ NFS_VOLUME_PATH }}"
 # Network interface prefix
 # Make sure to use the traditional interface naming scheme (eth0, eth1,... | ens0, ens1,...)
 # Instead of Predictable Network Interface Names
