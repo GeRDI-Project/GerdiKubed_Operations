@@ -36,13 +36,13 @@
   import_tasks: setup_lbtables.yml
   when: inventory_hostname in groups['loadbalancer-nodes']
 
-# VMware nodes use gateways, so we don't require this step
+# LRZ VMware nodes use gateways, so we don't require this step
 - name: ufw opennebula | Allow & Limit SSH logins from everywhere
   ufw:
     rule: limit
     port: ssh
     proto: tcp
-  when: inventory_hostname not in groups['vmware-nodes']
+  when: not (inventory_hostname in groups['vmware-nodes'] and LRZ_INTERNAL)
 
 - name: ufw common | Allow geneve (OVN) tunnel traffic
   ufw:

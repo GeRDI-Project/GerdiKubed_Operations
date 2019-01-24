@@ -16,17 +16,17 @@
 # Performs the network interface setup on vmware-nodes
 # Making sure it uses systemd-networkd
 
-- name: vmware-node | Script to setup NICs of VMware machine
-  copy:
-    src: setupNIC.sh
+- name: vmware-node | Create script to setup NICs of VMware machine
+  template:
+    src: setupNIC.sh.j2
     dest: /root/setupNIC.sh
 
 - name: vmware-node | Setup NICs of VMware machine
-  shell: bash /root/setupNIC.sh {{ eth0ip }} {{ eth1ip }} {{ eth2ip }}
+  shell: bash /root/setupNIC.sh {{ nic0ip }} {{ nic1ip }} {{ nic2ip }}
 
-- name: vmware-node | Script that sets up networkd
-  copy:
-    src: setupNetworkd.sh
+- name: vmware-node | Create script that sets up networkd
+  template:
+    src: setupNetworkd.sh.j2
     dest: /root/setupNetworkd.sh
 
 - name: vmware-node | Setup networkd
