@@ -148,6 +148,11 @@ if [ ${#PUBLIC_IPS[@]} -eq 1 ]; then
     echo 'ip rule add from all to 10.156.10.20 lookup '$ROUTING_TABLE_INT; \
     echo 'ip rule add from all to 10.156.10.40 lookup '$ROUTING_TABLE_INT; \
 {% endif %}
+{% if inventory_hostname in groups['loadbalancer-nodes'] %}
+    echo 'if service --status-all 2>&1 | grep -Fq 'dnsmasq'; then'; \
+    echo '  service dnsmasq restart'; \
+    echo 'fi'; \
+{% endif %}
   } > /root/repairRoutes.sh
 
   chmod +x /root/repairRoutes.sh
