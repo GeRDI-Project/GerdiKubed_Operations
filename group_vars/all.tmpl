@@ -21,7 +21,8 @@ K8S_DOMAIN_NAMESPACE: "example.com"
 CONTROL_BASE_DIR:   "<some_dir>"
 # Note: Your machine might need whitelisting
 NFS_SERVER_DOMAIN: "<domain>"
-NFS_VOLUME_PATH: "{{ NFS_SERVER_DOMAIN }}:<mountlocation>"
+NFS_VOLUME_PATH: "<path>"
+NFS_SERVER_PATH: "{{ NFS_SERVER_DOMAIN }}:{{ NFS_VOLUME_PATH }}"
 ########################################
 # End: Change the values
 ########################################

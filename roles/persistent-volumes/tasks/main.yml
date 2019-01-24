@@ -12,13 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+# This is needed for the following task. Should go to common-role
+- name: persistent-volumes | Check whether nfs-client-provisioner is already installed
+  shell: |
+    kubectl get pods  \
+      --selector=app=nfs-client-provisioner \
+      --field-selector=status.phase=Running
+  register: provisionerInstalled
 
-- name: Helm install persistent volume chart
-  shell: >
-    helm install
-    --name nfs-test
-    --set nfs.server="{{ NFS_SERVER_DOMAIN }}"
-    --set nfs.path= "{{ NFS_VOLUME_PATH }}/nfs-{{ K8S_DEPLOYMENT_CONTEXT}}""
-    --set storageClass.defaultClass=true
-    --set storageClass.name=managed-nfs-storage
-    --set rbac.create=false stable/nfs-client-provisioner
+- name: persistent-volumes | Helm install persistent volume chart
+  shell: |
+    helm install \
+    --name "nfs-{{ K8S_DEPLOYMENT_CONTEXT }}" \
+    --set nfs.server="{{ NFS_SERVER_DOMAIN }}" \
+    --set nfs.path="{{ NFS_VOLUME_PATH }}/nfs-{{ K8S_DEPLOYMENT_CONTEXT}}" \
+    --set storageClass.defaultClass=true \
+    --set storageClass.name=managed-nfs-storage \
+    --set rbac.create=false \
+    stable/nfs-client-provisioner
+  when: provisionerInstalled.stdout.find("Running") == -1

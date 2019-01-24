@@ -12,18 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Install configuration for jhub
+- name: jhub | Check whether jhub chart is already installed
+  shell: |
+    kubectl get pods -n {{ JHUB_NAMESPACE }}  \
+      --selector=app=jupyterhub \
+      --field-selector=status.phase=Running
+  register: jhubInstalled
+
+- name: jhub | Install configuration for jhub
   template:
     src: "jhub-chart.yml.j2"
     dest: "{{ JHUB_CONFIG }}"
+  when: jhubInstalled.stdout.find("Running") == -1
 
-- name: Add jupyterhub repo
+- name: jhub | Add jupyterhub repo
   shell: helm repo add jupyterhub {{ JHUB_REPO }}
+  when: jhubInstalled.stdout.find("Running") == -1
 
-- name: Update repos
+- name: jhub | Update repos
   shell: helm repo update
+  when: jhubInstalled.stdout.find("Running") == -1
 
-- name: Install jhub
+- name: jhub | Install jhub
   shell: |
     helm upgrade \
       --install {{ JHUB_RELEASE }} jupyterhub/jupyterhub \
@@ -32,3 +42,4 @@
       --values {{ JHUB_CONFIG }}
   async: 1800
   poll: 180
+  when: jhubInstalled.stdout.find("Running") == -1

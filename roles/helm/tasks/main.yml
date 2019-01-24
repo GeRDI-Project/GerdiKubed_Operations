@@ -40,4 +40,4 @@
     state: link
 
 - name: Install helm server (tiller)
-  shell: helm init --upgrade
+  shell: helm init --upgrade --wait

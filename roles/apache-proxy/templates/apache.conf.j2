@@ -221,8 +221,10 @@
     ProxyPass         /admin/kafka        http://kafka-manager.default.svc.cluster.local:9000/admin/kafka
     ProxyPassReverse  /admin/kafka        http://kafka-manager.default.svc.cluster.local:9000/admin/kafka
 
-    ProxyPassMatch    "/analyze/(user/[^/])/(api/kernels/[^/]+/channels|terminals/websocket)(.)" ws://proxy-public.jhub.svc.cluster.local/analyze/$1/$2$3
-    ProxyPassReverse  /analyze/user/      ws://proxy-public.jhub.svc.cluster.local/analyze/user
+    RewriteCond %{HTTP:Connection} Upgrade [NC,OR]
+    RewriteCond %{HTTP:Upgrade} websocket [NC]
+    RewriteRule /analyze/(.*) ws://proxy-public.jhub.svc.cluster.local/analyze/$1 [P,L]
+    ProxyPreserveHost On
     ProxyPass         /analyze            http://proxy-public.jhub.svc.cluster.local/analyze
     ProxyPassReverse  /analyze            http://proxy-public.jhub.svc.cluster.local/analyze
 
