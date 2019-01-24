@@ -22,6 +22,11 @@ CONTROL_BASE_DIR:   "<some_dir>"
 # Note: Your machine might need whitelisting
 NFS_SERVER_DOMAIN: "<domain>"
 NFS_VOLUME_PATH: "{{ NFS_SERVER_DOMAIN }}:<mountlocation>"
+# Network interface prefix
+# Make sure to use the traditional interface naming scheme (eth0, eth1,... | ens0, ens1,...)
+# Instead of Predictable Network Interface Names
+# Example: "ens" would assume the interfaces would be named ens[0-9]
+NICDEVICEPREFIX: "ens"
 ########################################
 # End: Change the values
 ########################################
@@ -43,9 +48,18 @@ K8S_SERVER_BIN_DIR: "{{ K8S_K8S_DIR }}/server/kubernetes/server/bin"
 # Intercluster addresses, authorization and authentication information
 K8S_KUBECONFIG: "{{ K8S_BASE_DIR }}/kubeconfig"
 K8S_DOWNLOAD_URL: "https://github.com/kubernetes/kubernetes/releases/download/{{K8S_VERSION}}/kubernetes.tar.gz"
+# Nameserver the node (systemd-resolved) should use
+NODE_NAMESERVER: "8.8.8.8"
 # Nameserver Docker should use to resolve
-DOCKER_NAMESERVER: "8.8.8.8"
-
+DOCKER_NAMESERVER: {{ NODE_NAMESERVER }}
+# Note: NICDEVICEPREFIX_VMWARE & NICDEVICEPREFIX_NEBULA
+# Only required if inventory contains vmware and opennebula machines
+# VMware nic prefix:
+NICDEVICEPREFIX_VMWARE: {{ NICDEVICEPREFIX }}
+# Nebula nic prefix:
+NICDEVICEPREFIX_NEBULA: {{ NICDEVICEPREFIX }}
+# Set to true, if you are running this on LRZ machines
+LRZ_INTERNAL: false
 ################################################################################
 # Configuration for cert-infrastructure role
 ################################################################################

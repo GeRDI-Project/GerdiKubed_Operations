@@ -25,12 +25,12 @@ if [ "$DIRECTORYTEST" -eq "$#" ]; then
 fi
 
 IFS=$'\n'
-# Get number of eth0-9 interfaces
+# Get number of {{ NICDEVICEPREFIX_VMWARE }}0-9 interfaces
 NIC_ARRAY=$( \
-        ip addr | grep -E 'eth[0-9]:' | awk '{print $2}')
+        ip addr | grep -E '{{ NICDEVICEPREFIX_VMWARE }}[0-9]:' | awk '{print $2}')
 IP_ARRAY=$( \
         ip addr | grep -e "inet[[:space:]]" | \
-        grep -v '127.0.0.1' | grep -E 'eth[0-9]' | \
+        grep -v '127.0.0.1' | grep -E '{{ NICDEVICEPREFIX_VMWARE }}[0-9]' | \
         awk '{print $2" "$4" "$7$8}' | sed 's/\// /g' | \
         sed 's/dynamic//g')
 unset $IFS
@@ -66,25 +66,25 @@ COUNTER=0
 TEMP=1
 while read -r NIC; do
   # Setup private interfaces
-  # Skip eth0; This is setup by default on VMware machines
+  # Skip {{ NICDEVICEPREFIX_VMWARE }}0; This is setup by default on VMware machines
   if [ "$COUNTER" -gt 0 ] && [ "$COUNTER" -ne 2 ]; then
     # grep || makes sure that the interface is not already in
-    grep -q -F 'auto eth'$COUNTER /etc/network/interfaces ||
+    grep -q -F 'auto {{ NICDEVICEPREFIX_VMWARE }}'$COUNTER /etc/network/interfaces ||
     { \
         printf '\n'; \
-        echo 'auto eth'$COUNTER; \
-        echo 'iface eth'$COUNTER' inet static'; \
+        echo 'auto {{ NICDEVICEPREFIX_VMWARE }}'$COUNTER; \
+        echo 'iface {{ NICDEVICEPREFIX_VMWARE }}'$COUNTER' inet static'; \
         echo '	address '${!TEMP}; \
         echo '	netmask 22'; \
     } >> /etc/network/interfaces
   elif [ "$COUNTER" -eq 2 ]; then
     # Setup public interface
     # grep || makes sure that the interface is not already in
-    grep -q -F 'auto eth'$COUNTER /etc/network/interfaces ||
+    grep -q -F 'auto {{ NICDEVICEPREFIX_VMWARE }}'$COUNTER /etc/network/interfaces ||
     { \
         printf '\n'; \
-        echo 'auto eth'$COUNTER; \
-        echo 'iface eth'$COUNTER' inet static'; \
+        echo 'auto {{ NICDEVICEPREFIX_VMWARE }}'$COUNTER; \
+        echo 'iface {{ NICDEVICEPREFIX_VMWARE }}'$COUNTER' inet static'; \
         echo '  address '${!TEMP}; \
         echo '  netmask 23'; \
     } >> /etc/network/interfaces
