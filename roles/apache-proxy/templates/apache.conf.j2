@@ -173,6 +173,7 @@
     ProxyPassReverse  /api/search         http://elasticsearch-data.default.svc.cluster.local:9200/gerdi/_search
     ProxyPass         /api/index          http://elasticsearch-data.default.svc.cluster.local:9200/gerdi/metadata
     ProxyPassReverse  /api/index          http://elasticsearch-data.default.svc.cluster.local:9200/gerdi/metadata
+
     ProxyPass         /harvest/arcgis     http://arcgis-harvester.default.svc.cluster.local:8080/arcgis/harvest
     ProxyPassReverse  /harvest/arcgis     http://arcgis-harvester.default.svc.cluster.local:8080/arcgis/harvest
     ProxyPass         /harvest/faostat    http://faostat-harvester.default.svc.cluster.local:8080/faostat/harvest
@@ -197,25 +198,38 @@
     ProxyPassReverse  /harvest/opendatalmu  http://opendatalmu-harvester.default.svc.cluster.local:8080/oaipmh/harvest
     ProxyPass         /harvest/fishstatj  http://fishstatj-harvester.default.svc.cluster.local:8080/fishstatj/harvest
     ProxyPassReverse  /harvest/fishstatj  http://fishstatj-harvester.default.svc.cluster.local:8080/fishstatj/harvest
+    ProxyPass         /harvest/ifo        http://ifo-harvester.default.svc.cluster.local:8080/oaipmh/harvest
+    ProxyPassReverse  /harvest/ifo        http://ifo-harvester.default.svc.cluster.local:8080/oaipmh/harvest
     ProxyPass         /harvest/hccenter   http://hccenter.default.svc.cluster.local
     ProxyPassReverse  /harvest/hccenter   http://hccenter.default.svc.cluster.local
+
     ProxyPass         /api/v1/hccenter    http://hccenter.default.svc.cluster.local/v1
     ProxyPassReverse  /api/v1/hccenter    http://hccenter.default.svc.cluster.local/v1
     ProxyPass         /api/v1/store       http://webdav-store.default.svc.cluster.local:5678
     ProxyPassReverse  /api/v1/store       http://webdav-store.default.svc.cluster.local:5678
     ProxyPass         /api/v1/collections http://bookmark-persistence-api.default.svc.cluster.local:4567/api/v1/collections
     ProxyPassReverse  /api/v1/collections http://bookmark-persistence-api.default.svc.cluster.local:4567/api/v1/collections
+
     ProxyPass         /store              http://webdav-store-ui.default.svc.cluster.local/store
     ProxyPassReverse  /store              http://webdav-store-ui.default.svc.cluster.local/store
+
     ProxyPass         /bookmark           http://bookmark-frontend.default.svc.cluster.local/bookmark
     ProxyPassReverse  /bookmark           http://bookmark-frontend.default.svc.cluster.local/bookmark
+
     ProxyPass         /admin/kibana/      http://kibana.default.svc.cluster.local:5601/
-    ProxyPassReverse  /admin/kibana/      http://kibana.default.svc.cluster.locak:5601/
+    ProxyPassReverse  /admin/kibana/      http://kibana.default.svc.cluster.local:5601/
     ProxyPass         /admin/logs         http://graylog-web.default.svc.cluster.local:9000/admin/logs
     ProxyPassReverse  /admin/logs         http://graylog-web.default.svc.cluster.local:9000/admin/logs
     ProxyPass         /admin/kafka        http://kafka-manager.default.svc.cluster.local:9000/admin/kafka
     ProxyPassReverse  /admin/kafka        http://kafka-manager.default.svc.cluster.local:9000/admin/kafka
+
+    RewriteCond %{HTTP:Connection} Upgrade [NC,OR]
+    RewriteCond %{HTTP:Upgrade} websocket [NC]
+    RewriteRule /analyze/(.*) ws://proxy-public.jhub.svc.cluster.local/analyze/$1 [P,L]
+    ProxyPreserveHost On
+    ProxyPass         /analyze            http://proxy-public.jhub.svc.cluster.local/analyze
+    ProxyPassReverse  /analyze            http://proxy-public.jhub.svc.cluster.local/analyze
+
     ProxyPass         /                   http://search-frontend.default.svc.cluster.local/
     ProxyPassReverse  /                   http://search-frontend.default.svc.cluster.local/
-
 </VirtualHost>

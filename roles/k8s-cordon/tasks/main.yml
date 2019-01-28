@@ -19,9 +19,12 @@
 # Wait for the kube-dns and kube-addon-manager to enter running state
 # Otherwise the cordon node will force it to be stuck in pending state
 - name: k8s-cordon master | Wait for start of k8s-addons
-  shell: kubectl get pods -n kube-system | grep -c "Running"
+  shell: |
+    kubectl get pods -n kube-system \
+      --selector=k8s-app=kube-dns \
+      --field-selector=status.phase=Running
   register: result
-  until: result.stdout.find("2") != -1
+  until: result.stdout.find("Running") != -1
   retries: 10
   delay: 5
   when: inventory_hostname in groups['kubernetes-masters']

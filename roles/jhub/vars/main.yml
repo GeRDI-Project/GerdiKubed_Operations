@@ -12,9 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Initialize loadbalancer nodes
-  hosts: loadbalancer-nodes
-  remote_user: root
-  roles:
-    - cluster-dns
-    - apache-proxy
+JHUB_REPO: "https://jupyterhub.github.io/helm-chart/"
+JHUB_RELEASE: "jhub"
+JHUB_NAMESPACE: "jhub"
+JHUB_VERSION: "0.7.0"
+JHUB_CONFIG: "/root/jhub-chart.yml"
