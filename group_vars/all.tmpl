@@ -10,7 +10,6 @@
 # - controller-manager: --cluster-name
 # - apache.conf: subdomain name
 K8S_DEPLOYMENT_CONTEXT: "test"
-K8S_VERSION: "vx.y.z"
 K8S_GLOBAL_LOG_LEVEL: "v=2"
 # Certificates will be created with both DNS-names and IP-Adresses in the alternative names.
 # DNS-names in certs need to comply to the following pattern:
@@ -28,6 +27,14 @@ NFS_SERVER_PATH: "{{ NFS_SERVER_DOMAIN }}:{{ NFS_VOLUME_PATH }}"
 # Instead of Predictable Network Interface Names
 # Example: "ens" would assume the interfaces would be named ens[0-9]
 NICDEVICEPREFIX: "ens"
+# Nameserver the node (systemd-resolved) should use
+NODE_NAMESERVER: "8.8.8.8"
+# Version Configuration (See: util/VariableTemplate.md):
+K8S_VERSION: "vx.y.z"
+DOCKER_VERSION: "5:18.09.1~3-0~debian-stretch"
+CNI_VERSION: "v0.5.2"
+OPENVSWITCH_VERSION: "2.10.0+2018.08.28+git.8ca7c82b7d+ds1-10"
+GOLANG_VERSION: "go1.11.1"
 ########################################
 # End: Change the values
 ########################################
@@ -49,11 +56,8 @@ K8S_SERVER_BIN_DIR: "{{ K8S_K8S_DIR }}/server/kubernetes/server/bin"
 # Intercluster addresses, authorization and authentication information
 K8S_KUBECONFIG: "{{ K8S_BASE_DIR }}/kubeconfig"
 K8S_DOWNLOAD_URL: "https://github.com/kubernetes/kubernetes/releases/download/{{K8S_VERSION}}/kubernetes.tar.gz"
-# Nameserver the node (systemd-resolved) should use
-NODE_NAMESERVER: "8.8.8.8"
 # Nameserver Docker should use to resolve
 DOCKER_NAMESERVER: {{ NODE_NAMESERVER }}
-DOCKER_VERSION: "5:18.09.1~3-0~debian-stretch"
 # Note: NICDEVICEPREFIX_VMWARE & NICDEVICEPREFIX_NEBULA
 # Only required if inventory contains vmware and opennebula machines
 # VMware nic prefix:
@@ -94,7 +98,6 @@ K8S_DNS_IP: "{{ K8S_SERVICE_IP_PRE }}.0.10"
 # Configuration for the following roles:
 # cni, kubelet, network-ovn
 ################################################################################
-CNI_VERSION: v0.5.2
 CNI_DOWNLOAD_URL: "https://github.com/containernetworking/cni/releases/download/{{ CNI_VERSION }}/cni-{{ CNI_VERSION }}.tgz"
 CNI_DIR: "{{ K8S_BASE_DIR }}/cni-{{ CNI_VERSION }}"
 CNI_CONF_DIR: /etc/cni/net.d
@@ -104,13 +107,10 @@ CNI_CONF_DIR: /etc/cni/net.d
 # apiserver, network-ovn
 ################################################################################
 OVN_API_TOKEN: "someValue"
-# OVN Common Version
-OPENVSWITCH_VERSION: "2.10.0+2018.08.28+git.8ca7c82b7d+ds1-10"
 # OVN Node Version
 OVN_HOST_VERSION: {{ OPENVSWITCH_VERSION }}
 # OVN Master Version
 OVN_CENTRAL_VERSION: {{ OPENVSWITCH_VERSION }}
-GOLANG_VERSION: "go1.11.1"
 #Used by autoRepairRoutes.sh; Make sure number is unique
 K8S_INTERNAL_ROUTING_TABLE: "180485"
 
