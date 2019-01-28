@@ -15,9 +15,8 @@
 - name: network-ovn master | install ovs and ovn master packages
   package:
     name={{ item }}
-    state=present
   with_items:
-    - ovn-central
+    - ovn-central={{ OVN_CENTRAL_VERSION }}
 
 - name: network-ovn master | open tcp ports for ovn databases
   shell: |
