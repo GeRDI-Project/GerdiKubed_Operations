@@ -18,6 +18,12 @@
   with_items:
     - ovn-host={{ OVN_HOST_VERSION }}
 
+- name: network-ovn node | Make ovn-nbdb reachable from nodes
+  lineinfile:
+    dest: ~/.profile
+    state: present
+    line: 'OVN_NB_DB="ssl:{{ K8S_MASTER_IP }}:6641"'
+
 - name: network-ovn node | Secure connection to k8s API server
   shell: ovs-vsctl set Open_vSwitch . external_ids:{{item}}
   with_items:

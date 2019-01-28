@@ -34,11 +34,17 @@
   retries: 3
   delay: 3
 
+- name: network-ovn common | Create ca.crt.pem symlink
+  file:
+    src: "{{ K8S_CERT_FILES_DIR }}/ca.crt.pem"
+    dest: "/etc/openvswitch/cacert.pem"
+    state: link
+
 - name: network-ovn common | Set db entries on both masters and nodes
   shell: ovs-vsctl set Open_vSwitch . external_ids:{{item}}
   with_items:
-    - ovn-remote="tcp:{{ K8S_MASTER_IP }}:6642"
-    - ovn-nb="tcp:{{ K8S_MASTER_IP }}:6641"
+    - ovn-nb="ssl:{{ K8S_MASTER_IP }}:6641"
+    - ovn-remote="ssl:{{ K8S_MASTER_IP }}:6642"
     - ovn-encap-ip="{{ host_private_address | default(lookup('dig', inventory_hostname, 'qtype=A'), true) }}"
     - ovn-encap-type="{{ OVN_ENCAP_TYPE }}"
 
