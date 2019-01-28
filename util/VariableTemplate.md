@@ -21,3 +21,7 @@
   - Consult: https://packages.debian.org/en/stretch/ovn-host and https://packages.debian.org/en/stretch/ovn-central
     for the latest versions
   - Example value: 2.6.2~pre+git20161223-3
+* CNI_VERSION:
+  - Set version of Container Network Interface (CNI) binaries to install
+  - Consult https://github.com/containernetworking/cni/releases/ for the latest release version
+  - Example value: v0.5.2
