@@ -21,7 +21,8 @@ K8S_DOMAIN_NAMESPACE: "example.com"
 CONTROL_BASE_DIR:   "<some_dir>"
 # Note: Your machine might need whitelisting
 NFS_SERVER_DOMAIN: "<domain>"
-NFS_VOLUME_PATH: "{{ NFS_SERVER_DOMAIN }}:<mountlocation>"
+NFS_VOLUME_PATH: "<path>"
+NFS_SERVER_PATH: "{{ NFS_SERVER_DOMAIN }}:{{ NFS_VOLUME_PATH }}"
 # Network interface prefix
 # Make sure to use the traditional interface naming scheme (eth0, eth1,... | ens0, ens1,...)
 # Instead of Predictable Network Interface Names
@@ -52,6 +53,7 @@ K8S_DOWNLOAD_URL: "https://github.com/kubernetes/kubernetes/releases/download/{{
 NODE_NAMESERVER: "8.8.8.8"
 # Nameserver Docker should use to resolve
 DOCKER_NAMESERVER: {{ NODE_NAMESERVER }}
+DOCKER_VERSION: "5:18.09.1~3-0~debian-stretch"
 # Note: NICDEVICEPREFIX_VMWARE & NICDEVICEPREFIX_NEBULA
 # Only required if inventory contains vmware and opennebula machines
 # VMware nic prefix:
@@ -102,6 +104,13 @@ CNI_CONF_DIR: /etc/cni/net.d
 # apiserver, network-ovn
 ################################################################################
 OVN_API_TOKEN: "someValue"
+# OVN Common Version
+OPENVSWITCH_VERSION: "2.10.0+2018.08.28+git.8ca7c82b7d+ds1-10"
+# OVN Node Version
+OVN_HOST_VERSION: {{ OPENVSWITCH_VERSION }}
+# OVN Master Version
+OVN_CENTRAL_VERSION: {{ OPENVSWITCH_VERSION }}
+GOLANG_VERSION: "go1.11.1"
 #Used by autoRepairRoutes.sh; Make sure number is unique
 K8S_INTERNAL_ROUTING_TABLE: "180485"
 

@@ -11,7 +11,7 @@ There are three major playbooks in the root of the git-repo (for the others see 
 
 ```bash
 
-# Edit variable-template (see role documentation for questions):
+# Edit variable-template (see role & [version](util/VariableTemplate.md) documentation for questions):
 cp group_vars/all.tmpl group_vars/all
 vi group_vars/all
 
