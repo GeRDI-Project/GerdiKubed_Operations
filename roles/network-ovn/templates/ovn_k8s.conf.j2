@@ -3,7 +3,7 @@ mtu=1400
 conntrack-zone=64321
 
 [kubernetes]
-apiserver=https://{{ iface1.ipv4 }}:443
+apiserver=https://{{ K8S_MASTER_IP }}:443
 token={{ OVN_API_TOKEN }}
 cacert={{ K8S_CERT_FILES_DIR }}/ca.crt.pem
 
@@ -16,7 +16,19 @@ conf-dir=/etc/cni/net.d
 plugin=ovn-k8s-cni-overlay
 
 [ovnnorth]
-address=tcp://{{ iface1.ipv4 }}:6641
+address=ssl://{{ K8S_MASTER_IP }}:6641
+client-privkey=/etc/openvswitch/ovncontroller-privkey.pem
+client-cert=/etc/openvswitch/ovncontroller-cert.pem
+client-cacert=/etc/openvswitch/cacert.pem
+server-privkey=/etc/openvswitch/ovnnb-privkey.pem
+server-cert=/etc/openvswitch/ovnnb-cert.pem
+server-cacert=/etc/openvswitch/cacert.pem
 
 [ovnsouth]
-address=tcp://{{ iface1.ipv4 }}:6642
+address=ssl://{{ K8S_MASTER_IP }}:6642
+client-privkey=/etc/openvswitch/ovncontroller-privkey.pem
+client-cert=/etc/openvswitch/ovncontroller-cert.pem
+client-cacert=/etc/openvswitch/cacert.pem
+server-privkey=/etc/openvswitch/ovnsb-privkey.pem
+server-cert=/etc/openvswitch/ovnsb-cert.pem
+server-cacert=/etc/openvswitch/cacert.pem
