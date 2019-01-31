@@ -11,7 +11,7 @@ There are three major playbooks in the root of the git-repo (for the others see 
 
 ```bash
 
-# Edit variable-template (see role & [version](util/VariableTemplate.md) documentation for questions):
+# Edit variable-template (consult role & version documentation (util/VariableTemplate.md) for answers):
 cp group_vars/all.tmpl group_vars/all
 vi group_vars/all
 
@@ -212,11 +212,3 @@ These roles are both tailored to machines running on LRZ infrastructure. Dependi
 # CI
 
 The repository is now checked by a CI-Task in Bamboo (push to bitbucket)
-
-# Other Playbooks
-
-## k8s-nibi.yml
-
-This playbook makes sure the latest GeRDI version is deployed on a cron basis
-
-This playbook will only work if a file "registry_config" is on the root of the system (needed to seed the registry credentials as a secret to k8s). See [Pull an Image from a Private Registry](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/).
