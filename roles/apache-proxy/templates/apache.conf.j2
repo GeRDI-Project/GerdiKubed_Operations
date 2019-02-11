@@ -207,11 +207,15 @@
     ProxyPassReverse  /api/v1/hccenter    http://hccenter.default.svc.cluster.local/v1
     ProxyPass         /api/v1/store       http://webdav-store.default.svc.cluster.local:5678
     ProxyPassReverse  /api/v1/store       http://webdav-store.default.svc.cluster.local:5678
+    ProxyPass         /api/v1/store-jhub  http://jhub-store.default.svc.cluster.local:5678
+    ProxyPassReverse  /api/v1/store-jhub  http://jhub-store.default.svc.cluster.local:5678
     ProxyPass         /api/v1/collections http://bookmark-persistence-api.default.svc.cluster.local:4567/api/v1/collections
     ProxyPassReverse  /api/v1/collections http://bookmark-persistence-api.default.svc.cluster.local:4567/api/v1/collections
 
     ProxyPass         /store              http://webdav-store-ui.default.svc.cluster.local/store
     ProxyPassReverse  /store              http://webdav-store-ui.default.svc.cluster.local/store
+    ProxyPass         /store-jhub         http://jhub-store-ui.default.svc.cluster.local/store-jhub
+    ProxyPassReverse  /store-jhub         http://jhub-store-ui.default.svc.cluster.local/store-jhub
 
     ProxyPass         /bookmark           http://bookmark-frontend.default.svc.cluster.local/bookmark
     ProxyPassReverse  /bookmark           http://bookmark-frontend.default.svc.cluster.local/bookmark
