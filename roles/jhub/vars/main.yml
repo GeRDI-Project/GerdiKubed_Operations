@@ -15,5 +15,5 @@
 JHUB_REPO: "https://jupyterhub.github.io/helm-chart/"
 JHUB_RELEASE: "jhub"
 JHUB_NAMESPACE: "jhub"
-JHUB_VERSION: "0.7.0"
+JHUB_VERSION: "0.8.0-beta.1"
 JHUB_CONFIG: "/root/jhub-chart.yml"

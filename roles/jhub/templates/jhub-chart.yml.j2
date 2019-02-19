@@ -129,23 +129,15 @@ proxy:
 
 
 auth:
-  type: dummy
-  whitelist:
-    users:
-  admin:
-    access: true
-    users:
-  dummy:
-    password:
+  type: ldap
   ldap:
+    server:
+      address: 'simauth3.sim.lrz.de'
+      port: 636
+      ssl: true
     dn:
-      search: {}
-      user: {}
-    user: {}
-  state:
-    enabled: false
-    cryptoKey:
-
+      templates:
+        - 'cn={username},ou=VPN,ou=Kennungen,o=lrz-muenchen,c=de'
 
 singleuser:
   extraTolerations: []
@@ -192,7 +184,7 @@ singleuser:
     static:
       pvcName:
       subPath: '{username}'
-    capacity: 10Gi
+    capacity: 3Gi
     homeMountPath: /home/jovyan
     dynamic:
       storageClass:
