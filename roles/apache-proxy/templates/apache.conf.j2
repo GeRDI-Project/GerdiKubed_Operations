@@ -202,6 +202,8 @@
     ProxyPassReverse  /harvest/ifo        http://ifo-harvester.default.svc.cluster.local:8080/oaipmh/harvest
     ProxyPass         /harvest/imr        http://imr-harvester.default.svc.cluster.local:8080/imr/harvest
     ProxyPassReverse  /harvest/imr        http://imr-harvester.default.svc.cluster.local:8080/imr/harvest
+    ProxyPass         /harvest/oglp       http://oglp-harvester.default.svc.cluster.local:8080/oaipmh/harvest
+    ProxyPassReverse  /harvest/oglp       http://oglp-harvester.default.svc.cluster.local:8080/oaipmh/harvest
     ProxyPass         /harvest/hccenter   http://hccenter.default.svc.cluster.local
     ProxyPassReverse  /harvest/hccenter   http://hccenter.default.svc.cluster.local
 
