@@ -58,4 +58,5 @@
 - name: ufw common | Reload ufw
   ufw:
     state: enabled
+    direction: incoming
     policy: reject
