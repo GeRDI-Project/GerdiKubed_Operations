@@ -14,7 +14,7 @@
 ---
 - name: network-ovn master | install ovs and ovn master packages
   package:
-    name={{ item }}
+    name: "{{ item }}"
   with_items:
     - ovn-central={{ OVN_CENTRAL_VERSION }}
 
