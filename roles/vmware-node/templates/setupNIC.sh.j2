@@ -19,7 +19,7 @@
 # Test if we are already set up
 DIRECTORYTEST=$(find /etc/systemd/network -name "*.network" | wc -l)
 
-if [ "$DIRECTORYTEST" -eq "$#" ]; then
+if [ "$DIRECTORYTEST" -eq "1" ]; then
   echo "Networkd already setup. Nothing to do here."
   exit 0;
 fi
@@ -47,8 +47,6 @@ while read -r IP; do
   COUNTERIP=$((COUNTERIP+1))
 done <<< "$IP_ARRAY"
 
-echo "$COUNTER NICs detected, $# IPs passed to script & $COUNTERIP IPs already setup"
-
 # Check if we are already setup
 if [ "$COUNTER" -eq "$COUNTERIP" ]; then
   echo "NICs already setup. Nothing to do here."
@@ -56,41 +54,22 @@ if [ "$COUNTER" -eq "$COUNTERIP" ]; then
 fi
 
 # Check if provided amount of ips matches amount of NICs
-if [ "$#" -ne $COUNTER ]; then
+if [ "2" -ne $COUNTER ]; then
   echo "Illegal amount of IPs or NICs"
   exit 1
 fi
 
 # Iterate again, this time add the ips to the interfaces file
 COUNTER=0
-TEMP=1
-while read -r NIC; do
-  # Setup private interfaces
-  # Skip {{ NICDEVICEPREFIX_VMWARE }}0; This is setup by default on VMware machines
-  if [ "$COUNTER" -gt 0 ] && [ "$COUNTER" -ne 2 ]; then
-    # grep || makes sure that the interface is not already in
-    grep -q -F 'auto {{ NICDEVICEPREFIX_VMWARE }}'$COUNTER /etc/network/interfaces ||
-    { \
-        printf '\n'; \
-        echo 'auto {{ NICDEVICEPREFIX_VMWARE }}'$COUNTER; \
-        echo 'iface {{ NICDEVICEPREFIX_VMWARE }}'$COUNTER' inet static'; \
-        echo '	address '${!TEMP}; \
-        echo '	netmask 22'; \
-    } >> /etc/network/interfaces
-  elif [ "$COUNTER" -eq 2 ]; then
-    # Setup public interface
-    # grep || makes sure that the interface is not already in
-    grep -q -F 'auto {{ NICDEVICEPREFIX_VMWARE }}'$COUNTER /etc/network/interfaces ||
-    { \
-        printf '\n'; \
-        echo 'auto {{ NICDEVICEPREFIX_VMWARE }}'$COUNTER; \
-        echo 'iface {{ NICDEVICEPREFIX_VMWARE }}'$COUNTER' inet static'; \
-        echo '  address '${!TEMP}; \
-        echo '  netmask 23'; \
-    } >> /etc/network/interfaces
-  fi
-  COUNTER=$((COUNTER+1))
-  TEMP=$((TEMP+1))
-done <<< "$NIC_ARRAY"
+# Setup public interface
+# grep || makes sure that the interface is not already in
+grep -q -F 'auto {{ NICDEVICEPREFIX_VMWARE }}'$POSITION /etc/network/interfaces ||
+{ \
+  printf '\n'; \
+  echo 'auto {{ NICDEVICEPREFIX_VMWARE }}'$POSITION; \
+  echo 'iface {{ NICDEVICEPREFIX_VMWARE }}'$POSITION' inet static'; \
+  echo '  address '$2; \
+  echo '  netmask '$3; \
+} >> /etc/network/interfaces
 
 service networking restart
