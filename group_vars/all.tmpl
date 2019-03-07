@@ -57,13 +57,13 @@ K8S_SERVER_BIN_DIR: "{{ K8S_K8S_DIR }}/server/kubernetes/server/bin"
 K8S_KUBECONFIG: "{{ K8S_BASE_DIR }}/kubeconfig"
 K8S_DOWNLOAD_URL: "https://github.com/kubernetes/kubernetes/releases/download/{{K8S_VERSION}}/kubernetes.tar.gz"
 # Nameserver Docker should use to resolve
-DOCKER_NAMESERVER: {{ NODE_NAMESERVER }}
+DOCKER_NAMESERVER: "{{ NODE_NAMESERVER }}"
 # Note: NICDEVICEPREFIX_VMWARE & NICDEVICEPREFIX_NEBULA
 # Only required if inventory contains vmware and opennebula machines
 # VMware nic prefix:
-NICDEVICEPREFIX_VMWARE: {{ NICDEVICEPREFIX }}
+NICDEVICEPREFIX_VMWARE: "{{ NICDEVICEPREFIX }}"
 # Nebula nic prefix:
-NICDEVICEPREFIX_NEBULA: {{ NICDEVICEPREFIX }}
+NICDEVICEPREFIX_NEBULA: "{{ NICDEVICEPREFIX }}"
 # Set to true, if you are running this on LRZ machines
 LRZ_INTERNAL: false
 ################################################################################
@@ -108,9 +108,9 @@ CNI_CONF_DIR: /etc/cni/net.d
 ################################################################################
 OVN_API_TOKEN: "someValue"
 # OVN Node Version
-OVN_HOST_VERSION: {{ OPENVSWITCH_VERSION }}
+OVN_HOST_VERSION: "{{ OPENVSWITCH_VERSION }}"
 # OVN Master Version
-OVN_CENTRAL_VERSION: {{ OPENVSWITCH_VERSION }}
+OVN_CENTRAL_VERSION: "{{ OPENVSWITCH_VERSION }}"
 #Used by autoRepairRoutes.sh; Make sure number is unique
 K8S_INTERNAL_ROUTING_TABLE: "180485"
 

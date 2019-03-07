@@ -21,4 +21,6 @@
 # Please use FQDNs for the hosts, IP addresses are not supported anymore
 
 [kubernetes-management]
-localhost         ansible_user=<your_local_user>
+# If you use localhost use the following ansible_connection=local which does not require a running SSH server
+# If you use a remot host just delete the ansivle_connection=local variable from the inventory file
+localhost ansible_user=<your_local_user> ansible_connection=local
