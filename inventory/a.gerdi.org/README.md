@@ -18,12 +18,12 @@ configure the interface routing using ip route.
 # The secondary network interface
 auto eth1
 iface eth1 inet static
-	address 129.187.252.21
-	netmask 23
-	post-up ip route add 129.187.252.0/23 dev eth1 src 129.187.252.21 table rt2
-   	post-up ip route add default via 129.187.253.254 dev eth1 table rt2
-    	post-up ip rule add from 129.187.252.21/32 table rt2
-    	post-up ip rule add to 129.187.252.21/32 table rt2
+address 129.187.252.21
+netmask 23
+post-up ip route add 129.187.252.0/23 dev eth1 src 129.187.252.21 table rt2
+post-up ip route add default via 129.187.253.254 dev eth1 table rt2
+post-up ip rule add from 129.187.252.21/32 table rt2
+post-up ip rule add to 129.187.252.21/32 table rt2
 ```
 Restart the network service.
 
