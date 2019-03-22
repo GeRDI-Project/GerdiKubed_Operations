@@ -14,13 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# NOTE: OpenNebula !specific! script that handles the setup of systemd-networkd and systemd-resolved
+# NOTE: VMWARE !specific! script that handles the setup of systemd-networkd and systemd-resolved
 # Get all attached ips
 # Make sure to only seperate by newline;
 # Also get rid of loopback IP
 # IPs are stored as IP_ARRAY[0] = IP[[:space:]]CIDR[[:space:]]BROADCAST[[:space:]]DEVICENAME
 #      Example: 141.40.254.115 23 141.40.255.255 {{ NICDEVICEPREFIX_NEBULA }}3
 # Delete previous default OpenNebula setup (happens on multi NIC machines)
+
+# TODO: Break script into logical parts, add headings, describe the workflow from a bird's eye perspective.
+
+# TODO: Explain
 rm /etc/systemd/network/wired.network > /dev/null 2>&1
 
 # Test if we are already set up
@@ -43,6 +47,8 @@ awk '{print $2" "$4" "$7$8}' | sed 's/\// /g' | \
 sed 's/dynamic//g')
 unset $IFS
 
+# TODO: PUT VARIABLE INITIALISATION AT THE TOP
+# TODO: CHECK FOR WRONG VALUES
 ROUTING_TABLE_INT=$1
 NFS_SERVER_DOMAIN=$2
 
@@ -88,8 +94,12 @@ if [ ${#PUBLIC_IPS[@]} -eq 1 ] && [ $EXIST -eq 0 ]; then
   ip rule add to $NFS_SERVER_DOMAIN table $ROUTING_TABLE_INT
 fi
 
+# TODO: Put functions at the top of the script
+
 # Taken from https://gist.github.com/kwilczynski/5d37e1cced7e76c7c9ccfdf875ba6c5b
 # arg $1 = IP
+# TODO: Please comment this function comparable to
+# https://code.gerdi-project.de/projects/HL/repos/harvestersetup/browse/scripts/renameSetup.sh#34
 cidr_to_netmask() {
   local value=$(( 0xffffffff ^ ((1 << (32 - $1)) - 1) ))
   echo "$(( (value >> 24) & 0xff )).$(( (value >> 16) & 0xff )).$(( (value >> 8) & 0xff )).$(( value & 0xff ))"
@@ -97,6 +107,8 @@ cidr_to_netmask() {
 
 # Taken from https://stackoverflow.com/questions/15429420/given-the-ip-and-netmask-how-can-i-calculate-the-network-address-using-bash?answertab=active#tab-top
 # arg $1 = IP; arg $2 = SUBNET_MASK
+# TODO: Please comment this function comparable to
+# https://code.gerdi-project.de/projects/HL/repos/harvestersetup/browse/scripts/renameSetup.sh#34
 ip_to_netaddr() {
   IFS=. read -r i1 i2 i3 i4 <<< "$1"
   IFS=. read -r m1 m2 m3 m4 <<< "$2"
@@ -129,7 +141,6 @@ if [ ${#PUBLIC_IPS[@]} -eq 1 ]; then
   } > /etc/systemd/network/1-$DEV_NAME.network
   echo "Writting 1-"$DEV_NAME".network"
   # Setup repairRoutes.sh
-  DEV_OVN=$(echo ${PRIVATE_IPS[1]} | awk '{print $4}')
   DEV_INT=$(echo ${PRIVATE_IPS[0]} | awk '{print $4}')
   IP_INT=$(echo ${PRIVATE_IPS[0]} | awk '{print $1}')
   CIDR=$(echo ${PRIVATE_IPS[0]} | awk '{print $2}')
@@ -182,6 +193,7 @@ fi
 {% raw %}
 if [ ${#PRIVATE_IPS[@]} -eq 1 ]; then
 {% endraw %}
+# TODO: is the loop necessary? I believe we checked for PRIVATE_IPS to have lenght 1?
   for IP in "${PRIVATE_IPS[@]}" ; do
     # Two private interfaces; First is gonna be SSH; Second OVN
     DEV_NAME=$(echo ${PRIVATE_IPS[0]} | awk '{print $4}')
@@ -233,15 +245,17 @@ fi
 # We always use the private IP for SSH
 IP_INT=$(echo ${PRIVATE_IPS[0]} | awk '{print $1}')
 
+# TODO: Explain
 rm /etc/resolv.conf
 
 # Start systemd networking
 systemctl enable --now systemd-networkd.service > /dev/null 2>&1
 systemctl enable --now systemd-resolved.service > /dev/null 2>&1
 
-# Setup systemd DNS
+# Setup systemd DNS TODO: Explain, why is this necessary
 sed -i 's/#DNS=/DNS={{ NODE_NAMESERVER }}/;' /etc/systemd/resolved.conf
 
+# TODO: Explain
 systemctl disable networking.service > /dev/null 2>&1
 
 ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
@@ -253,5 +267,6 @@ systemctl daemon-reload
 
 systemctl restart systemd-networkd
 
+# TODO Why is this not above where we determine IP_INT?
 sed -i 's/#ListenAddress 0.0.0.0/ListenAddress '$IP_INT'/
   s/#AddressFamily.*/AddressFamily inet/;' /etc/ssh/sshd_config
