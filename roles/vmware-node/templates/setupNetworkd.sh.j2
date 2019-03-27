@@ -43,10 +43,10 @@ ip_to_netaddr() {
   unset $IFS
 }
 
-# Delete default network config of VMWare 
+# Delete default network config of VMWare
 clean_vmware_netconfig() {
- # Delete file, or ignore if already deleted
- rm /etc/systemd/network/wired.network > /dev/null 2>&1
+  # Delete file, or ignore if already deleted
+  rm /etc/systemd/network/wired.network > /dev/null 2>&1
 }
 
 # Test if we are already set up
@@ -218,7 +218,7 @@ setup_public_interface() {
 setup_private_interface() {
 {% raw %}
   if [ ${#PRIVATE_IPS[@]} -eq 1 ]; then
-{% endraw %} 
+{% endraw %}
     # One private interfaces; First is gonna be SSH
     DEV_NAME=$(echo ${PRIVATE_IPS[0]} | awk '{print $4}')
     IP_INTERNAL=$(echo ${PRIVATE_IPS[0]} | awk '{print $1}')
@@ -268,7 +268,7 @@ setup_private_interface() {
   fi
 }
 
-# Replaces networking.service and resolv.conf with 
+# Replaces networking.service and resolv.conf with
 # systemd-networkd and systemd-resolved (required for our two interface setup)
 replace_networking() {
   # Delete previous resolve file
