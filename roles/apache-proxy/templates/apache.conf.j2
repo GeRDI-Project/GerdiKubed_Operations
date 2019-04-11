@@ -117,6 +117,11 @@
         Require         valid-user
     </Location>
 
+    <Location /admin/auth>
+        RequestHeader set X-Forwarded-Proto "https"
+        SetEnvIf X-Forwarded-For "^(.+)" CLIENTIP=$1
+    </Location>
+
     <Location /admin/logs>
         RequestHeader set X-Graylog-Server-URL expr=https://%{HTTP_HOST}/admin/logs/api
     </Location>
@@ -214,12 +219,16 @@
 
     ProxyPass         /store              http://webdav-store-ui.default.svc.cluster.local/store
     ProxyPassReverse  /store              http://webdav-store-ui.default.svc.cluster.local/store
+    ProxyPass         /callback           http://callback-test-frontend.default.svc.cluster.local/callback
+    ProxyPassReverse  /callback           http://callback-test-frontend.default.svc.cluster.local/callback
     ProxyPass         /store-jhub         http://jhub-store-ui.default.svc.cluster.local/store-jhub
     ProxyPassReverse  /store-jhub         http://jhub-store-ui.default.svc.cluster.local/store-jhub
 
     ProxyPass         /bookmark           http://bookmark-frontend.default.svc.cluster.local/bookmark
     ProxyPassReverse  /bookmark           http://bookmark-frontend.default.svc.cluster.local/bookmark
 
+    ProxyPass         /admin/auth/        http://keycloak-http.default.svc.cluster.local:80/
+    ProxyPassReverse  /admin/auth/        http://keycloak-http.default.svc.cluster.local:80/
     ProxyPass         /admin/kibana/      http://kibana.default.svc.cluster.local:5601/
     ProxyPassReverse  /admin/kibana/      http://kibana.default.svc.cluster.local:5601/
     ProxyPass         /admin/logs         http://graylog-web.default.svc.cluster.local:9000/admin/logs
