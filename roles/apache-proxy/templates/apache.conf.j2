@@ -1,8 +1,12 @@
 <VirtualHost *:80>
-    ServerName      www.{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}
-    ServerAlias     {{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}
-    ServerAlias     eree.showcase.gerdi.org
-    ServerAlias     tumor.showcase.gerdi.org
+    ServerName      www.gerdi.org
+    ServerAlias     www.test.gerdi.org
+    ServerAlias     test.gerdi.org
+    ServerAlias     www.demo.gerdi.org
+    ServerAlias     demo.gerdi.org
+    ServerAlias     www.canary.gerdi.org
+    ServerAlias     canary.gerdi.org
+
     ServerAdmin     weber@lrz.de
 
     ErrorLog        /var/log/apache2/gerdi_frontend_error.log
@@ -21,10 +25,14 @@
 </VirtualHost>
 
 <VirtualHost *:443>
-    ServerName      www.{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}
-    ServerAlias     {{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}
-    ServerAlias     eree.showcase.gerdi.org
-    ServerAlias     tumor.showcase.gerdi.org
+    ServerName      www.gerdi.org
+    ServerAlias     www.test.gerdi.org
+    ServerAlias     test.gerdi.org
+    ServerAlias     www.demo.gerdi.org
+    ServerAlias     demo.gerdi.org
+    ServerAlias     www.canary.gerdi.org
+    ServerAlias     canary.gerdi.org
+
     ServerAdmin     weber@lrz.de
 
     ErrorLog        /var/log/apache2/gerdi_frontend_ssl_error.log
@@ -95,12 +103,6 @@
             Require all denied
         </LimitExcept>
     </Location>
-
-    RewriteCond %{HTTP_HOST} ^eree.showcase.gerdi.org
-    RewriteRule ^/(.*) http://nd-0.ext.test.gerdi.org:32000/$1
-
-    RewriteCond %{HTTP_HOST} ^tumor.showcase.gerdi.org
-    RewriteRule ^/(.*) http://nd-0.ext.test.gerdi.org:32001/$1
 
     # Protect harvesters and index
     <Location /api/index>
