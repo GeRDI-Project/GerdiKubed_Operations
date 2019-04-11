@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - name: Setup VMWare nodes
-  hosts: vmware-nodes:!kubernetes-masters
+  hosts: kubernetes-nodes:&vmware-nodes
   remote_user: root
   roles:
     - vmware-node

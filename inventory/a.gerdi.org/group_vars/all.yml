@@ -9,28 +9,28 @@
 # - kubeconfig: cluster-name & current-context
 # - controller-manager: --cluster-name
 # - apache.conf: subdomain name
-K8S_DEPLOYMENT_CONTEXT: "test"
-K8S_GLOBAL_LOG_LEVEL: "v=2"
+K8S_DEPLOYMENT_CONTEXT: "a"
+K8S_GLOBAL_LOG_LEVEL: "v=1"
 # Certificates will be created with both DNS-names and IP-Adresses in the alternative names.
 # DNS-names in certs need to comply to the following pattern:
 # [mstr|no]-\d+.{{K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}
-K8S_DOMAIN_NAMESPACE: "example.com"
+K8S_DOMAIN_NAMESPACE: "gerdi.org"
 # You will find the cert infrastructure (e.g. ca-key and cert and all other stuff) here:
 # Do not use ~ or relative paths, please spell out absolute path
-CONTROL_BASE_DIR:   "<some_dir>"
+CONTROL_BASE_DIR:   "/Users/di39num/Code/Cert/k8s-gerdi/cluster_a_k8s_mgmt"
 # Note: Your machine might need whitelisting
-NFS_SERVER_DOMAIN: "<domain>"
-NFS_VOLUME_PATH: "<path>"
+NFS_SERVER_DOMAIN: intern05.nas.lrz.de
+NFS_VOLUME_PATH: /intern/gerdi01
 NFS_SERVER_PATH: "{{ NFS_SERVER_DOMAIN }}:{{ NFS_VOLUME_PATH }}"
 # Network interface prefix
 # Make sure to use the traditional interface naming scheme (eth0, eth1,... | ens0, ens1,...)
 # Instead of Predictable Network Interface Names
 # Example: "ens" would assume the interfaces would be named ens[0-9]
-NICDEVICEPREFIX: "ens"
+NICDEVICEPREFIX: "eth"
 # Nameserver the node (systemd-resolved) should use
 NODE_NAMESERVER: "8.8.8.8"
 # Version Configuration (See: util/VariableTemplate.md):
-K8S_VERSION: "vx.y.z"
+K8S_VERSION: "v1.11.6"
 DOCKER_VERSION: "5:18.09.1~3-0~debian-stretch"
 CNI_VERSION: "v0.5.2"
 OPENVSWITCH_VERSION: "2.10.0+2018.08.28+git.8ca7c82b7d+ds1-10"
@@ -57,13 +57,13 @@ K8S_SERVER_BIN_DIR: "{{ K8S_K8S_DIR }}/server/kubernetes/server/bin"
 K8S_KUBECONFIG: "{{ K8S_BASE_DIR }}/kubeconfig"
 K8S_DOWNLOAD_URL: "https://github.com/kubernetes/kubernetes/releases/download/{{K8S_VERSION}}/kubernetes.tar.gz"
 # Nameserver Docker should use to resolve
-DOCKER_NAMESERVER: {{ NODE_NAMESERVER }}
+DOCKER_NAMESERVER: "{{ NODE_NAMESERVER }}"
 # Note: NICDEVICEPREFIX_VMWARE & NICDEVICEPREFIX_NEBULA
 # Only required if inventory contains vmware and opennebula machines
 # VMware nic prefix:
-NICDEVICEPREFIX_VMWARE: {{ NICDEVICEPREFIX }}
+NICDEVICEPREFIX_VMWARE: "{{ NICDEVICEPREFIX }}"
 # Nebula nic prefix:
-NICDEVICEPREFIX_NEBULA: {{ NICDEVICEPREFIX }}
+NICDEVICEPREFIX_NEBULA: "{{ NICDEVICEPREFIX }}"
 # Set to true, if you are running this on LRZ machines
 LRZ_INTERNAL: false
 ################################################################################
@@ -108,9 +108,9 @@ CNI_CONF_DIR: /etc/cni/net.d
 ################################################################################
 OVN_API_TOKEN: "someValue"
 # OVN Node Version
-OVN_HOST_VERSION: {{ OPENVSWITCH_VERSION }}
+OVN_HOST_VERSION: "{{ OPENVSWITCH_VERSION }}"
 # OVN Master Version
-OVN_CENTRAL_VERSION: {{ OPENVSWITCH_VERSION }}
+OVN_CENTRAL_VERSION: "{{ OPENVSWITCH_VERSION }}"
 #Used by autoRepairRoutes.sh; Make sure number is unique
 K8S_INTERNAL_ROUTING_TABLE: "180485"
 

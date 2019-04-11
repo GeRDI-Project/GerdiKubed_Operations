@@ -14,24 +14,41 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# NOTE: This is a slighly different script that also makes sure networkd is setup
+# NOTE: VMWARE !specific! script that handles the setup of systemd-networkd and systemd-resolved
 # Get all attached ips
 # Make sure to only seperate by newline;
 # Also get rid of loopback IP
 # IPs are stored as IP_ARRAY[0] = IP[[:space:]]CIDR[[:space:]]BROADCAST[[:space:]]DEVICENAME
-#      Example: 141.40.254.115 23 141.40.255.255 {{ NICDEVICEPREFIX_VMWARE }}3
+#      Example: 141.40.254.115 23 141.40.255.255 {{ NICDEVICEPREFIX_NEBULA }}3
+# Delete previous default OpenNebula setup (happens on multi NIC machines)
+
+# TODO: Break script into logical parts, add headings, describe the workflow from a bird's eye perspective.
+
+# TODO: Explain
+rm /etc/systemd/network/wired.network > /dev/null 2>&1
+
+# Test if we are already set up
+DIRECTORYTEST=$(find /etc/systemd/network -name "*.network" | wc -l)
+
+if [ "$DIRECTORYTEST" -ge "1" ]; then
+  echo "Networkd already setup. Nothing to do here."
+  exit 0;
+fi
+
 IFS=$'\n'
 # Filter out ipv4 ips
-# Remove loopback, filter by device {{ NICDEVICEPREFIX_VMWARE }}0-9
+# Remove loopback, filter by device {{ NICDEVICEPREFIX_NEBULA }}0-9
 # Get the fields we need, replace / with space
 # Filter out dynamic
 IP_ARRAY=$( \
 ip addr | grep -e "inet[[:space:]]" | \
-grep -v '127.0.0.1' | grep -E '{{ NICDEVICEPREFIX_VMWARE }}[0-9]' | \
+grep -v '127.0.0.1' | grep -E '{{ NICDEVICEPREFIX_NEBULA }}[0-9]' | \
 awk '{print $2" "$4" "$7$8}' | sed 's/\// /g' | \
 sed 's/dynamic//g')
 unset $IFS
 
+# TODO: PUT VARIABLE INITIALISATION AT THE TOP
+# TODO: CHECK FOR WRONG VALUES
 ROUTING_TABLE_INT=$1
 NFS_SERVER_DOMAIN=$2
 
@@ -56,10 +73,8 @@ while read -r IP; do
 done <<< "$IP_ARRAY"
 
 # Check what state we are in
-# Loadbalancer & Old Nodes: 1 Public, 2 Private (1 OVN, 1 SSH) -> Setup required
-# Loadbalancer & Old Nodes after OVN setup: 1 Public, 1 Private (1 hijacked by OVN, 1 SSH) -> No Setup required
-# New Nodes: 0 Public, 2 Private (1 OVN, 1 SSH) -> Setup required
-# New Nodes after OVN setup: 0 Public, 1 Private (1 hijacked by OVN, 1 SSH) -> No Setup required
+# Loadbalancers: 1 Public & 1 Private -> Setup required
+# Nodes: 0 Public & 1 Private interface -> Setup required
 {% raw %}
 echo "${#PUBLIC_IPS[@]} Public & ${#PRIVATE_IPS[@]} Private IPs detected."
 {% endraw %}
@@ -67,10 +82,10 @@ echo "${#PUBLIC_IPS[@]} Public & ${#PRIVATE_IPS[@]} Private IPs detected."
 # Error states
 {% raw %}
 if [ ${#PRIVATE_IPS[@]} -eq 0 ]; then
-{% endraw %}
   >&2 echo "No private IPs assigned to node. All setups require private IPs!"
   exit 1
 fi
+{% endraw %}
 
 EXIST=`ip rule show $NFS_SERVER_DOMAIN | wc -l`
 {% raw %}
@@ -79,16 +94,12 @@ if [ ${#PUBLIC_IPS[@]} -eq 1 ] && [ $EXIST -eq 0 ]; then
   ip rule add to $NFS_SERVER_DOMAIN table $ROUTING_TABLE_INT
 fi
 
-# Cases: 1 Private & 1 Public OR 1 Private & 0 Public -> Assume we are already set up -> Exit script
-{% raw %}
-if [[ ${#PRIVATE_IPS[@]} -eq 1 && ${#PUBLIC_IPS[@]} -eq 1 ]] || [[ ${#PRIVATE_IPS[@]} -eq 1 && ${#PUBLIC_IPS[@]} -eq 0 ]]; then
-{% endraw %}
-  echo "Nothing to do"
-  exit 0
-fi
+# TODO: Put functions at the top of the script
 
 # Taken from https://gist.github.com/kwilczynski/5d37e1cced7e76c7c9ccfdf875ba6c5b
 # arg $1 = IP
+# TODO: Please comment this function comparable to
+# https://code.gerdi-project.de/projects/HL/repos/harvestersetup/browse/scripts/renameSetup.sh#34
 cidr_to_netmask() {
   local value=$(( 0xffffffff ^ ((1 << (32 - $1)) - 1) ))
   echo "$(( (value >> 24) & 0xff )).$(( (value >> 16) & 0xff )).$(( (value >> 8) & 0xff )).$(( value & 0xff ))"
@@ -96,14 +107,19 @@ cidr_to_netmask() {
 
 # Taken from https://stackoverflow.com/questions/15429420/given-the-ip-and-netmask-how-can-i-calculate-the-network-address-using-bash?answertab=active#tab-top
 # arg $1 = IP; arg $2 = SUBNET_MASK
+# TODO: Please comment this function comparable to
+# https://code.gerdi-project.de/projects/HL/repos/harvestersetup/browse/scripts/renameSetup.sh#34
 ip_to_netaddr() {
   IFS=. read -r i1 i2 i3 i4 <<< "$1"
   IFS=. read -r m1 m2 m3 m4 <<< "$2"
   echo "$(printf "%d.%d.%d.%d\n" "$((i1 & m1))" "$((i2 & m2))" "$((i3 & m3))" "$((i4 & m4))")"
   unset $IFS
 }
+
+# Does this machine have a public interface?
 {% raw %}
 if [ ${#PUBLIC_IPS[@]} -eq 1 ]; then
+  # Yes, setup route repair
   PRIVATEIP_COUNT=${#PRIVATE_IPS[@]}
 {% endraw %}
   DEV_NAME=$(echo ${PUBLIC_IPS[0]} | awk '{print $4}')
@@ -125,7 +141,6 @@ if [ ${#PUBLIC_IPS[@]} -eq 1 ]; then
   } > /etc/systemd/network/1-$DEV_NAME.network
   echo "Writting 1-"$DEV_NAME".network"
   # Setup repairRoutes.sh
-  DEV_OVN=$(echo ${PRIVATE_IPS[1]} | awk '{print $4}')
   DEV_INT=$(echo ${PRIVATE_IPS[0]} | awk '{print $4}')
   IP_INT=$(echo ${PRIVATE_IPS[0]} | awk '{print $1}')
   CIDR=$(echo ${PRIVATE_IPS[0]} | awk '{print $2}')
@@ -135,7 +150,7 @@ if [ ${#PUBLIC_IPS[@]} -eq 1 ]; then
   # Taken from Gerdi GIT (gerdikubed/util/sed.src/repairRoutes.sh)
   { \
     echo '#!/bin/bash'; \
-    echo "ip route | egrep '"$DEV_INT"|"$DEV_OVN"' | \\" ; \
+    echo "ip route | egrep '"$DEV_INT"|br"$DEV_INT"' | \\" ; \
     echo 'while read line'; \
     echo 'do'; \
     echo '  ip route delete $line'; \
@@ -144,10 +159,6 @@ if [ ${#PUBLIC_IPS[@]} -eq 1 ]; then
     echo 'ip rule add from '$IP_INT' lookup '$ROUTING_TABLE_INT; \
     echo 'ip rule add to '$NETWORK_ADDRESS'/'$CIDR' lookup '$ROUTING_TABLE_INT; \
     echo 'ip rule add to '$NFS_SERVER_DOMAIN' table '$ROUTING_TABLE_INT; \
-{% if LRZ_INTERNAL %}
-    echo 'ip rule add from all to 10.156.10.20 lookup '$ROUTING_TABLE_INT; \
-    echo 'ip rule add from all to 10.156.10.40 lookup '$ROUTING_TABLE_INT; \
-{% endif %}
 {% if inventory_hostname in groups['loadbalancer-nodes'] %}
     echo 'if service --status-all 2>&1 | grep -Fq 'dnsmasq'; then'; \
     echo '  service dnsmasq restart'; \
@@ -180,27 +191,36 @@ elif [ ${#PUBLIC_IPS[@]} -gt 1 ]; then
 fi
 
 {% raw %}
-if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
+if [ ${#PRIVATE_IPS[@]} -eq 1 ]; then
 {% endraw %}
-  COUNTER=0
+# TODO: is the loop necessary? I believe we checked for PRIVATE_IPS to have lenght 1?
   for IP in "${PRIVATE_IPS[@]}" ; do
     # Two private interfaces; First is gonna be SSH; Second OVN
-    DEV_NAME=$(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $4}')
-    IP_INTERNAL=$(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $1}')
-    CIDR=$(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $2}')
-    NETWORK_ADDRESS=$(ip_to_netaddr $(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $1;}') $(echo $SUBNET_MASK))
-    CURRENT_GATEWAY=$(echo "$GATEWAYS" | awk -v pos="$(($COUNTER+1))" '{print $pos}')
-    if [ $COUNTER -eq 0 ]; then
-      # Setup SSH interface
+    DEV_NAME=$(echo ${PRIVATE_IPS[0]} | awk '{print $4}')
+    IP_INTERNAL=$(echo ${PRIVATE_IPS[0]} | awk '{print $1}')
+    CIDR=$(echo ${PRIVATE_IPS[0]} | awk '{print $2}')
+    NETWORK_ADDRESS=$(ip_to_netaddr $(echo ${PRIVATE_IPS[0]} | awk '{print $1;}') $(echo $SUBNET_MASK))
+    CURRENT_GATEWAY=$(echo "$GATEWAYS" | awk -v pos="1" '{print $pos}')
+    # Setup SSH interface
+    { \
+      echo '[Match]'; \
+      echo 'Name='$DEV_NAME; \
+      echo ''; \
+      echo '[Network]'; \
+      echo 'DHCP=no'; \
+      echo 'DNS={{ NODE_NAMESERVER }}'; \
+      echo 'Address='$IP_INTERNAL'/'$CIDR; \
+      echo 'Gateway='$CURRENT_GATEWAY; \
+      echo 'IPForward=kernel'; \
+    } > /etc/systemd/network/$DEV_NAME.network
+{% raw %}
+    if [ ${#PUBLIC_IPS[@]} -eq 1 ]; then
+{% endraw %}
+      # This is a 2 interface machine;
+      # Get rid of previous Gateway
+      sed -i '0,/Gateway=/{/Gateway=/d;}' /etc/systemd/network/$DEV_NAME.network
+      # Append Route logic
       { \
-        echo '[Match]'; \
-        echo 'Name='$DEV_NAME; \
-        echo ''; \
-        echo '[Network]'; \
-        echo 'DHCP=no'; \
-        echo 'DNS={{ NODE_NAMESERVER }}'; \
-        echo 'Address='$IP_INTERNAL'/'$CIDR; \
-        echo 'IPForward=kernel'; \
         echo ''; \
         echo '[Route]'; \
         echo 'Gateway='$CURRENT_GATEWAY; \
@@ -210,44 +230,32 @@ if [ ${#PRIVATE_IPS[@]} -eq 2 ]; then
         echo 'Gateway='$CURRENT_GATEWAY; \
         echo 'Destination='$NETWORK_ADDRESS'/'$CIDR; \
         echo 'Table='$ROUTING_TABLE_INT; \
-      } > /etc/systemd/network/$DEV_NAME.network
-      echo "Writting "$DEV_NAME".network"
-    elif [ $COUNTER -eq 1 ]; then
-      SUBNET_MASK=$(cidr_to_netmask $(echo ${PRIVATE_IPS[$COUNTER]} | awk '{print $2;}'))
-      # Setup OVN interface
-      { \
-        echo '[Match]'; \
-        echo 'Name='$DEV_NAME; \
-        echo ''; \
-        echo '[Network]'; \
-        echo 'DHCP=no'; \
-        echo 'DNS={{ NODE_NAMESERVER }}'; \
-        echo 'Address='$IP_INTERNAL'/'$CIDR; \
-        echo 'Gateway='$CURRENT_GATEWAY; \
-        echo 'IPForward=kernel'; \
-      } > /etc/systemd/network/$DEV_NAME.network
-      echo "Writting "$DEV_NAME".network"
+      } >> /etc/systemd/network/$DEV_NAME.network
+      # Setup networkd for ovn kubernetes bridge
+      cp /etc/systemd/network/$DEV_NAME.network /etc/systemd/network/br$DEV_NAME.network
+      sed -i "s/Name=$DEV_NAME/Name=br$DEV_NAME/g" /etc/systemd/network/br$DEV_NAME.network
     fi
-    COUNTER=$((COUNTER+1))
+    echo "Writting "$DEV_NAME".network"
   done
 else
   >&2 echo "Too many private interfaces. I have no idea what to do!"
   exit 1;
 fi
 
-# We always use the first private ip for OVN and the second for internal
+# We always use the private IP for SSH
 IP_INT=$(echo ${PRIVATE_IPS[0]} | awk '{print $1}')
 
+# TODO: Explain
 rm /etc/resolv.conf
-#apt-get purge -y resolvconf
 
 # Start systemd networking
 systemctl enable --now systemd-networkd.service > /dev/null 2>&1
 systemctl enable --now systemd-resolved.service > /dev/null 2>&1
 
-# Setup systemd DNS
+# Setup systemd DNS TODO: Explain, why is this necessary
 sed -i 's/#DNS=/DNS={{ NODE_NAMESERVER }}/;' /etc/systemd/resolved.conf
 
+# TODO: Explain
 systemctl disable networking.service > /dev/null 2>&1
 
 ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
@@ -257,5 +265,8 @@ systemctl restart systemd-resolved.service > /dev/null 2>&1
 rm -f /etc/systemd/network/wired.network
 systemctl daemon-reload
 
+systemctl restart systemd-networkd
+
+# TODO Why is this not above where we determine IP_INT?
 sed -i 's/#ListenAddress 0.0.0.0/ListenAddress '$IP_INT'/
   s/#AddressFamily.*/AddressFamily inet/;' /etc/ssh/sshd_config

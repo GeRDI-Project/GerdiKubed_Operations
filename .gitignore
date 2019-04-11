@@ -1,7 +1,13 @@
 *.swp
 *.pem
 *.retry
-group_vars/all
-testing
 *.swp
 registry_config
+
+# Editet Variable Files on Control Maschines
+group_vars/all
+group_vars/all.yml
+
+# Edited Host Files on Control Maschines
+production.ini
+testing

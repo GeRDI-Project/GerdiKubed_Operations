@@ -2,7 +2,7 @@
 # Only add vmware nodes, since they need a different interface setup,
 # you need to manually add all IPs to the node. Pattern:
 # HOSTNAME		   User		     Variable
-# mstr-0.staging.gerdi.org ansible_user=root nic0ip=IP1 nic1ip=IP2 nic2ip=IP3 (optional)
+# mstr-0.staging.gerdi.org ansible_user=root nic0ip=IP1 nic1ip=IP2
 
 [loadbalancer-nodes]
 # Add all lb nodes, pattern:
@@ -21,4 +21,6 @@
 # Please use FQDNs for the hosts, IP addresses are not supported anymore
 
 [kubernetes-management]
-localhost         ansible_user=<your_local_user>
+# If you use localhost use the following ansible_connection=local which does not require a running SSH server
+# If you use a remote host just delete the ansible_connection=local variable from the inventory file
+localhost ansible_user=<your_local_user> ansible_connection=local
