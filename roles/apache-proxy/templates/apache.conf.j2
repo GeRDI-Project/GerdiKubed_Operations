@@ -235,8 +235,8 @@
     ProxyPass         /bookmark           http://bookmark-frontend.default.svc.cluster.local/bookmark
     ProxyPassReverse  /bookmark           http://bookmark-frontend.default.svc.cluster.local/bookmark
 
-    ProxyPass         /admin/auth/        http://keycloak-http.default.svc.cluster.local:80/
-    ProxyPassReverse  /admin/auth/        http://keycloak-http.default.svc.cluster.local:80/
+    ProxyPass         /admin/auth/        http://keycloak-http.default.svc.cluster.local:80/admin/auth
+    ProxyPassReverse  /admin/auth/        http://keycloak-http.default.svc.cluster.local:80/admin/auth
     ProxyPass         /admin/kibana/      http://kibana.default.svc.cluster.local:5601/
     ProxyPassReverse  /admin/kibana/      http://kibana.default.svc.cluster.local:5601/
     ProxyPass         /admin/logs         http://graylog-web.default.svc.cluster.local:9000/admin/logs
