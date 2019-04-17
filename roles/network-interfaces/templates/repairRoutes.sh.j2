@@ -7,6 +7,10 @@ do
   ip route delete $line
 done
 
+# Delete the rules if they already exists
+ip rule del from {{ host_private_address }} lookup {{ host_private_rtable }} > /dev/null 2>&1
+ip rule del to {{ host_private_network }}/{{ (host_private_address + '/' + host_private_netmask) | ipaddr('prefix') }} lookup {{ host_private_rtable }} > /dev/null 2>&1
+
 ip rule add from {{ host_private_address }} lookup {{ host_private_rtable }}
 ip rule add to {{ host_private_network }}/{{ (host_private_address + '/' + host_private_netmask) | ipaddr('prefix') }} lookup {{ host_private_rtable }}
 {% if NFS_SERVER_DOMAIN is defined %}
@@ -16,3 +20,6 @@ ip rule add to {{ NFS_SERVER_DOMAIN }} table {{ host_private_rtable }}
 if service --status-all 2>&1 | grep -Fq dnsmasq; then
   service dnsmasq restart
 fi
+
+# Restart systemd to force active the route repair
+systemctl restart systemd-networkd > /dev/null 2>&1

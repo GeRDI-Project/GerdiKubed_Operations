@@ -9,15 +9,17 @@ Name={{ host_interface }}
 DHCP=no
 DNS=1.1.1.1
 Address={{ host_address }}
+{% if not ((host_public_interface is defined) and (iface_type != 'private')) %}
 Gateway={{ host_gateway }}
+{% endif %}
 IPForward=kernel
 
 {% if (host_public_interface is defined) and (iface_type != 'private') %}
-[ROUTE]
+[Route]
 Gateway={{ host_gateway }}
 Table={{ host_rtable }}
 
-[ROUTE]
+[Route]
 Gateway={{ host_gateway }}
 Destination={{ host_network}}
 Table={{ host_rtable }}

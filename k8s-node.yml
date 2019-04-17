@@ -23,6 +23,20 @@
   roles:
     - nebula-node
 
+- name: Prepare Openstack Host for Prometheus Setup
+  hosts: openstack-nodes
+  remote_user: debian
+  become: true
+  roles:
+    - openstack-node
+
+- name: Configure Network Interfaces
+  hosts: openstack-nodes
+  remote_user: root
+  become: true
+  roles:
+    - network-interfaces
+
 - name: Initialize kubernetes nodes
   hosts: kubernetes-nodes
   remote_user: root

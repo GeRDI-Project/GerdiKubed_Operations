@@ -6,23 +6,29 @@
 #
 # ########################################################################### #
 ---
+- name: Check if we are already setup
+  shell: grep 'AllowGroups root debian' /etc/ssh/sshd_config
+  register: alreadySetup
+  ignore_errors: True
+
 - name: Check If moduli File exists
   stat:
     path: /etc/ssh/moduli
   register: openstack_node_ssh_moduli
-  
+  when: alreadySetup is defined and alreadySetup.rc > 0
+ 
 - name: Filter /etc/ssh/moduli for Values < 2000
   shell: awk '$5 > 2000' /etc/ssh/moduli > /etc/ssh/moduli.filtered
-  when: openstack_node_ssh_moduli.stat.exists == true
+  when: alreadySetup is defined and alreadySetup.rc > 0 and openstack_node_ssh_moduli.stat.exists == true
 
 - name: Replace /etc/ssh/moduli By Filtered One
   shell: mv /etc/ssh/moduli.filtered /etc/ssh/moduli
-  when: openstack_node_ssh_moduli.stat.exists == true
+  when: alreadySetup is defined and alreadySetup.rc > 0 and openstack_node_ssh_moduli.stat.exists == true
 
 - name: Check Content of /etc/ssh/moduli
   shell: wc -l /etc/ssh/moduli
   register: openstack_node_ssh_moduli_content
-  when: openstack_node_ssh_moduli.stat.exists == true
+  when: alreadySetup is defined and alreadySetup.rc > 0 and openstack_node_ssh_moduli.stat.exists == true
 
 - name: Generate /etc/ssh/moduli
   shell: >
@@ -30,26 +36,29 @@
     ssh-keygen -T /etc/ssh/moduli.safe -f /etc/ssh/moduli.all
     mv /etc/ssh/moduli.safe /etc/ssh/moduli
     rm /etc/ssh/moduli.all
-  when: ( openstack_node_ssh_moduli.stat.exists == false ) or ( openstack_node_ssh_moduli_content.stdout.split()[0] == "0" )
+  when: ( alreadySetup is defined and alreadySetup.rc > 0 ) and (( openstack_node_ssh_moduli.stat.exists == false ) or ( openstack_node_ssh_moduli_content.stdout.split()[0] == "0" ))
 
 - name: Detect SSH Host Keys
   find:
     paths: /etc/ssh/
     patterns: ssh_host_*key*
   register: openstack_node_ssh_host_keys
+  when: alreadySetup is defined and alreadySetup.rc > 0
 
 - name: Delte Default SSH Host Keys
   file:
     path: "{{ item.path }}"
     state: absent
   with_items: "{{ openstack_node_ssh_host_keys.files }}"
-  when: openstack_node_ssh_host_keys.files | length > 2
+  when: alreadySetup is defined and alreadySetup.rc > 0 and openstack_node_ssh_host_keys.files | length > 2
 
 - name: Generate New ED25519 Key
   shell: ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -N "" < /dev/null
+  when: alreadySetup is defined and alreadySetup.rc > 0
 
 - name: Generate New RSA Hostkey
   shell: ssh-keygen -t rsa -b 4096 -f /etc/ssh/ssh_host_rsa_key -N "" < /dev/null
+  when: alreadySetup is defined and alreadySetup.rc > 0
 
 - name: Inject Public SSH Keys for Root Account
   authorized_key:
@@ -58,6 +67,11 @@
     key: "{{ lookup('file', item) }}"
   with_fileglob:
     - "{{ openstack_node_ssh_public_keys }}/*.pub"
+  when: alreadySetup is defined and alreadySetup.rc > 0
+
+- name: Delete password of debian user, only allow ssh pub key
+  shell: usermod -p '*' debian
+  when: alreadySetup is defined and alreadySetup.rc > 0
 
 - name: Update /etc/ssh/sshd_config for High Security One
   template:
@@ -65,18 +79,22 @@
     dest: /etc/ssh/sshd_config
   notify:
     - Restart OpenSSH
+  when: alreadySetup is defined and alreadySetup.rc > 0
 
 - name: Install Fail2Ban
   apt:
     name: fail2ban
     state: present
+  when: alreadySetup is defined and alreadySetup.rc > 0
 
 - name: Configure fail2ban
   template:
     src: jail.local.j2
     dest: /etc/fail2ban/jail.local
+  when: alreadySetup is defined and alreadySetup.rc > 0
 
-- name: Restart Fail2Band
+- name: Restart Fail2Ban
   systemd:
     name: fail2ban
     state: restarted
+  when: alreadySetup is defined and alreadySetup.rc > 0
