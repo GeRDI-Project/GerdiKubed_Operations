@@ -1,0 +1,18 @@
+#!/bin/bash
+# {{ ansible_managed }}
+
+ip route | grep '{{ host_private_interface }}' | \
+while read line
+do
+  ip route delete $line
+done
+
+ip rule add from {{ host_private_address }} lookup {{ host_private_rtable }}
+ip rule add to {{ host_private_network }}/{{ (host_private_address + '/' + host_private_netmask) | ipaddr('prefix') }} lookup {{ host_private_rtable }}
+{% if NFS_SERVER_DOMAIN is defined %}
+ip rule add to {{ NFS_SERVER_DOMAIN }} table {{ host_private_rtable }}
+{% endif %}
+
+if service --status-all 2>&1 | grep -Fq dnsmasq; then
+  service dnsmasq restart
+fi

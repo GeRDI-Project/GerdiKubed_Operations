@@ -1,0 +1,24 @@
+# This file is {{ ansible_managed }}, every change will be removed when the 
+# system is deployed again. Please make your changes in the according ansible
+# template of the role network-interfaces.
+
+[Match]
+Name={{ host_interface }}
+
+[Network]
+DHCP=no
+DNS=1.1.1.1
+Address={{ host_address }}
+Gateway={{ host_gateway }}
+IPForward=kernel
+
+{% if (host_public_interface is defined) and (iface_type != 'private') %}
+[ROUTE]
+Gateway={{ host_gateway }}
+Table={{ host_rtable }}
+
+[ROUTE]
+Gateway={{ host_gateway }}
+Destination={{ host_network}}
+Table={{ host_rtable }}
+{% endif %}

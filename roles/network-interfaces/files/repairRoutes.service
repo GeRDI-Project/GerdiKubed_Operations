@@ -1,0 +1,17 @@
+# This file is {{ ansible_managed }}, every change will be removed when the 
+# system is deployed again. Please make your changes in the according ansible
+# template of the role network-interfaces.
+#
+# Copyright: Valentin Lamos (LRZ)
+#
+
+[Unit]
+Description=Repair routes on multi NIC setup
+After=network.target
+
+[Service]
+ExecStart=/etc/repairRoutes/repairRoutes.sh
+Type=oneshot
+
+[Install]
+WantedBy=multi-user.target
