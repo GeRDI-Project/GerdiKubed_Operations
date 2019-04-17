@@ -1,12 +1,8 @@
 <VirtualHost *:80>
-    ServerName      www.gerdi.org
-    ServerAlias     www.test.gerdi.org
-    ServerAlias     test.gerdi.org
-    ServerAlias     www.demo.gerdi.org
-    ServerAlias     demo.gerdi.org
-    ServerAlias     www.canary.gerdi.org
-    ServerAlias     canary.gerdi.org
-
+    ServerName      {{ MAIN_DOMAIN }}
+    {% for OTHER_DOMAIN in OTHER_DOMAINS %}
+    ServerAlias     {{ OTHER_DOMAIN }}
+    {% endfor %}
     ServerAdmin     weber@lrz.de
 
     ErrorLog        /var/log/apache2/gerdi_frontend_error.log
@@ -20,25 +16,28 @@
     RewriteCond %{HTTP_HOST} ^tumor.showcase.gerdi.org
     RewriteRule ^/(.*) http://www.test.gerdi.org:32001/$1
 
+    # Redirect to https to {{ MAIN_DOMAIN }}
     RewriteCond %{HTTP_HOST} !^.*\.showcase
-    RewriteRule     ^/(.*)  https://%{HTTP_HOST}/$1 [R=301,L]
+    RewriteRule     ^/(.*)  https://{{ MAIN_DOMAIN }}/$1 [R=301,L]
 </VirtualHost>
 
 <VirtualHost *:443>
-    ServerName      www.gerdi.org
-    ServerAlias     www.test.gerdi.org
-    ServerAlias     test.gerdi.org
-    ServerAlias     www.demo.gerdi.org
-    ServerAlias     demo.gerdi.org
-    ServerAlias     www.canary.gerdi.org
-    ServerAlias     canary.gerdi.org
+    ServerName      {{ MAIN_DOMAIN }}
+    {% for OTHER_DOMAIN in OTHER_DOMAINS %}
+    ServerAlias     {{ OTHER_DOMAIN }}
+    {% endfor %}
+
+    RewriteEngine   On
+    # One domain is the main domain and we will use redirect all request to that
+    RewriteCond     %{HTTP_HOST}  !^{{ MAIN_DOMAIN }}
+    RewriteRule     ^(.*)         https://{{ MAIN_DOMAIN }}/$1 [L,R=301]
 
     ServerAdmin     weber@lrz.de
 
     ErrorLog        /var/log/apache2/gerdi_frontend_ssl_error.log
     CustomLog       /var/log/apache2/gerdi_frontend_ssl_access.log combined
 
-    RewriteEngine   On
+
     DocumentRoot    /var/www/html
 
     SSLEngine on

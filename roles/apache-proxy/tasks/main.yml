@@ -42,7 +42,7 @@
 - name: Install server configuration
   template:
     src: apache.conf.j2
-    dest: "/etc/apache2/sites-enabled/{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}.conf"
+    dest: "/etc/apache2/sites-enabled/{{ MAIN_DOMAIN }}.conf"
   notify:
     - restart apache
 
@@ -118,3 +118,10 @@
     path: '/opt/k8s/certs/admin.crtAndKey.pem'
     regexp: '(PRIVATE KEY-----)$'
     replace: 'RSA \1'
+
+- name: apache-proxy | remove debian default vhost
+  file:
+    path: "/etc/apache2/sites-enabled/000-default.conf"
+    state: absent
+  notify:
+    - restart apache
