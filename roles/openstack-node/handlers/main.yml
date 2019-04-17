@@ -1,0 +1,12 @@
+# ########################################################################### #
+# This Ansible role can be used to configure an OpenStack Node so that if can
+# be used to with root access and dissable the default debian user
+#
+# Author: Alexander Goetz@LRZ (2019 -)
+#
+# ########################################################################### #
+---
+- name: Restart OpenSSH
+  systemd:
+    name: sshd
+    state: restarted

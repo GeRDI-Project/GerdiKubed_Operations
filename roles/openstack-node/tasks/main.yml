@@ -1,0 +1,82 @@
+# ########################################################################### #
+# This Ansible role can be used to configure an OpenStack Node so that if can
+# be used to with root access and dissable the default debian user
+#
+# Author: Alexander Goetz@LRZ (2019 -)
+#
+# ########################################################################### #
+---
+- name: Check If moduli File exists
+  stat:
+    path: /etc/ssh/moduli
+  register: openstack_node_ssh_moduli
+  
+- name: Filter /etc/ssh/moduli for Values < 2000
+  shell: awk '$5 > 2000' /etc/ssh/moduli > /etc/ssh/moduli.filtered
+  when: openstack_node_ssh_moduli.stat.exists == true
+
+- name: Replace /etc/ssh/moduli By Filtered One
+  shell: mv /etc/ssh/moduli.filtered /etc/ssh/moduli
+  when: openstack_node_ssh_moduli.stat.exists == true
+
+- name: Check Content of /etc/ssh/moduli
+  shell: wc -l /etc/ssh/moduli
+  register: openstack_node_ssh_moduli_content
+  when: openstack_node_ssh_moduli.stat.exists == true
+
+- name: Generate /etc/ssh/moduli
+  shell: >
+    ssh-keygen -G /etc/ssh/moduli.all -b 4096
+    ssh-keygen -T /etc/ssh/moduli.safe -f /etc/ssh/moduli.all
+    mv /etc/ssh/moduli.safe /etc/ssh/moduli
+    rm /etc/ssh/moduli.all
+  when: ( openstack_node_ssh_moduli.stat.exists == false ) or ( openstack_node_ssh_moduli_content.stdout.split()[0] == "0" )
+
+- name: Detect SSH Host Keys
+  find:
+    paths: /etc/ssh/
+    patterns: ssh_host_*key*
+  register: openstack_node_ssh_host_keys
+
+- name: Delte Default SSH Host Keys
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ openstack_node_ssh_host_keys.files }}"
+  when: openstack_node_ssh_host_keys.files | length > 2
+
+- name: Generate New ED25519 Key
+  shell: ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -N "" < /dev/null
+
+- name: Generate New RSA Hostkey
+  shell: ssh-keygen -t rsa -b 4096 -f /etc/ssh/ssh_host_rsa_key -N "" < /dev/null
+
+- name: Inject Public SSH Keys for Root Account
+  authorized_key:
+    user: root
+    state: present
+    key: "{{ lookup('file', item) }}"
+  with_fileglob:
+    - "{{ openstack_node_ssh_public_keys }}/*.pub"
+
+- name: Update /etc/ssh/sshd_config for High Security One
+  template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+  notify:
+    - Restart OpenSSH
+
+- name: Install Fail2Ban
+  apt:
+    name: fail2ban
+    state: present
+
+- name: Configure fail2ban
+  template:
+    src: jail.local.j2
+    dest: /etc/fail2ban/jail.local
+
+- name: Restart Fail2Band
+  systemd:
+    name: fail2ban
+    state: restarted
