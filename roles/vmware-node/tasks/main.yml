@@ -20,6 +20,7 @@
   template:
     src: setupNIC.sh.j2
     dest: /root/setupNIC.sh
+  when: inventory_hostname in groups['loadbalancer-nodes']
 
 - name: vmware-node | Setup NICs of VMware machine
   shell: bash /root/setupNIC.sh {{ nic0ip }} {{ nic1ip }}
