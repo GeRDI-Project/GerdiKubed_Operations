@@ -16,7 +16,7 @@
     path: /etc/ssh/moduli
   register: openstack_node_ssh_moduli
   when: alreadySetup is defined and alreadySetup.rc > 0
- 
+
 - name: Filter /etc/ssh/moduli for Values < 2000
   shell: awk '$5 > 2000' /etc/ssh/moduli > /etc/ssh/moduli.filtered
   when: alreadySetup is defined and alreadySetup.rc > 0 and openstack_node_ssh_moduli.stat.exists == true
