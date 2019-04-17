@@ -1,8 +1,12 @@
 <VirtualHost *:80>
-    ServerName      www.{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}
-    ServerAlias     {{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}
-    ServerAlias     eree.showcase.gerdi.org
-    ServerAlias     tumor.showcase.gerdi.org
+    ServerName      www.gerdi.org
+    ServerAlias     www.test.gerdi.org
+    ServerAlias     test.gerdi.org
+    ServerAlias     www.demo.gerdi.org
+    ServerAlias     demo.gerdi.org
+    ServerAlias     www.canary.gerdi.org
+    ServerAlias     canary.gerdi.org
+
     ServerAdmin     weber@lrz.de
 
     ErrorLog        /var/log/apache2/gerdi_frontend_error.log
@@ -21,10 +25,14 @@
 </VirtualHost>
 
 <VirtualHost *:443>
-    ServerName      www.{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}
-    ServerAlias     {{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}
-    ServerAlias     eree.showcase.gerdi.org
-    ServerAlias     tumor.showcase.gerdi.org
+    ServerName      www.gerdi.org
+    ServerAlias     www.test.gerdi.org
+    ServerAlias     test.gerdi.org
+    ServerAlias     www.demo.gerdi.org
+    ServerAlias     demo.gerdi.org
+    ServerAlias     www.canary.gerdi.org
+    ServerAlias     canary.gerdi.org
+
     ServerAdmin     weber@lrz.de
 
     ErrorLog        /var/log/apache2/gerdi_frontend_ssl_error.log
@@ -96,12 +104,6 @@
         </LimitExcept>
     </Location>
 
-    RewriteCond %{HTTP_HOST} ^eree.showcase.gerdi.org
-    RewriteRule ^/(.*) http://nd-0.ext.test.gerdi.org:32000/$1
-
-    RewriteCond %{HTTP_HOST} ^tumor.showcase.gerdi.org
-    RewriteRule ^/(.*) http://nd-0.ext.test.gerdi.org:32001/$1
-
     # Protect harvesters and index
     <Location /api/index>
         AuthType        Basic
@@ -115,6 +117,11 @@
         AuthName        "Restricted"
         AuthUserFile    /etc/apache2/.htpasswd
         Require         valid-user
+    </Location>
+
+    <Location /admin/auth>
+        RequestHeader set X-Forwarded-Proto "https"
+        SetEnvIf X-Forwarded-For "^(.+)" CLIENTIP=$1
     </Location>
 
     <Location /admin/logs>
@@ -204,6 +211,8 @@
     ProxyPassReverse  /harvest/imr        http://imr-harvester.default.svc.cluster.local:8080/imr/harvest
     ProxyPass         /harvest/oglp       http://oglp-harvester.default.svc.cluster.local:8080/oaipmh/harvest
     ProxyPassReverse  /harvest/oglp       http://oglp-harvester.default.svc.cluster.local:8080/oaipmh/harvest
+    ProxyPass         /harvest/eurostat   http://eurostat-harvester.default.svc.cluster.local:8080/eurostat/harvest
+    ProxyPassReverse  /harvest/eurostat   http://eurostat-harvester.default.svc.cluster.local:8080/eurostat/harvest
     ProxyPass         /harvest/hccenter   http://hccenter.default.svc.cluster.local
     ProxyPassReverse  /harvest/hccenter   http://hccenter.default.svc.cluster.local
 
@@ -218,12 +227,16 @@
 
     ProxyPass         /store              http://webdav-store-ui.default.svc.cluster.local/store
     ProxyPassReverse  /store              http://webdav-store-ui.default.svc.cluster.local/store
+    ProxyPass         /callback           http://callback-test-frontend.default.svc.cluster.local/callback
+    ProxyPassReverse  /callback           http://callback-test-frontend.default.svc.cluster.local/callback
     ProxyPass         /store-jhub         http://jhub-store-ui.default.svc.cluster.local/store-jhub
     ProxyPassReverse  /store-jhub         http://jhub-store-ui.default.svc.cluster.local/store-jhub
 
     ProxyPass         /bookmark           http://bookmark-frontend.default.svc.cluster.local/bookmark
     ProxyPassReverse  /bookmark           http://bookmark-frontend.default.svc.cluster.local/bookmark
 
+    ProxyPass         /admin/auth         http://keycloak-http.default.svc.cluster.local:80/admin/auth
+    ProxyPassReverse  /admin/auth         http://keycloak-http.default.svc.cluster.local:80/admin/auth
     ProxyPass         /admin/kibana/      http://kibana.default.svc.cluster.local:5601/
     ProxyPassReverse  /admin/kibana/      http://kibana.default.svc.cluster.local:5601/
     ProxyPass         /admin/logs         http://graylog-web.default.svc.cluster.local:9000/admin/logs

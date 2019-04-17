@@ -13,6 +13,12 @@
 # limitations under the License.
 ---
 # This is needed for the following task. Should go to common-role
+#
+- name: persistent-volumes | Create nfs-persistent-volume path
+  file:
+    path: "{{ NFS_VOLUME_PATH }}/nfs-{{ K8S_DEPLOYMENT_CONTEXT}}"
+    state: directory
+
 - name: persistent-volumes | Check whether nfs-client-provisioner is already installed
   shell: |
     kubectl get pods  \
