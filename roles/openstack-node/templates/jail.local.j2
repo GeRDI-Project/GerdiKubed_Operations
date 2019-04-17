@@ -681,7 +681,7 @@ logpath  = /var/log/named/security.log
 port     = 53
 action   = %(banaction)s[name=%(__name__)s-tcp, port="%(port)s", protocol="tcp", chain="%(chain)s", actname=%(banaction)s-tcp]
            %(banaction)s[name=%(__name__)s-udp, port="%(port)s", protocol="udp", chain="%(chain)s", actname=%(banaction)s-udp]
-logpath = /var/log/nsd.log
+logpath  = /var/log/nsd.log
 
 #
 # Miscellaneous
@@ -741,7 +741,7 @@ logpath  = /var/log/mongodb/mongodb.log
 #    to maintain entries for failed logins for sufficient amount of time
 [recidive]
 
-logpath  = /var/log/fail2ban.log
+logpath   = /var/log/fail2ban.log
 banaction = %(banaction_allports)s
 bantime  = 604800  ; 1 week
 findtime = 86400   ; 1 day
