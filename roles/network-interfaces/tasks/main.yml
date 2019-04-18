@@ -23,8 +23,8 @@
     host_private_address: "{{ hostvars[inventory_hostname]['ansible_' +  item]['ipv4']['address'] }}"
     host_private_netmask: "{{ hostvars[inventory_hostname]['ansible_' +  item]['ipv4']['netmask'] }}"
     host_private_network: "{{ hostvars[inventory_hostname]['ansible_' +  item]['ipv4']['network'] }}"
-  when: hostvars[inventory_hostname]['ansible_' + item] is defined and 
-        hostvars[inventory_hostname]['ansible_' + item]['ipv4'] is defined and 
+  when: hostvars[inventory_hostname]['ansible_' + item] is defined and
+        hostvars[inventory_hostname]['ansible_' + item]['ipv4'] is defined and
         hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('192.168.0.0/17')  # OpenStack Cloud
   with_items: "{{ ansible_interfaces }}"
 
@@ -34,8 +34,8 @@
     host_public_address: "{{ hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] }}"
     host_public_netmask: "{{ hostvars[inventory_hostname]['ansible_' + item]['ipv4']['netmask'] }}"
     host_public_network: "{{ hostvars[inventory_hostname]['ansible_' +  item]['ipv4']['network'] }}"
-  when: hostvars[inventory_hostname]['ansible_' + item] is defined and 
-        hostvars[inventory_hostname]['ansible_' + item]['ipv4'] is defined and 
+  when: hostvars[inventory_hostname]['ansible_' + item] is defined and
+        hostvars[inventory_hostname]['ansible_' + item]['ipv4'] is defined and
         hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('192.168.128.0/17') # OpenStack Cloud
   with_items: "{{ ansible_interfaces }}"
 
