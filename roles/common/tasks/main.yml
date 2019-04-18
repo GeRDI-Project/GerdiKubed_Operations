@@ -50,24 +50,6 @@
     - { path: "{{ K8S_KEY_FILES_DIR  }}", mode: '0700' }
     - { path: "/etc/kubernetes/manifests", mode: '0755' }
 
-- name: common | Install script to determine network configuration on runtime
-  copy:
-    src: printIface.sh
-    dest: /root/printIface.sh
-
-- name: common | Retrieve information for SSH (1st) interface
-  shell: bash /root/printIface.sh 1
-  register: internalInterface
-
-- name: common | Get facts for SSH (1st) interface
-  set_fact:
-    iface1:
-      name: "{{ internalInterface.stdout.split(' ')[0] }}"
-      ipv4: "{{ internalInterface.stdout.split(' ')[1] }}"
-      gw:   "{{ internalInterface.stdout.split(' ')[2] }}"
-      nw:   "{{ internalInterface.stdout.split(' ')[3] }}"
-      mask: "{{ internalInterface.stdout.split(' ')[4] }}"
-
 - name: common | Install server key and cert
   copy:
     src:  "{{ item.src  }}"

@@ -19,19 +19,20 @@
     - vmware-node
 
 - name: Setup OpenNebula nodes
-  hosts: kubernetes-masters:!vmware-nodes
+  hosts: kubernetes-masters:&opennebula-nodes
+  remote_user: root
   roles:
     - nebula-node
 
 - name: Prepare Openstack Host for Prometheus Setup
-  hosts: openstack-nodes
+  hosts: kubernetes-masters:&openstack-nodes
   remote_user: debian
   become: true
   roles:
     - openstack-node
 
 - name: Configure Network Interfaces
-  hosts: openstack-nodes
+  hosts: kubernetes-masters:&openstack-nodes
   remote_user: root
   become: true
   roles:

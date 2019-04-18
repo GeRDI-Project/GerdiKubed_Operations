@@ -25,7 +25,7 @@
   template:
     src: interface.network.j2
     dest: "/etc/systemd/network/{{ host_private_interface }}.network"
-  when: host_private_interface is defined
+  when: host_private_interface is defined and not 'br' in host_private_interface
   vars:
     host_interface: "{{ host_private_interface }}"
     host_address: "{{ host_private_address }}/{{ (host_private_address + '/' + host_private_netmask) | ipaddr('prefix') }}"

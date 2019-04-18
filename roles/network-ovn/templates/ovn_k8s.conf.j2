@@ -3,7 +3,7 @@ mtu=1400
 conntrack-zone=64321
 
 [kubernetes]
-apiserver=https://{{ iface1.ipv4 }}:443
+apiserver=https://{{ K8S_MASTER_IP }}:443
 token={{ OVN_API_TOKEN }}
 cacert={{ K8S_CERT_FILES_DIR }}/ca.crt.pem
 
@@ -16,7 +16,7 @@ conf-dir=/etc/cni/net.d
 plugin=ovn-k8s-cni-overlay
 
 [ovnnorth]
-address=tcp://{{ iface1.ipv4 }}:6641
+address=tcp://{{ K8S_MASTER_IP }}:6641
 
 [ovnsouth]
-address=tcp://{{ iface1.ipv4 }}:6642
+address=tcp://{{ K8S_MASTER_IP }}:6642

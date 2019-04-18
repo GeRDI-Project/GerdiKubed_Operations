@@ -29,8 +29,8 @@
 - name: network-interfaces | Create systemd Entry for Public Interface
   template:
     src: interface.network.j2
-    dest: "/etc/systemd/network/{{ host_public_interface }}.network"
-  when: host_public_interface is defined
+    dest: "/etc/systemd/network/1-{{ host_public_interface }}.network"
+  when: host_public_interface is defined and not 'br' in host_public_interface
   vars:
     host_interface: "{{ host_public_interface }}"
     host_address: "{{ host_public_address }}/{{ (host_public_address + '/' + host_public_netmask) | ipaddr('prefix') }}"
