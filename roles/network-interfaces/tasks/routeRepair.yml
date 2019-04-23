@@ -26,6 +26,7 @@
     src: repairRoutes.sh.j2
     dest: /etc/repairRoutes/repairRoutes.sh
     mode: 0744
+    force: no
 
 - name: network-interfaces | Setup repairRoutes service if two interfaces are configures
   copy:
