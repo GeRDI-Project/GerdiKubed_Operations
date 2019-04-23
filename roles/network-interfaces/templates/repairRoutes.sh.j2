@@ -32,6 +32,9 @@ ip rule add from all to 10.156.10.20 lookup {{ host_private_rtable }}
 ip rule add from all to 10.156.10.40 lookup {{ host_private_rtable }}
 {% endif %}
 
+{% if inventory_hostname in groups['loadbalancer-nodes'] %}
+# Force restart dnsmasq because it depends on the new rules
 if service --status-all 2>&1 | grep -Fq dnsmasq; then
   service dnsmasq restart
 fi
+{% endif %}
