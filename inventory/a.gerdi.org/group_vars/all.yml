@@ -40,6 +40,14 @@ DOCKER_VERSION: "5:18.09.1~3-0~debian-stretch"
 CNI_VERSION: "v0.5.2"
 OPENVSWITCH_VERSION: "2.10.0+2018.08.28+git.8ca7c82b7d+ds1-10"
 GOLANG_VERSION: "go1.11.1"
+
+####################
+# FIX SAI-1573, will be obsoleted by SAI-1492, SAI-1493, and SAI-1494
+####################
+EXTERNAL_LB: 129.187.252.21
+LB_ROUTES_TABLE: 8
+INTERNAL_NET: 10.156.116.55/22
+
 ########################################
 # End: Change the values
 ########################################
