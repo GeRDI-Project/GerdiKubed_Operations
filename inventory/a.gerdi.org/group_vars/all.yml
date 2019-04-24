@@ -9,6 +9,11 @@
 # - kubeconfig: cluster-name & current-context
 # - controller-manager: --cluster-name
 # - apache.conf: subdomain name
+MAIN_DOMAIN: "www.demo.gerdi.org"
+OTHER_DOMAINS:
+  - "demo.gerdi.org"
+  - "www.staging.gerdi.org"
+  - "staging.gerdi.org"
 K8S_DEPLOYMENT_CONTEXT: "a"
 K8S_GLOBAL_LOG_LEVEL: "v=1"
 # Certificates will be created with both DNS-names and IP-Adresses in the alternative names.
