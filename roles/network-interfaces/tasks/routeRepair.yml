@@ -33,10 +33,3 @@
     src: repairRoutes.service
     dest: /etc/systemd/system/repairRoutes.service
     mode: 0744
-
-- name: network-interfaces | Start and enable repairRoutes Service
-  systemd:
-    daemon_reload: yes
-    enabled: yes
-    name: repairRoutes
-    state: started

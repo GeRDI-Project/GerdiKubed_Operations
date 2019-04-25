@@ -14,7 +14,7 @@ Environment=ETCD_LISTEN_CLIENT_URLS=https://{{ host_private_address | default(lo
 Environment=ETCD_ADVERTISE_CLIENT_URLS=https://{{ K8S_MASTER_IP }}:2379
 
 # initial cluster configuration
-Environment=ETCD_INITIAL_CLUSTER={{ inventory_hostname}}=https://{{ lookup('dig', inventory_hostname, 'qtype=A') }}:2380
+Environment=ETCD_INITIAL_CLUSTER={{ inventory_hostname}}=https://{{ host_private_address | default(lookup('dig', inventory_hostname, 'qtype=A'), true) }}:2380
 Environment=ETCD_INITIAL_CLUSTER_TOKEN=your-unique-token
 Environment=ETCD_INITIAL_CLUSTER_STATE=new
 Environment=ETCD_INITIAL_ADVERTISE_PEER_URLS=https://{{ K8S_MASTER_IP }}:2380

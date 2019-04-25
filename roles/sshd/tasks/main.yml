@@ -1,0 +1,111 @@
+# ########################################################################### #
+# This Ansible role can be used to configure an OpenStack Node so that if can
+# be used to with root access and dissable the provided user
+#
+# Author: Alexander Goetz@LRZ (2019 -)
+#
+# ########################################################################### #
+---
+- name: Check if we are already setup
+  shell: grep 'AllowGroups root {{ ansible_user }}' /etc/ssh/sshd_config
+  register: alreadySetup
+  ignore_errors: True
+
+- name: Get Private Interface
+  set_fact:
+    host_private_address: "{{ hostvars[inventory_hostname]['ansible_' +  item]['ipv4']['address'] }}"
+  when: alreadySetup is defined and alreadySetup.rc > 0 and
+        hostvars[inventory_hostname]['ansible_' + item] is defined and
+        hostvars[inventory_hostname]['ansible_' + item]['ipv4'] is defined and
+        (hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('192.168.0.0/17') or 
+         hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('10.155.208.0/21') or 
+         hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('10.156.116.0/22')) 
+  with_items: "{{ ansible_interfaces }}"
+
+- name: Check If moduli File exists
+  stat:
+    path: /etc/ssh/moduli
+  register: openstack_node_ssh_moduli
+  when: alreadySetup is defined and alreadySetup.rc > 0
+
+- name: Filter /etc/ssh/moduli for Values < 2000
+  shell: awk '$5 > 2000' /etc/ssh/moduli > /etc/ssh/moduli.filtered
+  when: alreadySetup is defined and alreadySetup.rc > 0 and openstack_node_ssh_moduli.stat.exists == true
+
+- name: Replace /etc/ssh/moduli By Filtered One
+  shell: mv /etc/ssh/moduli.filtered /etc/ssh/moduli
+  when: alreadySetup is defined and alreadySetup.rc > 0 and openstack_node_ssh_moduli.stat.exists == true
+
+- name: Check Content of /etc/ssh/moduli
+  shell: wc -l /etc/ssh/moduli
+  register: openstack_node_ssh_moduli_content
+  when: alreadySetup is defined and alreadySetup.rc > 0 and openstack_node_ssh_moduli.stat.exists == true
+
+- name: Generate /etc/ssh/moduli
+  shell: >
+    ssh-keygen -G /etc/ssh/moduli.all -b 4096
+    ssh-keygen -T /etc/ssh/moduli.safe -f /etc/ssh/moduli.all
+    mv /etc/ssh/moduli.safe /etc/ssh/moduli
+    rm /etc/ssh/moduli.all
+  when: ( alreadySetup is defined and alreadySetup.rc > 0 ) and (( openstack_node_ssh_moduli.stat.exists == false ) or ( openstack_node_ssh_moduli_content.stdout.split()[0] == "0" ))
+
+- name: Detect SSH Host Keys
+  find:
+    paths: /etc/ssh/
+    patterns: ssh_host_*key*
+  register: openstack_node_ssh_host_keys
+  when: alreadySetup is defined and alreadySetup.rc > 0
+
+- name: Delte Default SSH Host Keys
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ openstack_node_ssh_host_keys.files }}"
+  when: alreadySetup is defined and alreadySetup.rc > 0 and openstack_node_ssh_host_keys.files | length > 2
+
+- name: Generate New ED25519 Key
+  shell: ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -N "" < /dev/null
+  when: alreadySetup is defined and alreadySetup.rc > 0
+
+- name: Generate New RSA Hostkey
+  shell: ssh-keygen -t rsa -b 4096 -f /etc/ssh/ssh_host_rsa_key -N "" < /dev/null
+  when: alreadySetup is defined and alreadySetup.rc > 0
+
+- name: Inject Public SSH Keys for Root Account
+  authorized_key:
+    user: root
+    state: present
+    key: "{{ lookup('file', item) }}"
+  with_fileglob:
+    - "{{ openstack_node_ssh_public_keys }}/*.pub"
+  when: alreadySetup is defined and alreadySetup.rc > 0
+
+- name: Delete password of the provided user, only allow ssh pub key
+  shell: usermod -p '*' {{ ansible_user }}
+  when: alreadySetup is defined and alreadySetup.rc > 0
+
+- name: Update /etc/ssh/sshd_config for High Security One
+  template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+  notify:
+    - Restart OpenSSH
+  when: alreadySetup is defined and alreadySetup.rc > 0
+
+- name: Install Fail2Ban
+  apt:
+    name: fail2ban
+    state: present
+  when: alreadySetup is defined and alreadySetup.rc > 0
+
+- name: Configure fail2ban
+  template:
+    src: jail.local.j2
+    dest: /etc/fail2ban/jail.local
+  when: alreadySetup is defined and alreadySetup.rc > 0
+
+- name: Restart Fail2Ban
+  systemd:
+    name: fail2ban
+    state: restarted
+  when: alreadySetup is defined and alreadySetup.rc > 0
