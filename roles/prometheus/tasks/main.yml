@@ -42,3 +42,4 @@
 - name: prometheus | Install and configure prometheusServer
   include_tasks: prometheusServer.yml
   when: prometheusServerInstalled.stdout.find("Running") == -1
+  
