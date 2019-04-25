@@ -1,0 +1,44 @@
+# Copyright 2019 Alexander Goetz goetz@lrz.de
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+- name: prometheus | Create prometheus base directory
+  file:
+    path: "{{ PROMETHEUS_BASE_DIR }}"
+    state: directory
+
+- name: prometheus | Check if kube-monitor namespace exists
+  shell: kubectl get namespaces
+  register: registeredNamespaces
+
+- name: prometheus | Copy k8s namespace to cluster
+  copy:
+    src: kube-monitor-ns.yml
+    dest: "{{ K8S_BASE_DIR }}/kube-monitor-ns.yml"
+  when: registeredNamespaces.stdout.find('kube-monitor') == -1
+
+- name: prometheus | Create kube-monitor namespace
+  shell: " kubectl apply -f {{ K8S_BASE_DIR }}/kube-monitor-ns.yml"
+  when: registeredNamespaces.stdout.find('kube-monitor') == -1
+
+- name: prometheus | Check if prometheusServer is installed
+  shell: |
+    kubectl get pods  \
+      --selector=app=prometheus-server \
+      --field-selector=status.phase=Running \
+      -n kube-monitor
+  register: prometheusServerInstalled
+
+- name: prometheus | Install and configure prometheusServer
+  include_tasks: prometheusServer.yml
+  when: prometheusServerInstalled.stdout.find("Running") == -1

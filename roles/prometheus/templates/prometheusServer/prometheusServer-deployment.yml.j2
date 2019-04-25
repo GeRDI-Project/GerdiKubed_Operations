@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-server
+  namespace: kube-monitor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus-server
+  template:
+    metadata:
+      labels:
+        app: prometheus-server
+        service: monitoring
+    spec:
+      containers:
+        - name: prometheus-server
+          image: prom/prometheus:v{{ PROMETHEUS_SERVER_VERSION }}
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus/"
+            - "--web.enable-lifecycle"
+            - "--storage.tsdb.no-lockfile"
+            - "--web.external-url=https://{{ MAIN_DOMAIN }}/admin/prometheus"
+          resources:
+            requests:
+              memory: "500Mi"
+              cpu: 0.5
+            limits:
+              memory: "2Gi"
+              cpu: 2
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: prometheus-config-volume
+              mountPath: /etc/prometheus/
+            - name: prometheus-tsdb-volume
+              mountPath: /prometheus/
+      volumes:
+        - name: prometheus-config-volume
+          configMap:
+            defaultMode: 420
+            name: prometheus-server
+        - name: prometheus-tsdb-volume
+          persistentVolumeClaim:
+            claimName: prometheus-tsdb
