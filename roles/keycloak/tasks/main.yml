@@ -19,15 +19,35 @@
       --field-selector=status.phase=Running
   register: keycloakInstalled
 
+- name: keycloak | Check whether postgresql chart is already installed
+  shell: |
+    kubectl get pods  \
+      --selector=app=postgresql \
+      --field-selector=status.phase=Running
+  register: postgresqlInstalled
+
 - name: keycloak | Update repos
   shell: helm repo update
   when: keycloakInstalled.stdout.find("Running") == -1
+
+- name: keycloak | Install postgres
+  shell: |
+    helm install \
+      --name postgres \
+      --set postgresqlDatabase=keycloak
+      stable/postgresql
+  when: postgresqlInstalled.stdout.find("Running") == -1
 
 - name: keycloak | Install keycloak
   shell: |
     helm install \
       --name keycloak \
       --set keycloak.basepath={{ KEYCLOAK_BASEPATH }} \
+      --set keycloak.persistence.existingSecret=postgresql-postgresql \
+      --set keycloak.persistence.existingSecretKey=postgresql-password \
+      --set keycloak.persistence.dbVendor=postgres \
+      --set keycloak.persistence.dbHost=postgresql-postgresql.default.svc.cluster.local \
+      --set keycloak.persistence.dbUser=postgres
       stable/keycloak
   async: 1800
   poll: 180
