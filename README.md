@@ -30,6 +30,9 @@ ansible-playbook -i production k8s-master.yml
 # setup nodes
 ansible-playbook -i production k8s-node.yml
 
+# Deploy the k8s stack for monitoring and management
+ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-stack.yml
+
 # setup loadbalancer (requires valid certificates for k8s domain namespace)
 ansible-playbook -i production k8s-lb.yml
 ```
@@ -192,6 +195,12 @@ Kube-proxy will run a s systemd-service on all nodes.
 ### network-ovn
 
 OVN/OVS is one of the possible k8s network driver (see [k8s network model](https://kubernetes.io/docs/concepts/cluster-administration/networking/#kubernetes-model). All additional network driver should be named alongside the pattern network\_*.
+
+<a name="prometheus"></a>
+### prometheus
+
+Install the prometheus monitoring system for central cluster and service monitoring. Prometheus [prometheus.io](https://prometheus.io/) is the default monitoring system for kubernetes and is maintained
+by the Cloud Native Foundation. It provides time series related monitoring and alerting. The role creates a dedicated kube-monitor namespace and deploys the prometheus master server into it.
 
 <a name="scheduler"></a> 
 ### scheduler
