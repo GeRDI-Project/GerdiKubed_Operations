@@ -40,6 +40,6 @@
       --namespace {{ JHUB_NAMESPACE }} \
       --version {{ JHUB_VERSION }} \
       --values {{ JHUB_CONFIG }}
-  async: 1800
-  poll: 180
+  async: 60
+  poll: 60
   when: jhubInstalled.stdout.find("Running") == -1
