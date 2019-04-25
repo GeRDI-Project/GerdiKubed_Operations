@@ -141,6 +141,13 @@
         Require		valid-user
     </Location>
 
+    <Location /admin/prometheus>
+        AuthType        Basic
+        AuthName        "Restricted"
+        AuthUserFile    /etc/apache2/.htpasswd
+        Require         valid-user
+    </Location>
+
     <Location /api/v1/collections>
         Header set Access-Control-Allow-Origin "*"
         Header set Access-Control-Allow-Methods "OPTIONS, DELETE, PUT, POST, GET"
@@ -242,6 +249,9 @@
     ProxyPassReverse  /admin/logs         http://graylog-web.default.svc.cluster.local:9000/admin/logs
     ProxyPass         /admin/kafka        http://kafka-manager.default.svc.cluster.local:9000/admin/kafka
     ProxyPassReverse  /admin/kafka        http://kafka-manager.default.svc.cluster.local:9000/admin/kafka
+    ProxyPass         /admin/prometheus   http://prometheus-server.kube-monitor.svc.cluster.local:9090
+    ProxyPassReverse  /admin/prometheus   http://prometheus-server.kube-monitor.svc.cluster.local:9090
+
 
     RewriteCond %{HTTP:Connection} Upgrade [NC,OR]
     RewriteCond %{HTTP:Upgrade} websocket [NC]
