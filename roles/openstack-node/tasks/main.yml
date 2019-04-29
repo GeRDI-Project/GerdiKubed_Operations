@@ -25,6 +25,12 @@
     - "{{ groups['kubernetes-masters'] }}"
     - "{{ groups['kubernetes-nodes'] }}"
 
+- name: Remove update_etc_hosts from cloud config to make /etc/hosts reboot persistent
+  lineinfile:
+    dest: /etc/cloud/cloud.cfg
+    state: absent
+    line: " - update_etc_hosts"
+
 - name: Install necessary packages for OpenStack internal ip resolution
   apt:
     name: "{{ packages }}"
