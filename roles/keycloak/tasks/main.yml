@@ -46,7 +46,7 @@
       --set keycloak.persistence.existingSecret=postgres-postgresql \
       --set keycloak.persistence.existingSecretKey=postgresql-password \
       --set keycloak.persistence.dbVendor=postgres \
-      --set keycloak.persistence.dbHost=postgresql-postgresql.default.svc.cluster.local \
+      --set keycloak.persistence.dbHost=postgres-postgresql.default.svc.cluster.local \
       --set keycloak.persistence.dbUser=postgres \
       stable/keycloak
   async: 60
