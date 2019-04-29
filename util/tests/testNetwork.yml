@@ -30,6 +30,8 @@ spec:
     spec:
       containers:
         - name: net-tools
-          image: walki/nettools:alpine
+          image: docker-registry.gerdi.research.lrz.de:5043/operations/net-tools:latest
           stdin: true
           tty: true
+      imagePullSecrets:
+        - name: lrz-docker-registry-secret
