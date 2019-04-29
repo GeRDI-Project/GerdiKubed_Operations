@@ -1,3 +1,5 @@
 #!/bin/bash
-ip route add default via {{ EXTERNAL_LB }} dev ens4 proto static table {{ LB_ROUTES_TABLE }}
+ip route add default via {{ EXTERNAL_LB }} dev {{ EXTERNAL_DEV }} proto static table {{ LB_ROUTES_TABLE }}
+ip route add {{ INTERNAL_NET }} via {{ EXTERNAL_GW }} dev {{ EXTERNAL_DEV }} proto static table {{ LB_ROUTES_TABLE }}
 ip rule add from {{ EXTERNAL_LB }} to {{ INTERNAL_NET }} lookup {{ LB_ROUTES_TABLE }}
+
