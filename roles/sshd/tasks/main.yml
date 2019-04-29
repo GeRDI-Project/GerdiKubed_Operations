@@ -17,9 +17,9 @@
   when: alreadySetup is defined and alreadySetup.rc > 0 and
         hostvars[inventory_hostname]['ansible_' + item] is defined and
         hostvars[inventory_hostname]['ansible_' + item]['ipv4'] is defined and
-        (hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('192.168.0.0/17') or 
-         hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('10.155.208.0/21') or 
-         hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('10.156.116.0/22')) 
+        (hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('192.168.0.0/17') or
+        hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('10.155.208.0/21') or
+        hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('10.156.116.0/22'))
   with_items: "{{ ansible_interfaces }}"
 
 - name: Check If moduli File exists
