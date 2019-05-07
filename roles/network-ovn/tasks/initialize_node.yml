@@ -31,12 +31,19 @@
     dest: /etc/systemd/system/ovn-k8s-node.service
     force: no
 
+# Restarts of this on !nodes! can fail if the bridge is already setup
+# We can't ignore the error inside the systemd unit because we need to make sure
+# ovn-kube-util runs on startup (this can fail on nodes if the master isn't up yet
+# so allowing it to fail is important so systemd restarts it)
+# However on a running machine, restarting it will then trigger an non zero code,
+# because the bridge is already setup, this is why we ignore_errors here
 - name: network-ovn node | Register ovn-k8s-node to systemd and start it
   systemd:
     name: ovn-k8s-node.service
     enabled: yes
     state: restarted
     daemon-reload: yes
+  ignore_errors: yes
 
 - name: network-ovn master | Restart ovn-k8s-master if master
   systemd:
