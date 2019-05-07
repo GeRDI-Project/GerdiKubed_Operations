@@ -20,21 +20,21 @@ cp production.tmpl production
 vi production
 
 # setup certificates:
-ansible-playbook -i production k8s-mgmt.yml
+ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-mgmt.yml
 # This has to be done only once per cluster!
 # Delete or move CONTROL_BASE_DIR to reset and recreate all certificates.
 
 # setup master(s)
-ansible-playbook -i production k8s-master.yml
+ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-master.yml
 
 # setup nodes
-ansible-playbook -i production k8s-node.yml
+ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-node.yml
+
+# setup loadbalancer (requires valid certificates for k8s domain namespace)
+ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-lb.yml
 
 # Deploy the k8s stack for monitoring and management
 ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-stack.yml
-
-# setup loadbalancer (requires valid certificates for k8s domain namespace)
-ansible-playbook -i production k8s-lb.yml
 ```
 
 # Requirements
