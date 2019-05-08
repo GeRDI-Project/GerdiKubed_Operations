@@ -52,7 +52,7 @@ ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-stack.yml
 Interface setup (iface1 is a private interface, iface2 is public):
 ```
       +--------------+
-      |k8s|master    |
+      |  k8s|master  |
       +--------------+
       |              |
 SSH+--+    iface1    +----+
@@ -61,7 +61,7 @@ SSH+--+    iface1    +----+
       +--------------+    |
                           |
       +--------------+    |
-      |k8s|node(s)   |    |
+      |  k8s|node(s) |    |
       +--------------+    |
       |              |    |
 SSH+--+    iface1    +---OVN
@@ -70,7 +70,7 @@ SSH+--+    iface1    +---OVN
       +--------------+    |
                           |
       +--------------+    |
-      |k8s|lb        |    |
+      |    k8s|lb    |    |
       +--------------+    |
       |              |    |
 SSH+--+    iface1    +----+
@@ -88,7 +88,9 @@ Note: For readability purposes, not in order of execution!
 
 | Role             							 |  k8s-master |  k8s-node  |  k8s-lb  |   k8s-management-machine |
 |---	                					 |---	       |---	        |---	   |---						  |
-| [vmware-node OR nebula-node](#vmware-node) |      x      |     x      |          |						  |
+| [vmware-node OR 
+   nebula-node OR
+   openstack-node](#vmware-node) |      x      |     x      |          |						  |
 | [common](#common) 	                     |      x      |     x      |          |					      |
 | [ufw](#ufw) 	                    		 |   	x      |     x   	|   	   |						  |
 | [docker](#docker) 	                     |   	x      |     x   	|   	   |						  |
