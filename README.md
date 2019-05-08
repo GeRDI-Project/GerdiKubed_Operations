@@ -101,6 +101,7 @@ Created using: http://asciiflow.com/
 | [kube-proxy](#kube-proxy) 	             |   	x      |     x	    |   	   |						  |
 | [network-interfaces](#network-interfaces)               |      x      | 	 x		|   	   |						  |
 | [network-ovn](#network-ovn)               |      x      | 	 x		|   	   |						  |
+| [cluster-dns](#cluster-dns) 	         |             |            |    x     |						  |
 | [apiserver](#apiserver)  	                 |  	x      |            |          |						  |
 | [scheduler](#scheduler)                  	 |  	x      |            |          |						  |
 | [controller-manager](#controller-manager)  |   	x      |            |   	   |						  |
@@ -108,7 +109,6 @@ Created using: http://asciiflow.com/
 | [k8s-addons](#k8s-addons)  	             |  	x      |            |          |						  |
 | [cni](#cni)  	                    		 |  	x      |            |          |						  |
 | [k8s-cordon](#k8s-cordon) 	             |   	x      | x	 		|   	   |						  |
-| [cluster-dns](#cluster-dns) 	         |             |            |    x     |						  |
 | [apache-proxy](#apache-proxy) 	         |             |            |    x     |						  |
 | [cert-infrastructure](#cert-infrastructure)|  		   |  			|  		   |			x			  |
 
