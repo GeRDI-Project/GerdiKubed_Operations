@@ -1,0 +1,26 @@
+# Copyright 2019 Alexander Goetz goetz@lrz.de
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+- name: prometheus | Copy k8s configurations for prometheus server to {{ PROMETHEUS_BASE_DIR }}
+  copy:
+    src: prometheusServer
+    dest: "{{ PROMETHEUS_BASE_DIR }}"
+
+- name: prometheus | Copy prometheusServer deployment template to k8s cluster
+  template:
+    src: prometheusServer/prometheusServer-deployment.yml.j2
+    dest: "{{ PROMETHEUS_BASE_DIR }}/prometheusServer/prometheusServer-deployment.yml"
+
+- name: prometheus | Deploy prometheus server to k8s cluster
+  shell: "kubectl apply -f {{ PROMETHEUS_BASE_DIR }}/prometheusServer"
