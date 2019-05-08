@@ -25,6 +25,8 @@
   with_items:
     - { ext: "key", mode: "0400" }
     - { ext: "crt", mode: "0400" }
+  tags:
+    - certs
 
 - name: Copy .htpasswd
   copy:

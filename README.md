@@ -83,6 +83,26 @@ SSH+--+    iface1    +----+
 Created using: http://asciiflow.com/
 # Documentation
 
+## Tags
+
+In order to allows certain deployment and update mechanisms, tags are used in the notebooks in order to prevent or
+specifically trigger the execution of certian tasks. To skipt roles which hold a certain tag you can use the 
+`--skip-tags <tags>` option. The following example shows the usage for the k8s-lb playbook, skipping the deployment
+of ne certificate files.
+
+```bash
+
+ansible-playbook -i inventory/<deployment-context>/hosts.ini --skip-tags certs k8s-lb.yml
+
+```
+
+All available tags, their functionality and occurences are listed in the following table
+
+
+| Tag       | Description                                         |                         
+| --------- | --------------------------------------------------- |
+| cert      | Skips deployment of certificate files to k8s hosts  |
+
 ## Role Overview
 Note: For readability purposes, not in order of execution!
 
