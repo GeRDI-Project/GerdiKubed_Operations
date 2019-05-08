@@ -249,8 +249,8 @@
     ProxyPassReverse  /admin/logs         http://graylog-web.default.svc.cluster.local:9000/admin/logs
     ProxyPass         /admin/kafka        http://kafka-manager.default.svc.cluster.local:9000/admin/kafka
     ProxyPassReverse  /admin/kafka        http://kafka-manager.default.svc.cluster.local:9000/admin/kafka
-    ProxyPass         /admin/prometheus   http://prometheus-server.kube-monitor.svc.cluster.local:9090
-    ProxyPassReverse  /admin/prometheus   http://prometheus-server.kube-monitor.svc.cluster.local:9090
+    ProxyPass         /admin/prometheus   http://prometheus-server.kube-monitor.svc.cluster.local:9090/admin/prometheus
+    ProxyPassReverse  /admin/prometheus   http://prometheus-server.kube-monitor.svc.cluster.local:9090/admin/prometheus
 
 
     RewriteCond %{HTTP:Connection} Upgrade [NC,OR]
