@@ -1,3 +1,4 @@
+
 # GerdiKubed
 
 This repo has all necessary roles to setup a kubernetes cluster (req. see below).
@@ -38,7 +39,6 @@ ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-stack.yml
 ```
 
 # Requirements
-
 * Debian 9.1 or higher on the remote machines (you can use the [recipe](util/CreateVMImage.md) to create a VM image against which these scripts have been tested).
 * Running sshd on the remote machines and on the control machine (preferrably localhost) and the package python-dnspython
 * Pub key in .ssh/authorized\_keys in roots's home on the remote machines
@@ -46,10 +46,14 @@ ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-stack.yml
 * Ansible >= 2.4.2.0 (on the control machine, only linux distros are supported!)
 * All nodes must have valid DNS-Records (configured in production). IP-Addresses are no longer supported.
   If this condition is not fulfilled the k8s-mgmt.yml-playbook will fail.
-* One private network interface for k8s-nodes and k8s-master. One private and one public interface for load balancer nodes.
-* The playbooks assume the following order: First interface = SSHD listening & OVN overlay network interface (and for load balancer nodes: Second interface = internet endpoint)
+* Nodes must follow the following network interface setup:
+  - One *private* network interface for k8s-nodes and k8s-master. 
+  - One *private* and one *public* interface for load balancer nodes.
+* The playbooks assume the following order: 
+  - First interface (private): SSHD listening & OVN overlay network interface 
+  - Second interface (public): Internet endpoint (Loadbalancer only)
 
-Interface setup (iface1 is a private interface, iface2 is public):
+**Interface setup:**
 ```
       +--------------+
       |  k8s|master  |
@@ -64,7 +68,7 @@ SSH+--+    iface1    +----+
       |  k8s|node(s) |    |
       +--------------+    |
       |              |    |
-SSH+--+    iface1    +---OVN
+SSH+--+    iface1    +---OVN (geneve)
       |              |    |
       |              |    |
       +--------------+    |
@@ -84,27 +88,27 @@ Created using: http://asciiflow.com/
 # Documentation
 
 ## Role Overview
-Note: For readability purposes, not in order of execution!
+*Note: For readability purposes, not in order of execution!*
 
 | Role             							 |  k8s-master |  k8s-node  |  k8s-lb  |   k8s-management-machine |
 |---	                					 |---	       |---	        |---	   |---						  |
-| [vmware-node OR 
-   nebula-node OR
-   openstack-node](#vmware-node) |      x      |     x      |          |						  |
+| [vmware-node](#vmware-node) OR <br> [nebula-node](#nebula-node) OR <br> [openstack-node](#openstack-node) |      x      |     x      |          |						  |
 | [common](#common) 	                     |      x      |     x      |          |					      |
 | [ufw](#ufw) 	                    		 |   	x      |     x   	|   	   |						  |
 | [docker](#docker) 	                     |   	x      |     x   	|   	   |						  |
 | [k8s-binaries](#k8s-binaries) 	         |   	x      | 	 x		| 		   |						  |
 | [kubelet](#kubelet) 	                     |   	x      |	 x		|	   	   |						  |
 | [kube-proxy](#kube-proxy) 	             |   	x      |     x	    |   	   |						  |
+| [network-interfaces](#network-interfaces)               |      x      | 	 x		|   	   |						  |
 | [network-ovn](#network-ovn)               |      x      | 	 x		|   	   |						  |
-| [k8s-cordon](#k8s-cordon) 	             |   	x      | 	 x		|   	   |						  |
 | [apiserver](#apiserver)  	                 |  	x      |            |          |						  |
 | [scheduler](#scheduler)                  	 |  	x      |            |          |						  |
 | [controller-manager](#controller-manager)  |   	x      |            |   	   |						  |
 | [etcd](#etcd)  	  	                     |      x      |            |          |						  |
 | [k8s-addons](#k8s-addons)  	             |  	x      |            |          |						  |
 | [cni](#cni)  	                    		 |  	x      |            |          |						  |
+| [k8s-cordon](#k8s-cordon) 	             |   	x      | 	 		|   	x   |						  |
+| [cluster-dns](#cluster-dns) 	         |             |            |    x     |						  |
 | [apache-proxy](#apache-proxy) 	         |             |            |    x     |						  |
 | [cert-infrastructure](#cert-infrastructure)|  		   |  			|  		   |			x			  |
 
@@ -118,8 +122,7 @@ Handles the setup of the SSL termination infrastructure involving an apache prox
 <a name="apiserver"></a> 
 ### apiserver
 
-The apiserver is the management interface of the k8s cluster.
-You can choose to run the apiserver as a systemd-service (set APISERVER\_AS\_SERVICE to "True") or as a pod (APISERVER\_AS\_POD to "True"). At least and at most one of these options has to be true.
+The apiserver is the management interface of the k8s cluster. It runs on the k8s-master node as a systemd service.
 
 <a name="cert-infrastructure"></a> 
 ### cert-infrastructure
@@ -146,9 +149,12 @@ This role sets up all machines (install packages, set hostname, create directori
 <a name="controller-manager"></a> 
 ### controller-manager
 
-The controller-manager runs on all master instances and distributes the deployments and pods to the kubelets running on the node instances.
+The controller-manager runs on all master instances as a systemd-service and distributes the deployments and pods to the kubelets running on the node instances.
 
-You can choose to run the controller-manager as a systemd-service (set CONTROLER\_MANAGER\_AS\_SERVICE to "True") or as a pod (CONTROLER\_MANAGER\_AS\_POD to "True"). At least and at most one of these options has to be true.
+<a name="cluster-dns"></a> 
+### cluster-dns
+
+TBA
 
 <a name="cni"></a> 
 ### cni
@@ -190,36 +196,52 @@ Kubelet will run as a systemd-service on all node and master instances.
 <a name="kube-proxy"></a> 
 ### kube-proxy
 
-The kube-proxy takes care of proxying request inside the k8s cluster.
-Kube-proxy will run a s systemd-service on all nodes.
+The kube-proxy takes care of proxying requests inside the k8s cluster. It runs as a systemd-service on all nodes.
+
+<a name="network-interfaces"></a> 
+### network-interfaces
+
+Sets up systemd-networkd & systemd-resolved by *'hotswapping'* the default networking.service (/etc/interfaces). Configures nameservers and network interfaces' properties to correctly fall in line with expectations of subsequent roles.
 
 <a name="network-ovn"></a> 
 ### network-ovn
 
-OVN/OVS is one of the possible k8s network driver (see [k8s network model](https://kubernetes.io/docs/concepts/cluster-administration/networking/#kubernetes-model). All additional network driver should be named alongside the pattern network\_*.
+OVN/OVS is one of the possible k8s network driver (see [k8s network model](https://kubernetes.io/docs/concepts/cluster-administration/networking/#kubernetes-model)). This role sets up a geneve interface to tunnel and encrypt pod to pod traffic.
 
 <a name="prometheus"></a>
 ### prometheus
 
-Install the prometheus monitoring system for central cluster and service monitoring. Prometheus [prometheus.io](https://prometheus.io/) is the default monitoring system for kubernetes and is maintained
+Installs the prometheus monitoring system for central cluster and service monitoring. Prometheus [prometheus.io](https://prometheus.io/) is the default monitoring system for kubernetes and is maintained
 by the Cloud Native Foundation. It provides time series related monitoring and alerting. The role creates a dedicated kube-monitor namespace and deploys the prometheus master server into it.
 
 <a name="scheduler"></a> 
 ### scheduler
 
-The scheduler runs scheduled pods.
-You can choose to run the scheduler as a systemd-service (set SCHEDULER\_AS\_SERVICE to "True") or as a pod (SCHEDULER\_AS\_POD to "True"). At least and at most one of these options has to be true.
+The scheduler runs scheduled pods it runs on the k8s-master as a systemd-service.
 
 <a name="ufw"></a> 
 ### ufw
 
 This role sets up the uncomplicated firewall (ufw). Depending on which node it's executed on it will vary the port openings, for example the load balancer will receive additional openings at 80 and 443. 
 
+## Node Specific Roles
 <a name="vmware-node"></a> 
-### vmware-node OR nebula-node
+### vmware-node 
 
-These roles are both tailored to machines running on LRZ infrastructure. Depending on the node, different steps have to be performed to bring the cluster into a state that allows the other roles to be executed properly.
+This role is tailored to VMWare machines running on LRZ infrastructure. Depending on the node, different steps have to be performed to bring each node into a state that allows the subsequent roles to be executed properly.
+
+<a name="nebula-node"></a> 
+### nebula-node
+*Note: Obsolete, will be removed in the future when the LRZ's OpenNebula infrastructure is going to be retired.*
+
+This role is tailored to OpenNebula machines using the image generated by this [script](util/CreateVMImage.md) running on LRZ infrastructure. Depending on the node, different steps have to be performed to bring each node into a state that allows the subsequent roles to be executed properly.
+
+<a name="openstack-node"></a> 
+### openstack-node
+
+This role is tailored to Openstack machines running on LRZ infrastructure. It features support for floating IPs and security groups. Depending on the node, different steps have to be performed to bring each node into a state that allows the subsequent roles to be executed properly.
 
 # CI
 
-The repository is now checked by a CI-Task in Bamboo (push to bitbucket)
+The repository is checked by a CI-Task in Bamboo (push to bitbucket)
+
