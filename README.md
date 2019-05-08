@@ -51,7 +51,7 @@ ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-stack.yml
   - One *private* and one *public* interface for load balancer nodes.
 * The playbooks assume the following order: 
   - First interface (private): SSHD listening & OVN overlay network interface 
-  - Second interface (public): Internet endpoint (Loadbalancer only)
+  - Second interface (public): Internet endpoint (load balancer only)
 
 **Interface setup:**
 ```
@@ -90,7 +90,7 @@ Created using: http://asciiflow.com/
 ## Role Overview
 *Note: For readability purposes, not in order of execution!*
 
-| Role             							 |  k8s-master |  k8s-node  |  k8s-lb  |   k8s-management-machine |
+| Role             							 |  k8s-master |  k8s-node  |  k8s-lb  |   k8s-mgmt-node |
 |---	                					 |---	       |---	        |---	   |---						  |
 | [vmware-node](#vmware-node) OR <br> [nebula-node](#nebula-node) OR <br> [openstack-node](#openstack-node) |      x      |     x      |          |						  |
 | [common](#common) 	                     |      x      |     x      |          |					      |
