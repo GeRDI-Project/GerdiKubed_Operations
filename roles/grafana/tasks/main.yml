@@ -1,4 +1,4 @@
-# Copyright 2019 Alexander Götz alexander.goetz@lrz.de
+# Copyright 2019 Alexander Goetz goetz@lrz.de
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,10 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Install the k8s software stack
-  hosts: kubernetes-masters
-  remote_user: root
-  roles:
-    - k8s-namespaces
-    - prometheus
-    - grafana
+- name: grafana | Create grafana base directory
+  file:
+    path: "{{ GRAFANA_BASE_DIR }}"
+    state: directory
+
+- name: grafana | Check if grafana is installed
+  shell: |
+    kubectl get pods  \
+      --selector=app=grafana \
+      --field-selector=status.phase=Running \
+      -n kube-monitor
+  register: grafanaInstalled

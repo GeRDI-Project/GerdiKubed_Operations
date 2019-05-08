@@ -1,4 +1,4 @@
-# Copyright 2019 Alexander Götz alexander.goetz@lrz.de
+# Copyright 2019 Alexander Goetz goetz@lrz.de
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,10 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Install the k8s software stack
-  hosts: kubernetes-masters
-  remote_user: root
-  roles:
-    - k8s-namespaces
-    - prometheus
-    - grafana
+- name: k8s-namespaces | Create k8s-namespace directory
+  file:
+    path: /opt/k8s/namespaces
+    state: directory
+
+- name: k8s-namespaces | Setup k8s manifests for namespaces
+  template:
+    src: k8s-namespace.yml.j2
+    dest: /opt/k8s/namespaces/{{ item }}-ns.yml
+  with_items:
+    - kube-monitor
+
+- name: k8s-namespaces | Deploy k8s manifests
+  shell: kubectl apply -f /opt/k8s/namespaces/
