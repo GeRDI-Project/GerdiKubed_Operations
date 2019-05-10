@@ -90,7 +90,7 @@
       - type: "IP"
         name: "{{ K8S_CLUSTER_IP_PRE }}.0.2"
       - type: "IP"
-        name: "{{ hostvars[item]['altIP'] | default("''") }}"
+        name: "{{ hostvars[item]['altIP'] | default(lookup('dig', item, 'qtype=A')) }}"
   with_items:
     - "{{ groups['kubernetes-masters'] }}"
     - "{{ groups['kubernetes-nodes'] }}"
