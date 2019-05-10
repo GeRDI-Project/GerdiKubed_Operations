@@ -199,6 +199,8 @@
     ProxyPassReverse  /harvest/seaaroundus http://seaaroundus-harvester.default.svc.cluster.local:8080/seaaroundus/harvest
     ProxyPass         /harvest/ena        http://ena-harvester.default.svc.cluster.local:8080/ena/harvest
     ProxyPassReverse  /harvest/ena        http://ena-harvester.default.svc.cluster.local:8080/ena/harvest
+    ProxyPass         /harvest/clinicaltrials http://clinicaltrials-harvester.default.svc.cluster.local:8080/clinicaltrials/harvest
+    ProxyPassReverse  /harvest/clinicaltrials http://clinicaltrials-harvester.default.svc.cluster.local:8080/clinicaltrials/harvest
     ProxyPass         /harvest/alpendac   http://alpendac-harvester.default.svc.cluster.local:8080/oaipmh/harvest
     ProxyPassReverse  /harvest/alpendac   http://alpendac-harvester.default.svc.cluster.local:8080/oaipmh/harvest
     ProxyPass         /harvest/soep       http://soep-harvester.default.svc.cluster.local:8080/soep/harvest
