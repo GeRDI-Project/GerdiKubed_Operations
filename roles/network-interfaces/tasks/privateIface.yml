@@ -28,7 +28,7 @@
 
 - name: network-interfaces | Set Private LRZ Gateway for OpenNebula Node
   set_fact:
-    host_private_gateway: 10.155.215.255 
+    host_private_gateway: 10.155.215.255
   when: (host_private_interface is defined) and (inventory_hostname in groups['opennebula-nodes'])
 
 - name: network-interfaces | Create systemd Entry for Private Interface
