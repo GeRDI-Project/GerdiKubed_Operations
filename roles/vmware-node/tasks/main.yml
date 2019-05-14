@@ -25,11 +25,3 @@
 - name: vmware-node | Setup NICs of VMware machine
   shell: bash /root/setupNIC.sh {{ nic0ip }} {{ nic1ip }}
   when: inventory_hostname in groups['loadbalancer-nodes']
-
-- name: vmware-node | Create script that sets up networkd
-  template:
-    src: setupNetworkd.sh.j2
-    dest: /root/setupNetworkd.sh
-
-- name: vmware-node | Setup networkd
-  shell: bash /root/setupNetworkd.sh {{ K8S_INTERNAL_ROUTING_TABLE }} {{ lookup('dig', NFS_SERVER_DOMAIN, 'qtype=A') }}

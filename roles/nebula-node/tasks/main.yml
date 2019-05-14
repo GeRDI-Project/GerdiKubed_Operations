@@ -13,16 +13,7 @@
 # limitations under the License.
 ---
 # Description:
-# Performs the network setup on OpenNebula nodes
-# Making sure the node uses systemd-networkd
-- name: nebula-node | Create script to set up networkd interfaces
-  template:
-    src: setupNetworkd.sh.j2
-    dest: /root/setupNetworkd.sh
-
-- name: nebula-node | Set up networkd interfaces
-  shell: bash /root/setupNetworkd.sh {{ K8S_INTERNAL_ROUTING_TABLE }} {{ lookup('dig', NFS_SERVER_DOMAIN, 'qtype=A') }}
-
+# Execute OpenNebula specific roles here
 - name: nebula-node | Set hostname to {{ inventory_hostname }}
   hostname:
     name: "{{ inventory_hostname }}"
