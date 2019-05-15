@@ -1,0 +1,4 @@
+PROMETHEUS_BASE_DIR: /opt/prometheus
+
+# ################### Prometheus Server Related Variables ################### #
+PROMETHEUS_SERVER_VERSION: 2.9.1

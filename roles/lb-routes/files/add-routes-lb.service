@@ -1,6 +1,5 @@
 [Unit]
-Wants=network-online.target
-After=network-online.target
+After=repairRoutes.service
 
 [Service]
 ExecStart=/etc/kubernetes/add-routes-lb.sh
