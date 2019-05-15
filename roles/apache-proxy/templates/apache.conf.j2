@@ -56,40 +56,6 @@
 
     AddDefaultCharset UTF-8
 
-    ShibCompatValidUser On
-
-    # dieser Alias wird i.d.R. nur benötigt, wenn URL Rewrite o.ä, erfolgt
-    # Alias /Shibboleth.sso /Shibboleth.sso
-    <Location /Shibboleth.sso>
-      SetHandler shib
-      Require all granted
-      ProxyPass !
-    </Location>
-
-    # Metadata unter der entityID-URL:
-    <Location /shibboleth>
-      Require all granted
-      ProxyPass !
-    </Location>
-    Redirect seeother /shibboleth https://www.{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}/Shibboleth.sso/Metadata
-
-    Alias /shibboleth-sp/main.css /usr/share/shibboleth/main.css
-    #Alias /shibboleth-sp/logo.jpg /usr/share/shibboleth/logo.jpg
-
-    # Location to be protected by the SP
-    <Location /shibbtest>
-        AuthType shibboleth
-        ShibRequestSetting requireSession true
-        Require valid-user
-    </Location>
-
-    # Support für WAYFless-URLs
-    # see https://www.ukfederation.org.uk/library/uploads/Documents/WAYFlessGuidance.pdf
-    #
-    <Location /start-session>
-      ProxyPass !
-    </Location>
-    RedirectMatch /start-session$ /Shibboleth.sso/Login
     <Location /api/search>
         Header set Access-Control-Allow-Origin "*"
         Header set Access-Control-Allow-Methods "OPTIONS, POST, GET"
@@ -161,8 +127,6 @@
         RequestHeader set X-SCRIPT-NAME /harvest/hccenter
         RequestHeader set X-SCHEME https
     </Location>
-
-    Redirect seeother /shibboleth https://test.sp.gerdi.org/Shibboleth.sso/Metadata
 
     SSLProxyEngine on
     ProxyPass /kubectl/ https://mstr-0.staging.gerdi.org/
