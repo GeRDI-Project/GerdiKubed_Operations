@@ -6,8 +6,8 @@ After=network.target
 [Service]
 ExecStart=/usr/bin/kube-proxy \
       --{{ K8S_GLOBAL_LOG_LEVEL }} \
-      --bind-address={{ iface1.ipv4 }} \
-      --healthz-bind-address={{ iface1.ipv4 }} \
+      --bind-address={{ host_private_address }} \
+      --healthz-bind-address={{ host_private_address }} \
       --kubeconfig={{ K8S_KUBECONFIG }} \
       --cluster-cidr={{ K8S_CLUSTER_IP_SUBNET }} \
       --proxy-mode="iptables"

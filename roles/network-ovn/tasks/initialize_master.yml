@@ -25,7 +25,7 @@
   changed_when: false
 
 - name: network-ovn master | Set the k8s api server address in the Open vSwitch database
-  shell: ovs-vsctl set Open_vSwitch . external_ids:k8s-api-server="https://{{ iface1.ipv4 }}:443"
+  shell: ovs-vsctl set Open_vSwitch . external_ids:k8s-api-server="https://{{ K8S_MASTER_IP }}:443"
 
 - name: network-ovn master | Install ovn-k8s-master as a service
   template:

@@ -1,0 +1,64 @@
+# Copyright 2019 Alexander Goetz alexander.goetz@lrz.de
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Description
+# -----------
+# Configures the network interfaces of the VMs, especially required if two
+# interfaces are used to route the traffic accordingly
+---
+- name: network-interfaces | Get Private Interface
+  set_fact:
+    host_private_interface: "{{ item }}"
+    host_private_address: "{{ hostvars[inventory_hostname]['ansible_' +  item]['ipv4']['address'] }}"
+    host_private_netmask: "{{ hostvars[inventory_hostname]['ansible_' +  item]['ipv4']['netmask'] }}"
+    host_private_network: "{{ hostvars[inventory_hostname]['ansible_' +  item]['ipv4']['network'] }}"
+  when: hostvars[inventory_hostname]['ansible_' + item] is defined and
+        hostvars[inventory_hostname]['ansible_' + item]['ipv4'] is defined and
+        (hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('192.168.0.0/17') or
+        hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('10.155.208.0/21') or
+        hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('10.156.116.0/22')) # OpenStack Cloud, OpenNebula Cloud, VMWare Cloud, RFC1918 24-bit, RFC1918 16-bit, RFC1918 20-bit
+  with_items: "{{ ansible_interfaces }}"
+
+- name: network-interfaces | Get Public Interface
+  set_fact:
+    host_public_interface: "{{ item }}"
+    host_public_address: "{{ hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] }}"
+    host_public_netmask: "{{ hostvars[inventory_hostname]['ansible_' + item]['ipv4']['netmask'] }}"
+    host_public_network: "{{ hostvars[inventory_hostname]['ansible_' +  item]['ipv4']['network'] }}"
+  when: hostvars[inventory_hostname]['ansible_' + item] is defined and
+        hostvars[inventory_hostname]['ansible_' + item]['ipv4'] is defined and
+        (hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('192.168.128.0/17') or
+        hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('141.40.254.0/23') or
+        hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('129.187.252.0/23')) # OpenStack Cloud # VMWare Cloud # OpenNebula Cloud
+  with_items: "{{ ansible_interfaces }}"
+
+- name: network-interfaces | Configure private interface
+  include_tasks: privateIface.yml
+  when: host_private_interface is defined
+
+- name: network-interfaces | Configure private interface
+  include_tasks: publicIface.yml
+  when: host_private_interface is defined
+
+- name: network-interfaces | Apply route repair in case of two interfaces
+  include_tasks: routeRepair.yml
+  when: (host_private_interface is defined) and (host_public_interface is defined)
+
+- name: network-interfaces | Create script for hot-swapping networking and networkd
+  template:
+    src: hotSwapNetworking.sh.j2
+    dest: "/opt/hotSwapNetworking.sh"
+
+- name: network-interfaces | Hot-Swap networking and networkd
+  shell: bash /opt/hotSwapNetworking.sh

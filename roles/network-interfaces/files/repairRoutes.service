@@ -1,4 +1,9 @@
-# Copyright 2018 Walentin Lamonos lamonos@lrz.de
+# This file is {{ ansible_managed }}, every change will be removed when the
+# system is deployed again. Please make your changes in the according ansible
+# template of the role network-interfaces.
+#
+#
+# Copyright 2018 Tobias Weber weber@lrz.de
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,9 +16,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
----
-# Description:
-# Execute OpenNebula specific roles here
-- name: nebula-node | Set hostname to {{ inventory_hostname }}
-  hostname:
-    name: "{{ inventory_hostname }}"
+
+[Unit]
+Description=Repair routes on multi NIC setup
+After=network.target
+
+[Service]
+ExecStart=/etc/repairRoutes/repairRoutes.sh
+Type=oneshot
+
+[Install]
+WantedBy=multi-user.target

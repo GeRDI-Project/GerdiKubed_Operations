@@ -1,4 +1,4 @@
-# Copyright 2018 Walentin Lamonos lamonos@lrz.de
+# Copyright 2018 Tobias Weber weber@lrz.de
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-# Description:
-# Execute OpenNebula specific roles here
-- name: nebula-node | Set hostname to {{ inventory_hostname }}
-  hostname:
-    name: "{{ inventory_hostname }}"
+- name: restart dnsmasq
+  service:
+    name: dnsmasq
+    state: restarted

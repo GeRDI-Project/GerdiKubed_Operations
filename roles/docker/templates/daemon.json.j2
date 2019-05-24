@@ -1,3 +1,4 @@
 {
-  "exec-opts": ["native.cgroupdriver=cgroupfs"]
+  "exec-opts": ["native.cgroupdriver=cgroupfs"],
+  "mtu": {{ DOCKER_MTU | default("1500") }}
 }

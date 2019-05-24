@@ -9,15 +9,15 @@ WantedBy=multi-user.target
 # basic config
 Environment=ETCD_DATA_DIR=/var/lib/etcd
 Environment=ETCD_NAME={{ inventory_hostname }}
-Environment=ETCD_LISTEN_PEER_URLS=https://{{ lookup('dig', inventory_hostname, 'qtype=A') }}:2380
-Environment=ETCD_LISTEN_CLIENT_URLS=https://{{ lookup('dig', inventory_hostname, 'qtype=A') }}:2379
-Environment=ETCD_ADVERTISE_CLIENT_URLS=https://{{ lookup('dig', inventory_hostname, 'qtype=A') }}:2379
+Environment=ETCD_LISTEN_PEER_URLS=https://{{ host_private_address | default(lookup('dig', inventory_hostname, 'qtype=A'), true) }}:2380
+Environment=ETCD_LISTEN_CLIENT_URLS=https://{{ host_private_address | default(lookup('dig', inventory_hostname, 'qtype=A'), true) }}:2379
+Environment=ETCD_ADVERTISE_CLIENT_URLS=https://{{ K8S_MASTER_IP }}:2379
 
 # initial cluster configuration
-Environment=ETCD_INITIAL_CLUSTER={{ inventory_hostname}}=https://{{ lookup('dig', inventory_hostname, 'qtype=A') }}:2380
+Environment=ETCD_INITIAL_CLUSTER={{ inventory_hostname}}=https://{{ host_private_address | default(lookup('dig', inventory_hostname, 'qtype=A'), true) }}:2380
 Environment=ETCD_INITIAL_CLUSTER_TOKEN=your-unique-token
 Environment=ETCD_INITIAL_CLUSTER_STATE=new
-Environment=ETCD_INITIAL_ADVERTISE_PEER_URLS=https://{{ lookup('dig', inventory_hostname, 'qtype=A') }}:2380
+Environment=ETCD_INITIAL_ADVERTISE_PEER_URLS=https://{{ K8S_MASTER_IP }}:2380
 
 # security
 Environment=ETCD_TRUSTED_CA_FILE={{ K8S_CERT_FILES_DIR }}/ca.crt.pem

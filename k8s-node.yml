@@ -12,6 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+# Replace remote_user with whatever distro you are using
+# Defaults to root
+- name: Secure and setup sshd
+  hosts: kubernetes-nodes
+  remote_user: debian
+  become: true
+  roles:
+    - sshd
+
 - name: Setup VMWare nodes
   hosts: kubernetes-nodes:&vmware-nodes
   remote_user: root
@@ -19,14 +28,22 @@
     - vmware-node
 
 - name: Setup OpenNebula nodes
-  hosts: kubernetes-nodes:!vmware-nodes
+  hosts: kubernetes-nodes:&opennebula-nodes
+  remote_user: root
   roles:
     - nebula-node
+
+- name: Setup OpenStack nodes
+  hosts: kubernetes-nodes:&openstack-nodes
+  remote_user: root
+  roles:
+    - openstack-node
 
 - name: Initialize kubernetes nodes
   hosts: kubernetes-nodes
   remote_user: root
   roles:
+    - network-interfaces
     - common
     - ufw
     - docker

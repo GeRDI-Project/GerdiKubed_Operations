@@ -1,0 +1,40 @@
+#!/bin/bash
+# {{ ansible_managed }}
+
+# Delete routes of interfaces that will be managed using ip rule
+ip route | egrep '{{ host_private_interface }}|br{{ host_private_interface }}' | \
+while read line
+do
+  ip route delete $line
+done
+
+# Delete the rules if they already exists
+# This prevents duplicate entries if this service is restarted
+ip rule del from {{ host_private_address }} lookup {{ host_private_rtable }} > /dev/null 2>&1
+ip rule del to {{ host_private_network }}/{{ (host_private_address + '/' + host_private_netmask) | ipaddr('prefix') }} lookup {{ host_private_rtable }} > /dev/null 2>&1
+{% if NFS_SERVER_DOMAIN is defined %}
+ip rule del to {{ lookup('dig', NFS_SERVER_DOMAIN, 'qtype=A') }} table {{ host_private_rtable }} > /dev/null 2>&1
+{% endif %}
+{% if LRZ_INTERNAL and inventory_hostname in groups['vmware-nodes'] %}
+ip rule del from all to 10.156.10.20 lookup {{ host_private_rtable }} > /dev/null 2>&1
+ip rule del from all to 10.156.10.40 lookup {{ host_private_rtable }} > /dev/null 2>&1
+{% endif %}
+
+ip rule add from {{ host_private_address }} lookup {{ host_private_rtable }}
+ip rule add to {{ host_private_network }}/{{ (host_private_address + '/' + host_private_netmask) | ipaddr('prefix') }} lookup {{ host_private_rtable }}
+{% if NFS_SERVER_DOMAIN is defined %}
+# Allow access to NFS
+ip rule add to {{ lookup('dig', NFS_SERVER_DOMAIN, 'qtype=A') }} table {{ host_private_rtable }}
+{% endif %}
+{% if LRZ_INTERNAL and inventory_hostname in groups['vmware-nodes'] %}
+# VMWare machines in the LRZ are using gateway machines, make sure we can reach them
+ip rule add from all to 10.156.10.20 lookup {{ host_private_rtable }}
+ip rule add from all to 10.156.10.40 lookup {{ host_private_rtable }}
+{% endif %}
+
+{% if inventory_hostname in groups['loadbalancer-nodes'] %}
+# Force restart dnsmasq because it depends on the new rules
+if service --status-all 2>&1 | grep -Fq dnsmasq; then
+  service dnsmasq restart
+fi
+{% endif %}
