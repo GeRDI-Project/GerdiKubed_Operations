@@ -21,6 +21,24 @@
   roles:
     - sshd
 
+- name: Setup VMWare nodes
+  hosts: nfs-nodes:&vmware-nodes
+  remote_user: root
+  roles:
+    - vmware-node
+
+- name: Setup OpenNebula nodes
+  hosts: nfs-nodes:&opennebula-nodes
+  remote_user: root
+  roles:
+    - nebula-node
+
+- name: Setup OpenStack nodes
+  hosts: nfs-nodes:&openstack-nodes
+  remote_user: root
+  roles:
+    - openstack-node
+
 - name: Setup the nfs server
   hosts: nfs-nodes
   remote_user: root

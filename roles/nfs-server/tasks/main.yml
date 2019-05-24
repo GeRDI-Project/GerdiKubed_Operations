@@ -15,18 +15,35 @@
 # limitations under the License.
 
 ---
-- name: Ensure NFS utilities are installed.
+- name: nfs-server | Ensure NFS utilities are installed
   apt:
     name:
       - nfs-common
       - nfs-kernel-server
-  state: present
+    state: present
 
-- name: Ensure directories to export exist
+- name: nfs-server | Create NFS mount directory
+  file:
+    path: "{{ NFS_VOLUME_PATH }}/{{ K8S_DEPLOYMENT_CONTEXT }}"
+    state: directory
+    mode: 0775
+
+- name: nfs-server | Create nfs_exports list
+  set_fact:
+    nfs_exports: []
+
+- name: nfs-server | Add all hosts to NFS export list
+  set_fact:
+    nfs_exports: "{{ nfs_exports + [ ''+NFS_VOLUME_PATH+' '+hostvars[item]['altIP'] | default(item)+'(rw,sync,no_root_squash)' ] }}"
+  with_items:
+    - "{{ groups['kubernetes-masters'] }}"
+    - "{{ groups['kubernetes-nodes'] }}"
+
+- name: nfs-server | Ensure directories to export exist
   file: 'path="{{ item.strip().split()[0] }}" state=directory'
   with_items: "{{ nfs_exports }}"
 
-- name: Copy exports file.
+- name: nfs-server | Copy exports file.
   template:
     src: exports.j2
     dest: /etc/exports
@@ -35,6 +52,6 @@
     mode: 0644
   notify: reload nfs
 
-- name: Ensure nfs is running.
+- name: nfs-server | Ensure nfs is running.
   service: "name={{ nfs_server_daemon }} state=started enabled=yes"
-when: nfs_exports|length
+  when: nfs_exports|length
