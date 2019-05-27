@@ -14,18 +14,20 @@
 # limitations under the License.
 #
 # Note: VMware machines start out with the ifupdown package,
-# our setup requires the systemd networking
+# our setup requires systemd-networkd
+# This script makes sure that the machine is in the correct state,
+# for our network-interfaces role to take over
 
 # Test if we are already set up
 DIRECTORYTEST=$(find /etc/systemd/network -name "*.network" | wc -l)
 
 if [ "$DIRECTORYTEST" -eq "1" ]; then
-  echo "Networkd already setup. Nothing to do here."
+  echo "Systemd-networkd already setup. Nothing to do here."
   exit 0;
 fi
 
-IFS=$'\n'
 # Get number of {{ NICDEVICEPREFIX_VMWARE }}0-9 interfaces
+IFS=$'\n'
 NIC_ARRAY=$( \
         ip addr | grep -E '{{ NICDEVICEPREFIX_VMWARE }}[0-9]:' | awk '{print $2}')
 IP_ARRAY=$( \
@@ -34,42 +36,52 @@ IP_ARRAY=$( \
         awk '{print $2" "$4" "$7$8}' | sed 's/\// /g' | \
         sed 's/dynamic//g')
 unset $IFS
+
 # Count results
-COUNTER=0
-COUNTERIP=0
+NIC_COUNT=0
+SETUP_IPs=0
+
+# Count amount of network devices attached to the machine
 while read -r NIC; do
   if [[ ! -z "$NIC" ]]; then
-    COUNTER=$((COUNTER+1))
+    NIC_COUNT=$((NIC_COUNT+1))
   fi
 done <<< "$NIC_ARRAY"
 
+# Count amount of IPs that are setup on the machine
 while read -r IP; do
-  COUNTERIP=$((COUNTERIP+1))
+  SETUP_IPs=$((SETUP_IPs+1))
 done <<< "$IP_ARRAY"
 
-# Check if we are already setup
-if [ "$COUNTER" -eq "$COUNTERIP" ]; then
+# Check if we are already setup by comparing about of
+# network interfaces to network interfaces with set up IPs
+if [ "$NIC_COUNT" -eq "$SETUP_IPs" ]; then
   echo "NICs already setup. Nothing to do here."
   exit 0
 fi
 
-# Check if provided amount of ips matches amount of NICs
-if [ "2" -ne $COUNTER ]; then
-  echo "Illegal amount of IPs or NICs"
+NONE_SETUP_NIC_COUNT=$((NIC_COUNT-SETUP_IPs))
+# Check if the provided amount of IPs matches amount
+# of none set up network devices attached to the machine
+if [ "$(($# - 1))" -ne $NONE_SETUP_NIC_COUNT ]; then
+  echo "Too few or too many IPs passed to script. Aborting."
   exit 1
 fi
 
-# Iterate again, this time add the ips to the interfaces file
-COUNTER=0
-# Setup public interface
+# Set up public interface
 # grep || makes sure that the interface is not already in
-grep -q -F 'auto {{ NICDEVICEPREFIX_VMWARE }}'$POSITION /etc/network/interfaces ||
+grep -q -F 'auto {{ NICDEVICEPREFIX_VMWARE }}1' /etc/network/interfaces ||
 { \
   printf '\n'; \
-  echo 'auto {{ NICDEVICEPREFIX_VMWARE }}'$POSITION; \
-  echo 'iface {{ NICDEVICEPREFIX_VMWARE }}'$POSITION' inet static'; \
-  echo '  address '$2; \
-  echo '  netmask '$3; \
+  echo 'auto {{ NICDEVICEPREFIX_VMWARE }}1'; \
+  echo 'iface {{ NICDEVICEPREFIX_VMWARE }}1 inet static'; \
+  echo '  address '$1; \
+  echo '  netmask '$2; \
 } >> /etc/network/interfaces
 
-service networking restart
+# Bring down interfaces to prevent restart from erroring out
+# because of "RTNETLINK answers: File exists"  
+#ifdown "{{ NICDEVICEPREFIX_VMWARE }}0" > /dev/null 2>&1
+#ifdown "{{ NICDEVICEPREFIX_VMWARE }}1" > /dev/null 2>&1
+
+systemctl restart networking
