@@ -79,9 +79,4 @@ grep -q -F 'auto {{ NICDEVICEPREFIX_VMWARE }}1' /etc/network/interfaces ||
   echo '  netmask '$2; \
 } >> /etc/network/interfaces
 
-# Bring down interfaces to prevent restart from erroring out
-# because of "RTNETLINK answers: File exists"  
-#ifdown "{{ NICDEVICEPREFIX_VMWARE }}0" > /dev/null 2>&1
-#ifdown "{{ NICDEVICEPREFIX_VMWARE }}1" > /dev/null 2>&1
-
 systemctl restart networking
