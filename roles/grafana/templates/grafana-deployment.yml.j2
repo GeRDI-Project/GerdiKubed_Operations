@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana-dashboard
+  namespace: kube-monitor
+  labels:
+    app: grafana
+    release: {{ GRAFANA_VERSION }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+      release: {{ GRAFANA_VERSION }}
+  template:
+    metadata:
+      labels:
+        app: grafana
+        service: monitoring
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana:{{ GRAFANA_VERSION }}
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus/"
+            - "--web.enable-lifecycle"
+            - "--storage.tsdb.no-lockfile"
+            - "--web.external-url=https://{{ MAIN_DOMAIN }}/admin/prometheus"
+          resources:
+            limits:
+              memory: "2Gi"
+              cpu: 1
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: grafana-config-volume
+              mountPath: /etc/prometheus/
+      volumes:
+        - name: grafana-config-volume
+          configMap:
+            defaultMode: 420
+            name: grafana
