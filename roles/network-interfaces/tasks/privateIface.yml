@@ -42,7 +42,7 @@
     host_network: "{{ host_private_network }}/{{ (host_private_address + '/' + host_private_netmask) | ipaddr('prefix') }}"
     host_gateway: "{{ host_private_gateway }}"
     host_rtable: "{{ host_private_rtable }}"
-    iface_type: 'public'
+    iface_type: 'private'
 
 # This task will be run for two interface machines only and makes sure routes are setup for the bridge interface
 - name: network-interfaces | Create systemd Entry for Private Bridge Interface
@@ -56,4 +56,4 @@
     host_network: "{{ host_private_network }}/{{ (host_private_address + '/' + host_private_netmask) | ipaddr('prefix') }}"
     host_gateway: "{{ host_private_gateway }}"
     host_rtable: "{{ host_private_rtable }}"
-    iface_type: 'public'
+    iface_type: 'private'
