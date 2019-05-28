@@ -18,17 +18,17 @@
 ---
 - name: network-interfaces | Set public LRZ gateway for OpenStack nodes
   set_fact:
-    host_public_gateway: 192.168.128.1
+    host_public_gateway: "{{ host_public_network | ipaddr('net') | ipaddr('1') | ipaddr('address') }}"
   when: (host_public_interface is defined) and (inventory_hostname in groups['openstack-nodes'])
 
 - name: network-interfaces | Set public LRZ gateway for VMware nodes
   set_fact:
-    host_public_gateway: 129.187.253.254
+    host_public_gateway: "{{ host_public_network | ipaddr('net') | ipaddr('-2') | ipaddr('address') }}"
   when: (host_public_interface is defined) and (inventory_hostname in groups['vmware-nodes'])
 
 - name: network-interfaces | Set public LRZ gateway for OpenNebula nodes
   set_fact:
-    host_public_gateway: 141.40.255.254
+    host_public_gateway: "{{ host_public_network | ipaddr('net') | ipaddr('-2') | ipaddr('address') }}"
   when: (host_public_interface is defined) and (inventory_hostname in groups['opennebula-nodes'])
 
 - name: network-interfaces | Set public LRZ gateway server for non OpenStack nodes
