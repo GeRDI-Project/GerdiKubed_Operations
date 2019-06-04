@@ -1,0 +1,4 @@
+# CA
+This is the CA to request for the certificates: [CLICK!](https://pki.pca.dfn.de/dfn-ca-global-g2/cgi-bin/pub/pki?cmd=pkcs10_req;id=1;menu_item=2;XSEC=1154ef0e855ca8448edf339889a2fec4cd5b5179d22bb3cdac4232c88851a628&RA_ID=3230)
+
+This the URL to fetch the chain: [CLICK!](https://pki.pca.dfn.de/dfn-ca-global-g2/pub/cacert/chain.txt)
