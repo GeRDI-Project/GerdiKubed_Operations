@@ -34,7 +34,7 @@
   shell: |
     helm install \
       --name postgres \
-      --set postgresqlDatabase=keycloak
+      --set postgresqlDatabase=keycloak \
       stable/postgresql
   when: postgresqlInstalled.stdout.find("Running") == -1
 
@@ -43,12 +43,12 @@
     helm install \
       --name keycloak \
       --set keycloak.basepath={{ KEYCLOAK_BASEPATH }} \
-      --set keycloak.persistence.existingSecret=postgresql-postgresql \
+      --set keycloak.persistence.existingSecret=postgres-postgresql \
       --set keycloak.persistence.existingSecretKey=postgresql-password \
       --set keycloak.persistence.dbVendor=postgres \
-      --set keycloak.persistence.dbHost=postgresql-postgresql.default.svc.cluster.local \
-      --set keycloak.persistence.dbUser=postgres
+      --set keycloak.persistence.dbHost=postgres-postgresql.default.svc.cluster.local \
+      --set keycloak.persistence.dbUser=postgres \
       stable/keycloak
-  async: 1800
-  poll: 180
+  async: 60
+  poll: 60
   when: keycloakInstalled.stdout.find("Running") == -1
