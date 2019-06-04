@@ -39,7 +39,7 @@
   with_items:
     - ovn-remote="tcp:{{ K8S_MASTER_IP }}:6642"
     - ovn-nb="tcp:{{ K8S_MASTER_IP }}:6641"
-    - ovn-encap-ip="{{ iface1.ipv4 }}"
+    - ovn-encap-ip="{{ host_private_address | default(lookup('dig', inventory_hostname, 'qtype=A'), true) }}"
     - ovn-encap-type="{{ OVN_ENCAP_TYPE }}"
 
 - name: network-ovn common | Check if ovn-kubernetes is already built
@@ -95,7 +95,7 @@
 - name: network-ovn common | Ensure /etc/hosts is updated
   lineinfile:
     path: /etc/hosts
-    line: "{{ iface1.ipv4 }} {{ inventory_hostname }}"
+    line: "{{ host_private_address | default(lookup('dig', inventory_hostname, 'qtype=A'), true) }} {{ inventory_hostname }}"
 
 # Gets rid of $OVS_CTL_OPTS in service file ExecStart
 # Fixes issue:
