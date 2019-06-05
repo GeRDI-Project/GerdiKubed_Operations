@@ -1,0 +1,67 @@
+- name: Install packages for apache httpd
+  apt:
+    pkg: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+      - apache2
+      - apt-transport-https
+      - ca-certificates
+
+- name: Create directory for key & cert
+  file:
+      path: "/etc/apache2/ssl"
+      state: directory
+      owner: root
+      group: root
+      mode: 0500
+
+- name: Create folder for LRZ-CA-cert chain
+  file:
+      path: "/usr/local/share/ca-certificates"
+      state: directory
+
+- name: Copy LRZ-CA-cert chain to folder
+  copy:
+      src: "LRZ-CA.crt"
+      dest: "/usr/local/share/ca-certificates"
+      owner: root
+      group: root
+      mode: 0644
+
+- name: Update trusted CA
+  shell: /usr/sbin/update-ca-certificates -f
+  notify: Restart apache-httpd
+
+- name: Copy key and cert
+  copy:
+      src: "{{ item }}"
+      dest: /etc/apache2/ssl/{{ item }}
+      owner: root
+      group: root
+      mode: 0400
+  with_items:
+      - key.pem
+      - cert.pem
+      - chain.pem
+  notify: Restart apache-httpd
+
+- name: Enable additional modules for apache httpd
+  apache2_module:
+      state: present
+      name: "{{ item }}"
+  with_items:
+      - alias
+      - headers
+      - proxy
+      - proxy_connect
+      - proxy_http
+      - proxy_wstunnel
+      - rewrite
+      - ssl
+  notify: Restart apache-httpd
+
+- name: Disable default sites
+  command: a2dissite {{ item }}
+  with_items:
+      - 000-default.conf

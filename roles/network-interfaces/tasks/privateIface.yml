@@ -1,0 +1,54 @@
+# Copyright 2019 Alexander Goetz alexander.goetz@lrz.de
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Description
+# -----------
+# Subrole that configures a private network interface accordingly
+---
+- name: Set public LRZ gateway server for  OpenStack nodes
+  set_fact:
+    host_private_gateway: "{{ (host_private_address + '/' + host_private_netmask) | ipaddr('1') }}"
+  when: (host_public_interface is defined) and (inventory_hostname in groups['openstack-nodes'])
+
+- name: Set public LRZ gateway server for non OpenStack nodes
+  set_fact:
+    host_private_gateway: "{{ (host_private_address + '/' + host_private_netmask) | ipaddr('-2') }}"
+  when: (host_public_interface is defined) and (inventory_hostname not in groups['openstack-nodes'])
+
+- name: network-interfaces | Create systemd Entry for Private Interface
+  template:
+    src: interface.network.j2
+    dest: "/etc/systemd/network/{{ host_private_interface }}.network"
+  when: host_private_interface is defined and not 'br' in host_private_interface
+  vars:
+    host_interface: "{{ host_private_interface }}"
+    host_address: "{{ host_private_address }}/{{ (host_private_address + '/' + host_private_netmask) | ipaddr('prefix') }}"
+    host_network: "{{ host_private_network }}/{{ (host_private_address + '/' + host_private_netmask) | ipaddr('prefix') }}"
+    host_gateway: "{{ host_private_gateway.split('/')[0] }}"
+    host_rtable: "{{ host_private_rtable }}"
+    iface_type: 'private'
+
+# This task will be run for two interface machines only and makes sure routes are setup for the bridge interface
+- name: network-interfaces | Create systemd Entry for Private Bridge Interface
+  template:
+    src: interface.network.j2
+    dest: "/etc/systemd/network/br{{ host_private_interface }}.network"
+  when: host_public_interface is defined and not 'br' in host_private_interface
+  vars:
+    host_interface: "br{{ host_private_interface }}"
+    host_address: "{{ host_private_address }}/{{ (host_private_address + '/' + host_private_netmask) | ipaddr('prefix') }}"
+    host_network: "{{ host_private_network }}/{{ (host_private_address + '/' + host_private_netmask) | ipaddr('prefix') }}"
+    host_gateway: "{{ host_private_gateway.split('/')[0] }}"
+    host_rtable: "{{ host_private_rtable }}"
+    iface_type: 'private'

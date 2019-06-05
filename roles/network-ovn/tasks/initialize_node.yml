@@ -35,7 +35,7 @@
   systemd:
     name: ovn-k8s-node.service
     enabled: yes
-    state: restarted
+    state: started
     daemon-reload: yes
 
 - name: network-ovn master | Restart ovn-k8s-master if master

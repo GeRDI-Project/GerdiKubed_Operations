@@ -50,6 +50,12 @@
     proto: udp
     port: 6081
 
+- name: ufw common | Allow Link-Local Multicast Name Resolution (LLMNR) (systemd)
+  ufw:
+    rule: allow
+    proto: udp
+    port: 5355
+
 - name: ufw common | Enable logging
   ufw:
     logging: on

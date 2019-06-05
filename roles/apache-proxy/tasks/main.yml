@@ -19,7 +19,6 @@
   vars:
     packages:
       - apache2
-      - libapache2-mod-shib2
   retries: 3
   delay: 3
 
@@ -33,7 +32,6 @@
     - proxy_http
     - proxy_wstunnel
     - rewrite
-    - shib2
     - ssl
     - remoteip
   retries: 3
@@ -55,40 +53,11 @@
     - { ext: "key", mode: "0400" }
     - { ext: "crt", mode: "0400" }
     - { ext: "chain", mode: "0400" }
-  tags:
-    - certs
-
-- name: Copy cert and key for shibboleth
-  copy:
-    src:  "sp.gerdi.org.{{ item.ext }}"
-    dest: "/etc/ssl/sp.gerdi.org.{{ item.ext }}"
-    mode: "{{ item.mode }}"
-    owner: "{{ item.owner }}"
-  with_items:
-    - { ext: "key", mode: "0400", owner: "_shibd" }
-    - { ext: "crt", mode: "0400", owner: "_shibd" }
-    - { ext: "chain", mode: "0400", owner: "_shibd" }
-  tags:
-    - certs
-
-- name: Get dfn federation certificate
-  get_url:
-    url: https://www.aai.dfn.de/fileadmin/metadata/dfn-aai.g2.pem
-    dest: /etc/ssl/dfn-aai.g2.pem
-  retries: 3
-  delay: 3
 
 - name: Copy .htpasswd
   copy:
     src: .htpasswd
     dest: /etc/apache2/.htpasswd
-
-- name: Install shibboleth configuration
-  template:
-    src: shibboleth2.xml.j2
-    dest: "/etc/shibboleth/shibboleth2.xml"
-  notify:
-    - restart shibd
 
 - name: Create directory for kubectl client auth cert and key
   file:

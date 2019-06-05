@@ -9,15 +9,7 @@
     CustomLog       /var/log/apache2/gerdi_frontend_access.log combined
 
     RewriteEngine   On
-
-    RewriteCond %{HTTP_HOST} ^eree.showcase.gerdi.org
-    RewriteRule ^/(.*) http://www.test.gerdi.org:32000/$1
-
-    RewriteCond %{HTTP_HOST} ^tumor.showcase.gerdi.org
-    RewriteRule ^/(.*) http://www.test.gerdi.org:32001/$1
-
     # Redirect to https to {{ MAIN_DOMAIN }}
-    RewriteCond %{HTTP_HOST} !^.*\.showcase
     RewriteRule     ^/(.*)  https://{{ MAIN_DOMAIN }}/$1 [R=301,L]
 </VirtualHost>
 
@@ -56,40 +48,6 @@
 
     AddDefaultCharset UTF-8
 
-    ShibCompatValidUser On
-
-    # dieser Alias wird i.d.R. nur benötigt, wenn URL Rewrite o.ä, erfolgt
-    # Alias /Shibboleth.sso /Shibboleth.sso
-    <Location /Shibboleth.sso>
-      SetHandler shib
-      Require all granted
-      ProxyPass !
-    </Location>
-
-    # Metadata unter der entityID-URL:
-    <Location /shibboleth>
-      Require all granted
-      ProxyPass !
-    </Location>
-    Redirect seeother /shibboleth https://www.{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}/Shibboleth.sso/Metadata
-
-    Alias /shibboleth-sp/main.css /usr/share/shibboleth/main.css
-    #Alias /shibboleth-sp/logo.jpg /usr/share/shibboleth/logo.jpg
-
-    # Location to be protected by the SP
-    <Location /shibbtest>
-        AuthType shibboleth
-        ShibRequestSetting requireSession true
-        Require valid-user
-    </Location>
-
-    # Support für WAYFless-URLs
-    # see https://www.ukfederation.org.uk/library/uploads/Documents/WAYFlessGuidance.pdf
-    #
-    <Location /start-session>
-      ProxyPass !
-    </Location>
-    RedirectMatch /start-session$ /Shibboleth.sso/Login
     <Location /api/search>
         Header set Access-Control-Allow-Origin "*"
         Header set Access-Control-Allow-Methods "OPTIONS, POST, GET"
@@ -162,8 +120,6 @@
         RequestHeader set X-SCHEME https
     </Location>
 
-    Redirect seeother /shibboleth https://test.sp.gerdi.org/Shibboleth.sso/Metadata
-
     SSLProxyEngine on
     ProxyPass /kubectl/ https://mstr-0.staging.gerdi.org/
     ProxyPassReverse /kubectl/ https://mstr-0.staging.gerdi.org/
@@ -199,6 +155,8 @@
     ProxyPassReverse  /harvest/seaaroundus http://seaaroundus-harvester.default.svc.cluster.local:8080/seaaroundus/harvest
     ProxyPass         /harvest/ena        http://ena-harvester.default.svc.cluster.local:8080/ena/harvest
     ProxyPassReverse  /harvest/ena        http://ena-harvester.default.svc.cluster.local:8080/ena/harvest
+    ProxyPass         /harvest/clinicaltrials http://clinicaltrials-harvester.default.svc.cluster.local:8080/clinicaltrials/harvest
+    ProxyPassReverse  /harvest/clinicaltrials http://clinicaltrials-harvester.default.svc.cluster.local:8080/clinicaltrials/harvest
     ProxyPass         /harvest/alpendac   http://alpendac-harvester.default.svc.cluster.local:8080/oaipmh/harvest
     ProxyPassReverse  /harvest/alpendac   http://alpendac-harvester.default.svc.cluster.local:8080/oaipmh/harvest
     ProxyPass         /harvest/soep       http://soep-harvester.default.svc.cluster.local:8080/soep/harvest

@@ -1,0 +1,5 @@
+---
+- name: Restart apache-httpd
+  service:
+      name: apache2
+      state: restarted
