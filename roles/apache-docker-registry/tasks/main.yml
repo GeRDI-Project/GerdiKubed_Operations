@@ -21,9 +21,6 @@
       path: "/usr/local/share/ca-certificates"
       state: directory
 
-- name: Update trusted CA
-  shell: /usr/sbin/update-ca-certificates
-
 - name: Copy LRZ-CA-cert chain to folder
   copy:
       src: "LRZ-CA.crt"
@@ -31,7 +28,10 @@
       owner: root
       group: root
       mode: 0644
-  notify: update trusted ca
+
+- name: Update trusted CA
+  shell: /usr/sbin/update-ca-certificates -f
+  notify: Restart apache-httpd
 
 - name: Copy key and cert
   copy:
