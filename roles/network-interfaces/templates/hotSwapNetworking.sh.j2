@@ -10,7 +10,6 @@ systemctl daemon-reload
 # Delete previous resolve file
 rm /etc/resolv.conf
 
-
 # Start systemd networking
 systemctl enable --now systemd-networkd.service > /dev/null 2>&1
 systemctl enable --now systemd-resolved.service > /dev/null 2>&1
