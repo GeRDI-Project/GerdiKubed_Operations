@@ -17,10 +17,13 @@
     path: "{{ GRAFANA_BASE_DIR }}"
     state: directory
 
-- name: grafana | Check if grafana is installed
-  shell: |
-    kubectl get pods  \
-      --selector=app=grafana \
-      --field-selector=status.phase=Running \
-      -n kube-monitor
-  register: grafanaInstalled
+- name: grafana | Copy templates into grafana base directory
+  template:
+    src: "{{ item }}"
+    dest: "{{ GRAFANA_BASE_DIR }}/{{ item | basename | regex_replace('.j2','') }}"
+  with_fileglob:
+    - ../templates/*
+
+- name: grafana | Αpply k8s manifests
+  shell: "kubectl apply -f {{ GRAFANA_BASE_DIR }}"
+  

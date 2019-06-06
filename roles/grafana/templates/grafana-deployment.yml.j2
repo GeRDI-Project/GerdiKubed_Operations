@@ -1,43 +1,56 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: grafana-dashboard
+  name: grafana
   namespace: kube-monitor
-  labels:
-    app: grafana
-    release: {{ GRAFANA_VERSION }}
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: grafana
-      release: {{ GRAFANA_VERSION }}
   template:
     metadata:
       labels:
         app: grafana
         service: monitoring
+        release: {{ GRAFANA_VERSION }}
     spec:
       containers:
         - name: grafana
           image: grafana/grafana:{{ GRAFANA_VERSION }}
-          args:
-            - "--config.file=/etc/prometheus/prometheus.yml"
-            - "--storage.tsdb.path=/prometheus/"
-            - "--web.enable-lifecycle"
-            - "--storage.tsdb.no-lockfile"
-            - "--web.external-url=https://{{ MAIN_DOMAIN }}/admin/prometheus"
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-admin
+                  key: GF_SECURITY_ADMIN_USER
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-admin
+                  key: GF_SECURITY_ADMIN_PASSWORD
+            - name: GF_INSTALL_PLUGINS
+              value: grafana-kubernetes-app
           resources:
+            requests:
+              memory: 500Mi
+              cpu: 0.25
             limits:
-              memory: "2Gi"
-              cpu: 1
+              memory: 2Gi
+              cpu: 1.0
           ports:
-            - containerPort: 3000
+            - containerPort: {{ GRAFANA_CONTAINER_PORT }}
           volumeMounts:
             - name: grafana-config-volume
-              mountPath: /etc/prometheus/
+              mountPath: /etc/grafana/
+            - name: grafana-datasources-volume
+              mountPath: /etc/grafana/provisioning/datasources
       volumes:
         - name: grafana-config-volume
           configMap:
             defaultMode: 420
-            name: grafana
+            name: grafana-config
+        - name: grafana-datasources-volume
+          configMap:
+            defaultMode: 420
+            name: grafana-datasources
