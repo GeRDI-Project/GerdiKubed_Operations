@@ -16,20 +16,15 @@
 # -----------
 # Subrole that configures a private network interface accordingly
 ---
-- name: network-interfaces | Set Private LRZ Gateway for OpenStack Node
+- name: Set private LRZ gateway server for  OpenStack nodes
   set_fact:
-    host_private_gateway: 192.168.0.1
+    host_private_gateway: "{{ (host_private_address + '/' + host_private_netmask) | ipaddr('1') }}"
   when: (host_private_interface is defined) and (inventory_hostname in groups['openstack-nodes'])
 
-- name: network-interfaces | Set Private LRZ Gateway for VMware Node
+- name: Set private LRZ gateway server for non OpenStack nodes
   set_fact:
-    host_private_gateway: 10.156.119.255
-  when: (host_private_interface is defined) and (inventory_hostname in groups['vmware-nodes'])
-
-- name: network-interfaces | Set Private LRZ Gateway for OpenNebula Node
-  set_fact:
-    host_private_gateway: 10.155.215.255
-  when: (host_private_interface is defined) and (inventory_hostname in groups['opennebula-nodes'])
+    host_private_gateway: "{{ (host_private_address + '/' + host_private_netmask) | ipaddr('-2') }}"
+  when: (host_private_interface is defined) and (inventory_hostname not in groups['openstack-nodes'])
 
 - name: network-interfaces | Create systemd Entry for Private Interface
   template:
