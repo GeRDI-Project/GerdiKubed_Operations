@@ -18,7 +18,9 @@ ExecStart=/usr/bin/ovnkube \
   -k8s-apiserver "https://{{ K8S_MASTER_IP }}:443" \
   -service-cluster-ip-range "{{ K8S_SERVICE_IP_SUBNET }}" \
   -nodeport \
-  -init-gateways -gateway-interface={{ host_private_interface }} -gateway-nexthop="{{ host_private_gateway }}" \
+  -init-gateways \
+  -gateway-interface={{ host_private_interface }} \
+  -gateway-nexthop="{{ host_private_gateway.split('/')[0] }}" \
   -nb-address="tcp://{{ K8S_MASTER_IP }}:6641" \
   -sb-address="tcp://{{ K8S_MASTER_IP }}:6642"
 {% if inventory_hostname not in groups['loadbalancer-nodes'] %}
