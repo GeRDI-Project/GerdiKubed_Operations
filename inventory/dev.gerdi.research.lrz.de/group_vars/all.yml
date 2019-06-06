@@ -21,8 +21,11 @@ K8S_GLOBAL_LOG_LEVEL: "v=1"
 # You will find the cert infrastructure (e.g. ca-key and cert and all other stuff) here:
 # Do not use ~ or relative paths, please spell out absolute path
 CONTROL_BASE_DIR:   "/home/debian/{{ K8S_DEPLOYMENT_CONTEXT }}_k8s_mgmt"
-# Note: Your machine might need whitelisting
-NFS_SERVER_DOMAIN: intern05.nas.lrz.de
+# Domain of the NFS host
+# Note: Your machine might need whitelisting if you are using a external NFS server
+# NFS_SERVER_DOMAIN: intern05.nas.lrz.de
+NFS_SERVER_DOMAIN: "nfs.{{K8S_DEPLOYMENT_CONTEXT}}.{{K8S_DOMAIN_NAMESPACE}}"
+# Will be created if you're using a cluster internal NFS node
 NFS_VOLUME_PATH: /intern/gerdi01
 NFS_SERVER_PATH: "{{ NFS_SERVER_DOMAIN }}:{{ NFS_VOLUME_PATH }}"
 # Network interface prefix

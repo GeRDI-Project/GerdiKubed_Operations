@@ -83,7 +83,7 @@
 - name: common | Mount NFS-Volume
   mount:
     path:   "{{ NFS_MOUNT_PATH }}"
-    src:    "{{ NFS_SERVER_PATH }}"
+    src:    "{{ hostvars[NFS_SERVER_DOMAIN]['altIP'] | default(NFS_SERVER_DOMAIN) + ':' + NFS_VOLUME_PATH }}"
     fstype: nfs
     opts:   tcp,nolock,nofail,x-systemd.device-timeout=1,rsize=65536,wsize=65536,timeo=600,intr
     state:  mounted
