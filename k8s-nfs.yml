@@ -1,0 +1,46 @@
+# Copyright 2019 Walentin Lamonos lamonos@lrz.de
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+# Replace remote_user with whatever distro you are using
+# Defaults to root
+- name: Secure and setup sshd
+  hosts: nfs-nodes
+  remote_user: debian
+  become: true
+  roles:
+    - sshd
+
+- name: Setup VMWare nodes
+  hosts: nfs-nodes:&vmware-nodes
+  remote_user: root
+  roles:
+    - vmware-node
+
+- name: Setup OpenNebula nodes
+  hosts: nfs-nodes:&opennebula-nodes
+  remote_user: root
+  roles:
+    - nebula-node
+
+- name: Setup OpenStack nodes
+  hosts: nfs-nodes:&openstack-nodes
+  remote_user: root
+  roles:
+    - openstack-node
+
+- name: Setup the nfs server
+  hosts: nfs-nodes
+  remote_user: root
+  roles:
+    - nfs-server
