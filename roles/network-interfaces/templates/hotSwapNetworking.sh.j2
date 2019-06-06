@@ -10,6 +10,9 @@ systemctl daemon-reload
 # Delete previous resolve file
 rm /etc/resolv.conf
 
+# Disable previous networking
+systemctl disable --now networking.service > /dev/null 2>&1
+
 # Start systemd networking
 systemctl enable --now systemd-networkd.service > /dev/null 2>&1
 systemctl enable --now systemd-resolved.service > /dev/null 2>&1
@@ -17,9 +20,6 @@ systemctl enable --now systemd-resolved.service > /dev/null 2>&1
 # Setup systemd DNS
 # Make sure to add our DNS
 sed -i 's/#DNS=/DNS={{ NODE_NAMESERVER }}/;' /etc/systemd/resolved.conf
-
-# Disable previous networking
-systemctl disable networking.service > /dev/null 2>&1
 
 # Link our new resolv.conf to the right place
 ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
