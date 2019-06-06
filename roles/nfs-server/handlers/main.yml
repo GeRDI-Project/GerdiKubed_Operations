@@ -1,4 +1,6 @@
-# Copyright 2018 Tobias Weber weber@lrz.de
+# Copyright 2018 Walentin Lamonos lamonos@lrz.de
+#
+# Based on https://github.com/geerlingguy/ansible-role-nfs
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,8 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 ---
-- name: restart nginx
-  service:
-    name: nginx
-    state: restarted
+- name: reload nfs
+  command: 'exportfs -ra'

@@ -1,0 +1,46 @@
+<VirtualHost *:5043>
+        ServerName  {{ SERVERNAME }}
+
+        SSLEngine On
+        SSLCertificateFile      /etc/apache2/ssl/cert.pem
+        SSLCertificateKeyFile   /etc/apache2/ssl/key.pem
+        SSLCertificateChainFile /etc/apache2/ssl/chain.pem
+
+        Header always set "Docker-Distribution-Api-Version" "registry/2.0"
+        Header onsuccess set "Docker-Distribution-Api-Version" "registry/2.0"
+        RequestHeader set X-Forwarded-Proto "https"
+
+        ProxyRequests     off
+        ProxyPreserveHost on
+
+        ErrorLog ${APACHE_LOG_DIR}/{{ SERVERNAME }}.log
+
+        LogLevel warn
+
+        # no proxy for /error/ (Apache HTTPd errors messages)
+        ProxyPass /error/ !
+
+        ProxyPass        /v2 http://localhost:5000/v2
+        ProxyPassReverse /v2 http://localhost:5000/v2
+
+        <Location /v2>
+            AuthName                "Registry Authentication"
+            AuthType                Basic
+            AuthBasicProvider       ldap
+
+            AuthLDAPBindDN          cn=readproxygerdi,ou=services,o=lrz-muenchen,c=de
+            AuthLDAPBindPassword    {{ LDAP_PASSWD }}
+            AuthLDAPURL             ldaps://auth.sim.lrz.de:636/ou=VPN,ou=Kennungen,o=lrz-muenchen,c=de?uid?one?(objectClass=posixAccount)
+
+          # Read access to authentified users
+          <Limit GET HEAD>
+            Require valid-user
+          </Limit>
+
+          # Write access to docker-deployer only
+          <Limit POST PUT DELETE PATCH>
+            Require user di72jiv di36ril di36vix
+          </Limit>
+
+        </Location>
+</VirtualHost>
