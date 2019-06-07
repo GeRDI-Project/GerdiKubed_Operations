@@ -96,32 +96,32 @@ Created using: http://asciiflow.com/
 
 |&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Playbook<br>Role <br>  |  k8s-master |  k8s-node  |  k8s-lb  |  k8s-mgmt |  k8s-nfs  |  k8s-stack  |  k8s-gerdi  |
 |---|---|---|---|---|---|---|---|
-| [vmware-node](#vmware-node) OR <br> [nebula-node](#nebula-node) OR <br> [openstack-node](#openstack-node) |<div align="center">x</div>|      x      |      |      |      |      |      |
-| [network-interfaces](#network-interfaces)      |      x      |      x      |      |      |      |      |      |
-| [common](#common)|      x      |      x      |      |      |      |      |      |
-| [ufw](#ufw)|      x      |      x      |      |      |      |      |      |
-| [docker](#docker)      |      x      |      x      |      |      |      |      |      |
-| [k8s-binaries](#k8s-binaries)      |      x      |      x      |      |      |      |      |      |
-| [kubelet](#kubelet)      |      x      |      x      |      |      |      |      |      |
-| [kube-proxy](#kube-proxy)      |      x      |      x      |      |      |      |      |      |
-| [network-ovn](#network-ovn)      |      x      |      x      |      |      |      |      |      |
-| [k8s-cordon](#k8s-cordon)      |      x      |      x      |      |      |      |      |      |
-| [apiserver](#apiserver)      |      x      |      |      |      |      |      |      |
-| [scheduler](#scheduler)      |      x      |      |      |      |      |      |      |
-| [controller-manager](#controller-manager)  |      x      |      |      |      |      |      |      |
-| [etcd](#etcd)      |      x      |      |      |      |      |      |      |
-| [k8s-addons](#k8s-addons)      |      x      |      |      |      |      |      |      |
-| [cni](#cni)      |      x      |      |      |      |      |      |      |
-| [cluster-dns](#cluster-dns)      |      |      |      x      |      |      |      |      |
-| [apache-proxy](#apache-proxy)      |      |      |      x      |      |      |      |      |
-| [cert-infrastructure](#cert-infrastructure)|      |      |      |      x      |      |      |      |
-| [nfs-server](#nfs-server)|      |      |      |      |      x      |      |      |
-| [prometheus](#prometheus)|      |      |      |      |      |      x      |      |
-| [secrets](#secrets)|      |      |      |      |      |      |      x      |
-| [helm](#helm)|      |      |      |      |      |      |      x      |
-| [persistent-volumes](#persistent-volumes)|      |      |      |      |      |      |      x      |
-| [jhub](#jhub)|      |      |      |      |      |      |      x      |
-| [keycloak](#keycloak)|      |      |      |      |      |      |      x      |
+| [vmware-node](#vmware-node) OR <br> [nebula-node](#nebula-node) OR <br> [openstack-node](#openstack-node) |<div align="center">x</div>|      <div align="center">x</div>      |      |      |      |      |      |
+| [network-interfaces](#network-interfaces)      |      <div align="center">x</div>      |      <div align="center">x</div>      |      |      |      |      |      |
+| [common](#common)|      <div align="center">x</div>      |      <div align="center">x</div>      |      |      |      |      |      |
+| [ufw](#ufw)|      <div align="center">x</div>      |      <div align="center">x</div>      |      |      |      |      |      |
+| [docker](#docker)      |      <div align="center">x</div>      |      <div align="center">x</div>      |      |      |      |      |      |
+| [k8s-binaries](#k8s-binaries)      |      <div align="center">x</div>      |      <div align="center">x</div>      |      |      |      |      |      |
+| [kubelet](#kubelet)      |      <div align="center">x</div>      |      <div align="center">x</div>      |      |      |      |      |      |
+| [kube-proxy](#kube-proxy)      |      <div align="center">x</div>      |      <div align="center">x</div>      |      |      |      |      |      |
+| [network-ovn](#network-ovn)      |      <div align="center">x</div>      |      <div align="center">x</div>      |      |      |      |      |      |
+| [k8s-cordon](#k8s-cordon)      |      <div align="center">x</div>      |      <div align="center">x</div>      |      |      |      |      |      |
+| [apiserver](#apiserver)      |      <div align="center">x</div>      |      |      |      |      |      |      |
+| [scheduler](#scheduler)      |      <div align="center">x</div>      |      |      |      |      |      |      |
+| [controller-manager](#controller-manager)  |      <div align="center">x</div>      |      |      |      |      |      |      |
+| [etcd](#etcd)      |      <div align="center">x</div>      |      |      |      |      |      |      |
+| [k8s-addons](#k8s-addons)      |      <div align="center">x</div>      |      |      |      |      |      |      |
+| [cni](#cni)      |      <div align="center">x</div>      |      |      |      |      |      |      |
+| [cluster-dns](#cluster-dns)      |      |      |      <div align="center">x</div>      |      |      |      |      |
+| [apache-proxy](#apache-proxy)      |      |      |      <div align="center">x</div>      |      |      |      |      |
+| [cert-infrastructure](#cert-infrastructure)|      |      |      |      <div align="center">x</div>      |      |      |      |
+| [nfs-server](#nfs-server)|      |      |      |      |      <div align="center">x</div>      |      |      |
+| [prometheus](#prometheus)|      |      |      |      |      |      <div align="center">x</div>      |      |
+| [secrets](#secrets)|      |      |      |      |      |      |      <div align="center">x</div>      |
+| [helm](#helm)|      |      |      |      |      |      |      <div align="center">x</div>      |
+| [persistent-volumes](#persistent-volumes)|      |      |      |      |      |      |      <div align="center">x</div>      |
+| [jhub](#jhub)|      |      |      |      |      |      |      <div align="center">x</div>      |
+| [keycloak](#keycloak)|      |      |      |      |      |      |      <div align="center">x</div>      |
 
 ## Role Documentation
 
