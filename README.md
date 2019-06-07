@@ -21,7 +21,7 @@ There are multiple playbooks in the root of the git repository:
 # Create new inventory from template:
 cp -r inventory/dev.gerdi.research.lrz.de inventory/<deployment-context>
 
-# Edit inventory (hosts.ini) and group variables (group_vars/all):
+# Edit inventory (hosts.ini) and group variables (group_vars/all.yml):
 # (Consult role documentation for variable descriptions)
 vi inventory/<deployment-context>/hosts.ini
 vi inventory/<deployment-context>/group_vars/all.yml
@@ -155,21 +155,23 @@ The apiserver is the management interface of the k8s cluster. It runs on the k8s
 
 ### cert-infrastructure
 
-This role creates a ca ready infrastructure on a trusted host the localhost should be the default.
+This role creates a CA ready infrastructure on a trusted host, the localhost should be the default.
 To get it working you'll have to set the following variables in group\_vars/all:
+| Name | Default Value | Description |
+|--|--|--|
+| ```CONTROL_MACHINE``` | 127.0.0.1 | Trusted machine on which certificates are issued and CA's private key resides |
+| ```CONTROL_BASE_DIR``` | "~" | Directory in which certificate infrastructure is persisted. |
 
-* CONTROL\_MACHINE: Trusted machine on which certificates are issued and ca's private key resides (set "127.0.0.1" for localhost)
-* CONTROL\_BASE\_DIR: Directory in which certficate infrastructure is persisted.
+*The following subdirs shouldn't be altered in the group\_vars/all template, they are there for documentation purpose:*
+| Name | Default Value | Description |
+|--|--|--|
+| ```CONTROL_CERT_DIR``` | ```CONTROL_BASE_DIR```/certs | All certificates reside here (including CA certificate) |
+| ```CONTROL_KEY_DIR``` | ```CONTROL_BASE_DIR```/keys | All keys reside here (including private key of CA) |
+| ```CONTROL_CONFIG_DIR``` | ```CONTROL_BASE_DIR```/configs | Openssl configs reside here |
+| ```CONTROL_CSR_DIR``` | ```CONTROL_BASE_DIR```/csrs | Certificate Signing requests reside here |
+| ```CONTROL_CA_DIR``` | ```CONTROL_BASE_DIR```/ca | Certification Authority Management files reside here (e.g. serial numbers, issued certificates, etc.) |
 
-These subdirs shouldn't be altered in group\_vars/all template (they are here for documentation purpose.
-
-* CONTROL\_CERT\_DIR: All certificates reside here (including certification authority certificate) (Default: CONTROL\_BASE\_DIR/certs).
-* CONTROL\_KEY\_DIR: All keys reside here (including private key of certification authority)( Default: CONTROL\_BASE\_DIR/keys).
-* CONTROL\_CONFIG\_DIR: Openssl configs reside here (Default:  CONTROL\_BASE\_DIR/configs).
-* CONTROL\_CSR\_DIR: Certificate Signing requests reside here (Default: CONTROL\_BASE\_DIR/csrs).
-* CONTROL\_CA\_DIR:  Certification Authority Management files reside here (e.g. serial numbers, issued certificates, etc.) (Default: CONTROL\_BASE\_DIR/ca)
-
-It also creates a number of certificates (both server and client) to handle authorization inside the k8s cluster (e.g. etcd <=> apiserver).
+It also creates a number of certificates (both server and client) to handle authorization inside the k8s cluster (e.g. *etcd* <=> *apiserver*).
 
 <a name="common"></a>
 
@@ -249,6 +251,8 @@ Sets up systemd-networkd & systemd-resolved by *'hotswapping'* the default netwo
 ### nfs-server
 
 Responsible for setting up a NFS server alongside the k8s cluster and adding all nodes from the cluster to its' exports file. This is optional, you can also choose to pick an already existing external NFS server.
+
+*Note: If you add additional nodes to the cluster, you have to execute this playbook again to add the new nodes to the exports. This will override manually added hosts!*
 
 <a name="network-ovn"></a>
 
