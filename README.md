@@ -9,7 +9,7 @@ There are multiple playbooks in the root of the git repository:
 * k8s-mgmt.yml
 * (k8s-nfs.yml; *Optional*)
 * k8s-master.yml
-* k8s-nodes.yml
+* k8s-node.yml
 * k8s-lb.yml
 * k8s-stack.yml
 * (k8s-gerdi.yml; *Optional*)
@@ -21,13 +21,14 @@ There are multiple playbooks in the root of the git repository:
 # Create new inventory from template:
 cp -r inventory/dev.gerdi.research.lrz.de inventory/<deployment-context>
 
-# Edit variable-template and inventory file-template:
-# (Consult role documentation for answers)
+# Edit inventory (hosts.ini) and group variables (group_vars/all):
+# (Consult role documentation for variable descriptions)
 vi inventory/<deployment-context>/hosts.ini
 vi inventory/<deployment-context>/group_vars/all.yml
 
-# -------------------------------------------------------------------------------------------#
+# ----------------------------------------------------------------------#
 
+# Ansible execution:
 # Setup certificates:
 ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-mgmt.yml
 # This has to be done only once per cluster!
