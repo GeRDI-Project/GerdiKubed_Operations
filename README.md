@@ -60,44 +60,50 @@ ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-gerdi.yml
 * Pub key in .ssh/authorized\_keys in roots's home on the remote machines
 * Python > 2.6
 * Ansible >= 2.8.0.0 (on the control machine, only linux distros are supported!)
-* All nodes must have valid DNS-Records (configured in production). IP-Addresses are no longer supported. If this condition is not fulfilled the k8s-mgmt.yml-playbook will fail.
+* All nodes must have valid DNS-Records (configured in production). IP addresses are no longer supported. If this condition is not fulfilled the k8s-mgmt.yml-playbook will fail.
 * Nodes must follow the following network interface setup:
-  * One *private* network interface for k8s-nodes and k8s-master.
-  * One *private* and one *public* interface for load balancer nodes.
+  * One *private* network interface for nfs-nodes, k8s-nodes and k8s-master.
+  * One *private* and one *public* network interface for loadbalancer nodes.
 * The playbooks assume the following order:
-  * First interface (private): SSHD listening & OVN overlay network interface
-  * Second interface (public): Internet endpoint (load balancer only)
+  * First interface (private): sshd listening & OVN overlay network interface
+  * Second interface (public): Internet endpoint (loadbalancer only)
 
-**Interface setup:**
+**Cluster Setup:**
 
 ```Text
-      +--------------+
-      |  k8s|master  |
-      +--------------+
-      |              |
-SSH+--+    iface1    +----+
-      |              |    |
-      |              |    |
-      +--------------+    |
-                          |
-      +--------------+    |
-      |  k8s|node(s) |    |
-      +--------------+    |
-      |              |    |
-SSH+--+    iface1    +---OVN (geneve)
-      |              |    |
-      |              |    |
-      +--------------+    |
-                          |
-      +--------------+    |
-      |    k8s|lb    |    |
-      +--------------+    |
-      |              |    |
-SSH+--+    iface1    +----+
-      |              |               +------------+
-      |    iface2    +---------------+  Internet  |
-      |              |               +------------+
-      +--------------+
+ Private Network
++-------------------------------------------------------------------------------------------+
+|                                                                                           |
+|                                       +--------------+                                    |
+|                                       |  k8s master  +-------+NFS+----+                   |
+|                                       +--------------+                |                   |
+|                                       |              |                |                   |
+|                           +----+SSH+--+    iface1    +---+            |                   |
+|                           |           |              |   |            |                   |
+|                           |           |              |   |            |    +------------+ |
+|                           |           +--------------+   |            |    | nfs server | |
+|                           |                              |            |    +------------+ |
+| +-------------------+     |           +--------------+   |            +    |            | |
+| |  Control Machine  |     |           |  k8s node(s) +-------+NFS+-+Mount+-+   iface1   | |
+| +-------------------+     |           +--------------+   |            +    |            | |
+| |                   |     +           |              |   +            |    |            | |
+| |      iface1       +-+Ansible++SSH+--+    iface1    +-+OVN           |    +------------+ |
+| |                   |     +           |              |   +            |                   |
+| |                   |     |           |              |   |            |                   |
+| +-------------------+     |           +--------------+   |            |                   |
+|                           |                              |            |                   |
+|                           |           +--------------+   |            |                   |
+|                           |           |    k8s lb    +-------+NFS+----+                   |
+|                           |           +--------------+   |                                |
+|                           |           |              |   |                                |
+|                           +----+SSH+--+    iface1    +---+                                |
+|                                       |              |                                    |
++-------------------------------------------------------------------------------------------+
+                                        |              |
+                                        |              |               +------------+
+                                        |    iface2    +---------------+  Internet  |
+                                        |              |               +------------+
+                                        +--------------+
 ```
 
 Created using: http://asciiflow.com/
@@ -191,7 +197,7 @@ The controller-manager runs on all master instances as a systemd-service and dis
 
 ### cluster-dns
 
-Sets up dnsmasq and forces the load balancer to use kube-dns to resolve cluster internal domains.
+Sets up dnsmasq and forces the loadbalancer to use kube-dns to resolve cluster internal domains.
 
 <a name="cni"></a>
 
@@ -279,7 +285,7 @@ The scheduler runs scheduled pods. It operates on the k8s-master as a systemd-se
 
 ### ufw
 
-This role sets up the uncomplicated firewall (ufw). Depending on which node it's executed on, it will vary the port openings, for example the load balancer will receive additional openings at TCP/80 and TCP/443. 
+This role sets up the uncomplicated firewall (ufw). Depending on which node it's executed on, it will vary the port openings, for example the loadbalancer will receive additional openings at TCP/80 and TCP/443. 
 
 ## Node Specific Roles
 
