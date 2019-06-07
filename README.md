@@ -71,7 +71,7 @@ ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-gerdi.yml
 **Cluster Setup:**
 
 ```Text
- Private Network
+  Private Network
 +-------------------------------------------------------------------------------------------+
 |                                                                                           |
 |                                       +--------------+                                    |
