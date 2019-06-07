@@ -2,17 +2,21 @@
 # GerdiKubed
 
 This repo has all necessary roles to setup a kubernetes cluster (req. see below).
+There are multiple playbooks in the root of the git repository:
 
-There are three major playbooks in the root of the git-repo (for the others see below):
+*Note: In order of execution!*
 
+* k8s-mgmt.yml
+* (k8s-nfs.yml; *Optional*)
 * k8s-master.yml
 * k8s-nodes.yml
-* k8s-mgmt.yml
+* k8s-lb.yml
+* (k8s-stack.yml; *Optional*)
+* (k8s-gerdi.yml; *Optional*)
 
 # Usage
 
 ```bash
-
 # Edit variable-template (consult role & version documentation (util/VariableTemplate.md) for answers):
 cp group_vars/all.tmpl group_vars/all
 vi group_vars/all
@@ -21,18 +25,21 @@ vi group_vars/all
 cp production.tmpl production
 vi production
 
-# setup certificates:
+# Setup certificates:
 ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-mgmt.yml
 # This has to be done only once per cluster!
 # Delete or move CONTROL_BASE_DIR to reset and recreate all certificates.
 
-# setup master(s)
+# (Setup NFS server; Optional)
+ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-nfs.yml
+
+# Setup master(s)
 ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-master.yml
 
-# setup nodes
+# Setup nodes
 ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-node.yml
 
-# setup loadbalancer (requires valid certificates for k8s domain namespace)
+# Setup loadbalancer (requires valid certificates for k8s domain namespace)
 ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-lb.yml
 
 # Deploy the k8s stack for monitoring and management
@@ -45,7 +52,7 @@ ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-stack.yml
 * Running sshd on the remote machines and on the control machine (preferrably localhost) and the package python-dnspython
 * Pub key in .ssh/authorized\_keys in roots's home on the remote machines
 * Python > 2.6
-* Ansible >= 2.4.2.0 (on the control machine, only linux distros are supported!)
+* Ansible >= 2.8.0.0 (on the control machine, only linux distros are supported!)
 * All nodes must have valid DNS-Records (configured in production). IP-Addresses are no longer supported. If this condition is not fulfilled the k8s-mgmt.yml-playbook will fail.
 * Nodes must follow the following network interface setup:
   * One *private* network interface for k8s-nodes and k8s-master.
@@ -234,7 +241,7 @@ Sets up systemd-networkd & systemd-resolved by *'hotswapping'* the default netwo
 
 ### nfs-server
 
-Responsible for setting up a NFS server alongside the k8s cluster and adding all nodes from a the cluster to its' exports file.
+Responsible for setting up a NFS server alongside the k8s cluster and adding all nodes from the cluster to its' exports file. This is optional, you can also choose to pick an already existing external NFS server.
 
 <a name="network-ovn"></a>
 
@@ -285,4 +292,3 @@ This role is tailored to Openstack machines running on LRZ infrastructure. It fe
 # CI
 
 The repository is checked by a CI-Task in Bamboo (push to bitbucket). You can't merge a PR that wasn't build successfully!
-
