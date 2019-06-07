@@ -70,7 +70,7 @@ ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-gerdi.yml
 
 **Interface setup:**
 
-```Bash
+```Text
       +--------------+
       |  k8s|master  |
       +--------------+
@@ -169,7 +169,7 @@ To get it working you'll have to set the following variables in group\_vars/all:
 |---|---|---|
 | ```CONTROL_CERT_DIR``` | ```CONTROL_BASE_DIR```/certs | All certificates reside here (including CA certificate) |
 | ```CONTROL_KEY_DIR``` | ```CONTROL_BASE_DIR```/keys | All keys reside here (including private key of CA) |
-| ```CONTROL_CONFIG_DIR``` | ```CONTROL_BASE_DIR```/configs | Openssl configs reside here |
+| ```CONTROL_CONFIG_DIR``` | ```CONTROL_BASE_DIR```/configs | OpenSSL configs reside here |
 | ```CONTROL_CSR_DIR``` | ```CONTROL_BASE_DIR```/csrs | Certificate Signing requests reside here |
 | ```CONTROL_CA_DIR``` | ```CONTROL_BASE_DIR```/ca | Certification Authority Management files reside here (e.g. serial numbers, issued certificates, etc.) |
 
