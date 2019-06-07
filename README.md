@@ -96,7 +96,7 @@ Created using: http://asciiflow.com/
 
 |&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Playbook<br>Role <br>  |  k8s-master |  k8s-node  |  k8s-lb  |  k8s-mgmt |  k8s-nfs  |  k8s-stack  |  k8s-gerdi  |
 |---|---|---|---|---|---|---|---|
-| [vmware-node](#vmware-node) OR <br> [nebula-node](#nebula-node) OR <br> [openstack-node](#openstack-node) |      x      |      x      |      |      |      |      |      |
+| [vmware-node](#vmware-node) OR <br> [nebula-node](#nebula-node) OR <br> [openstack-node](#openstack-node) |<div align="center">x</div>|      x      |      |      |      |      |      |
 | [network-interfaces](#network-interfaces)      |      x      |      x      |      |      |      |      |      |
 | [common](#common)|      x      |      x      |      |      |      |      |      |
 | [ufw](#ufw)|      x      |      x      |      |      |      |      |      |
