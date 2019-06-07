@@ -11,19 +11,22 @@ There are multiple playbooks in the root of the git repository:
 * k8s-master.yml
 * k8s-nodes.yml
 * k8s-lb.yml
-* (k8s-stack.yml; *Optional*)
+* k8s-stack.yml
 * (k8s-gerdi.yml; *Optional*)
 
 # Usage
 
 ```bash
-# Edit variable-template (consult role & version documentation (util/VariableTemplate.md) for answers):
-cp group_vars/all.tmpl group_vars/all
-vi group_vars/all
+# Initial setup
+# Create new inventory from template:
+cp -r inventory/dev.gerdi.research.lrz.de inventory/<deployment-context>
 
-# Edit inventory file-template
-cp production.tmpl production
-vi production
+# Edit variable-template and inventory file-template:
+# (Consult role documentation for answers)
+vi inventory/<deployment-context>/hosts.ini
+vi inventory/<deployment-context>/group_vars/all.yml
+
+# -------------------------------------------------------------------------------------------#
 
 # Setup certificates:
 ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-mgmt.yml
@@ -44,6 +47,9 @@ ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-lb.yml
 
 # Deploy the k8s stack for monitoring and management
 ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-stack.yml
+
+# (Execute the gerdi specific tasks; Optional)
+ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-gerdi.yml
 ```
 
 # Requirements
