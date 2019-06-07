@@ -157,14 +157,16 @@ The apiserver is the management interface of the k8s cluster. It runs on the k8s
 
 This role creates a CA ready infrastructure on a trusted host, the localhost should be the default.
 To get it working you'll have to set the following variables in group\_vars/all:
+
 | Name | Default Value | Description |
-|--|--|--|
+|---|---|---|
 | ```CONTROL_MACHINE``` | 127.0.0.1 | Trusted machine on which certificates are issued and CA's private key resides |
 | ```CONTROL_BASE_DIR``` | "~" | Directory in which certificate infrastructure is persisted. |
 
 *The following subdirs shouldn't be altered in the group\_vars/all template, they are there for documentation purpose:*
+
 | Name | Default Value | Description |
-|--|--|--|
+|---|---|---|
 | ```CONTROL_CERT_DIR``` | ```CONTROL_BASE_DIR```/certs | All certificates reside here (including CA certificate) |
 | ```CONTROL_KEY_DIR``` | ```CONTROL_BASE_DIR```/keys | All keys reside here (including private key of CA) |
 | ```CONTROL_CONFIG_DIR``` | ```CONTROL_BASE_DIR```/configs | Openssl configs reside here |
