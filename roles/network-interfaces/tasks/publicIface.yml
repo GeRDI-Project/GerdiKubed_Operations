@@ -16,12 +16,12 @@
 # -----------
 # Subrole that configures a public network interface
 ---
-- name: network-interfaces | Set public LRZ gateway server for OpenStack nodes
+- name: Set public LRZ gateway server for OpenStack nodes
   set_fact:
-    host_public_gateway: 192.168.128.1
+    host_public_gateway: "{{ (host_public_address + '/' + host_public_netmask) | ipaddr('-2') }}"
   when: (host_public_interface is defined) and (inventory_hostname in groups['openstack-nodes'])
 
-- name: network-interfaces | Set public LRZ gateway server for non OpenStack nodes
+- name: Set public LRZ gateway server for non OpenStack nodes
   set_fact:
     host_public_gateway: "{{ (host_public_address + '/' + host_public_netmask) | ipaddr('-2') }}"
   when: (host_public_interface is defined) and (inventory_hostname not in groups['openstack-nodes'])
@@ -35,5 +35,5 @@
     host_interface: "{{ host_public_interface }}"
     host_address: "{{ host_public_address }}/{{ (host_public_address + '/' + host_public_netmask) | ipaddr('prefix') }}"
     host_network: "{{ host_public_network }}/{{ (host_public_address + '/' + host_public_netmask) | ipaddr('prefix') }}"
-    host_gateway: "{{ host_public_gateway }}"
-    iface_type: "private"
+    host_gateway: "{{ host_public_gateway.split('/')[0] }}"
+    iface_type: "public"

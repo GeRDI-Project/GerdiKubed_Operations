@@ -1,0 +1,52 @@
+- name: Install python-docker
+  apt:
+    package: python-docker
+    state: latest
+
+- name: Enable additional modules for apache httpd
+  apache2_module:
+      state: present
+      name: "{{ item }}"
+  with_items:
+      - ldap
+      - authnz_ldap
+  notify: Restart apache-httpd
+
+- name: Configure firewall to accept traffic on port {{ REGISTRY_PORT }}
+  ufw:
+      rule: allow
+      port: "{{ REGISTRY_PORT }}"
+      proto: tcp
+
+- name: Create additional configuration for apache main file
+  template:
+    src: "docker-registry.conf.j2"
+    dest: "/etc/apache2/conf-available/docker-registry.conf"
+
+- name: Enable additional configuration for apache main file
+  command: a2enconf docker-registry.conf
+  notify: Restart apache-httpd
+
+- name: Configure Apache-Site for {{ SERVERNAME }}
+  template:
+    src: "{{ SERVERNAME }}.conf.j2"
+    dest: "/etc/apache2/sites-available/{{ SERVERNAME }}.conf"
+
+- name: Enable Configuration for {{ SERVERNAME }}
+  command: a2ensite {{ SERVERNAME }}
+  notify: Restart apache-httpd
+
+- name: Create Directory for images
+  file:
+      path: "/var/lib/docker/registry"
+      state: directory
+
+- name: Start docker-registry container
+  docker_container:
+      name: registry
+      image: registry:2
+      ports:
+          - 127.0.0.1:5000:5000
+      volumes:
+          - /var/lib/docker/registry:/var/lib/registry
+      restart_policy: "unless-stopped"

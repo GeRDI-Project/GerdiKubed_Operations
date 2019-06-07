@@ -14,7 +14,7 @@ Gateway={{ host_gateway }}
 {% endif %}
 IPForward=kernel
 
-{% if (host_public_interface is defined) and (iface_type != 'private') %}
+{% if (host_public_interface is defined) and (iface_type == 'private') %}
 [Route]
 Gateway={{ host_gateway }}
 Table={{ host_rtable }}
