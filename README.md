@@ -94,27 +94,28 @@ Created using: http://asciiflow.com/
 
 *Note: For readability purposes, not in order of execution!*
 
-| Role |  k8s-master |  k8s-node  |  k8s-lb  |   k8s-mgmt-node |
-|---|---|---|---|---|
-| [vmware-node](#vmware-node) OR <br> [nebula-node](#nebula-node) OR <br> [openstack-node](#openstack-node) |      x      |      x      |      |      |
-| [common](#common)|      x      |      x      |      |      |
-| [ufw](#ufw)|      x      |      x      |      |      |
-| [docker](#docker)      |      x      |      x      |      |      |
-| [k8s-binaries](#k8s-binaries)      |      x      |      x      |      |      |
-| [kubelet](#kubelet)      |      x      |      x      |      |      |
-| [kube-proxy](#kube-proxy)      |      x      |      x      |      |      |
-| [network-interfaces](#network-interfaces)      |      x      |      x      |      |      |
-| [network-ovn](#network-ovn)      |      x      |      x      |      |      |
-| [k8s-cordon](#k8s-cordon)      |      x      |      x      |      |      |
-| [apiserver](#apiserver)      |      x      |      |      |      |
-| [scheduler](#scheduler)      |      x      |      |      |      |
-| [controller-manager](#controller-manager)  |      x      |      |      |      |
-| [etcd](#etcd)      |      x      |      |      |      |
-| [k8s-addons](#k8s-addons)      |      x      |      |      |      |
-| [cni](#cni)      |      x      |      |      |      |
-| [cluster-dns](#cluster-dns)      |      |      |      x      |      |
-| [apache-proxy](#apache-proxy)      |      |      |      x      |      |
-| [cert-infrastructure](#cert-infrastructure)|      |      |      |      x      |
+|<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Playbook<br>Role <br>  |  k8s-master |  k8s-node  |  k8s-lb  |  k8s-mgmt |  k8s-nfs  |
+|---|:-:|:-:|:-:|:-:|:-:|
+| [vmware-node](#vmware-node) OR <br> [nebula-node](#nebula-node) OR <br> [openstack-node](#openstack-node) |      x      |      x      |      |      |      |
+| [network-interfaces](#network-interfaces)      |      x      |      x      |      |      |      |
+| [common](#common)|      x      |      x      |      |      |      |
+| [ufw](#ufw)|      x      |      x      |      |      |      |
+| [docker](#docker)      |      x      |      x      |      |      |      |
+| [k8s-binaries](#k8s-binaries)      |      x      |      x      |      |      |      |
+| [kubelet](#kubelet)      |      x      |      x      |      |      |      |
+| [kube-proxy](#kube-proxy)      |      x      |      x      |      |      |      |
+| [network-ovn](#network-ovn)      |      x      |      x      |      |      |      |
+| [k8s-cordon](#k8s-cordon)      |      x      |      x      |      |      |      |
+| [apiserver](#apiserver)      |      x      |      |      |      |      |
+| [scheduler](#scheduler)      |      x      |      |      |      |      |
+| [controller-manager](#controller-manager)  |      x      |      |      |      |      |
+| [etcd](#etcd)      |      x      |      |      |      |      |
+| [k8s-addons](#k8s-addons)      |      x      |      |      |      |      |
+| [cni](#cni)      |      x      |      |      |      |      |
+| [cluster-dns](#cluster-dns)      |      |      |      x      |      |      |
+| [apache-proxy](#apache-proxy)      |      |      |      x      |      |      |
+| [cert-infrastructure](#cert-infrastructure)|      |      |      |      x      |      |
+| [nfs-server](#nfs-server)|      |      |      |      |      x      |
 
 ## Role Documentation
 
@@ -222,6 +223,12 @@ The kube-proxy takes care of proxying requests inside the k8s cluster. It runs a
 ### network-interfaces
 
 Sets up systemd-networkd & systemd-resolved by *'hotswapping'* the default networking.service (/etc/interfaces). Configures nameservers and network interfaces' properties to correctly fall in line with expectations of subsequent roles.
+
+<a name="nfs-server"></a>
+
+### nfs-server
+
+Responsible for setting up a NFS server alongside the k8s cluster and adding all nodes from a the cluster to its' exports file.
 
 <a name="network-ovn"></a>
 
