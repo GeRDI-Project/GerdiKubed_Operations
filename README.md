@@ -94,7 +94,7 @@ Created using: http://asciiflow.com/
 
 *Note: For readability purposes, not in order of execution!*
 
-|<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Playbook<br>Role <br>  |  k8s-master |  k8s-node  |  k8s-lb  |  k8s-mgmt |  k8s-nfs  |  k8s-stack  |  k8s-gerdi  |
+|&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Playbook<br>Role <br>  |  k8s-master |  k8s-node  |  k8s-lb  |  k8s-mgmt |  k8s-nfs  |  k8s-stack  |  k8s-gerdi  |
 |---|---|---|---|---|---|---|---|
 | [vmware-node](#vmware-node) OR <br> [nebula-node](#nebula-node) OR <br> [openstack-node](#openstack-node) |      x      |      x      |      |      |      |      |      |
 | [network-interfaces](#network-interfaces)      |      x      |      x      |      |      |      |      |      |
