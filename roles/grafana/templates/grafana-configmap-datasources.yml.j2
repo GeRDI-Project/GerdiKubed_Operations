@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources
+  namespace: kube-monitor
+  labels:
+    app: grafana
+    release: {{ GRAFANA_VERSION }}
+data:
+  datasources.yml: |
+    apiVersion: 1
+
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        orgID: 1
+        url: http://prometheus.kube-monitor.svc.cluster.local:9090/admin/prometheus
