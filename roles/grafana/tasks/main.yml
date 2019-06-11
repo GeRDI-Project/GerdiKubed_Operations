@@ -26,4 +26,3 @@
 
 - name: grafana | Αpply k8s manifests
   shell: "kubectl apply -f {{ GRAFANA_BASE_DIR }}"
-  
