@@ -17,7 +17,7 @@
     path: "{{ GRAFANA_BASE_DIR }}"
     state: directory
 
-- name: grafana | Copy templates into grafana base directory
+- name: grafana | Copy k8s manifests into {{ GRAFANA_BASE_DIR }}
   template:
     src: "{{ item }}"
     dest: "{{ GRAFANA_BASE_DIR }}/{{ item | basename | regex_replace('.j2','') }}"
