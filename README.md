@@ -152,10 +152,11 @@ Created using: http://asciiflow.com/
 Handles the setup of the SSL termination infrastructure involving an apache proxy webserver.
 
 **Variables:**
+
 | Name | Default Value | Description |
 |---|---|---|
-| ```K8S_DEPLOYMENT_CONTEXT``` | "dev" | Name of the cluster |
-| ```K8S_DOMAIN_NAMESPACE``` | "gerdi.research.lrz.de" | domain name of the cluster |
+| ```K8S_DEPLOYMENT_CONTEXT``` | dev | Name of the cluster |
+| ```K8S_DOMAIN_NAMESPACE``` | gerdi.research.lrz.de | domain name of the cluster |
 | ```MAIN_DOMAIN``` | www.{{```K8S_DEPLOYMENT_CONTEXT```}}.{{```K8S_DOMAIN_NAMESPACE```}} | apache.conf: ServerName |
 | ```OTHER_DOMAIN``` | {{```K8S_DEPLOYMENT_CONTEXT```}}.{{```K8S_DOMAIN_NAMESPACE```}} | apache.conf: AlternativeName<br> (Can be more than one) |
 
@@ -166,6 +167,7 @@ Handles the setup of the SSL termination infrastructure involving an apache prox
 The apiserver is the management interface of the k8s cluster. It runs on the k8s-master node as a systemd-service.
 
 **Variables:**
+
 | Name | Default Value | Description |
 |---|---|---|
 | ```CONTROL_KEY_DIR``` | ```CONTROL_BASE_DIR```/keys | All keys reside here (including private key of CA) |
@@ -189,6 +191,7 @@ This role creates a CA ready infrastructure on a trusted host, the localhost sho
 To get it working you'll have to set the following variables in group\_vars/all:
 
 **Variables:**
+
 | Name | Default Value | Description |
 |---|---|---|
 | ```CONTROL_MACHINE``` | 127.0.0.1 | Trusted machine on which certificates are issued and CA's private key resides |
@@ -211,6 +214,20 @@ It also creates a number of certificates (both server and client) to handle auth
 ### common
 
 This role sets up all machines (install packages & certificates, creates directories etc.).
+
+**Variables:**
+| Name | Default Value | Description |
+|---|---|---|
+| ```CONTROL_CERT_DIR``` | ```CONTROL_BASE_DIR```/certs | All certificates reside here (including CA certificate) |
+| ```CONTROL_KEY_DIR``` | ```CONTROL_BASE_DIR```/keys | All keys reside here (including private key of CA) |
+| ```K8S_BASE_DIR``` | /opt/k8s | Kubernetes base directory |
+| ```K8S_DEPLOYMENT_CONTEXT``` | dev | Name of the cluster |
+| ```K8S_AUTH_FILES_DIR``` | {{```K8S_BASE_DIR```}}/tokens | Kubernetes cluster token location |
+| ```K8S_CERT_FILES_DIR``` | {{```K8S_BASE_DIR```}}/certs | Kubernetes cluster certificate location |
+| ```K8S_KEY_FILES_DIR``` | {{```K8S_BASE_DIR```}}/keys | Kubernetes cluster keys location |
+| ```NFS_SERVER_DOMAIN``` | nfs.{{```K8S_DEPLOYMENT_CONTEXT```}}.{{```K8S_DOMAIN_NAMESPACE```}} |  FQDN of the NFS server |
+| ```NFS_VOLUME_PATH``` | /intern/gerdi01 | Path of the to be mounted directory on the NFS server |
+| ```NFS_MOUNT_PATH``` | /mnt/nfs | Path to be mounted to on the node |
 
 <a name="controller-manager"></a>
 
