@@ -216,6 +216,7 @@ It also creates a number of certificates (both server and client) to handle auth
 This role sets up all machines (install packages & certificates, creates directories etc.).
 
 **Variables:**
+
 | Name | Default Value | Description |
 |---|---|---|
 | ```CONTROL_CERT_DIR``` | ```CONTROL_BASE_DIR```/certs | All certificates reside here (including CA certificate) |
