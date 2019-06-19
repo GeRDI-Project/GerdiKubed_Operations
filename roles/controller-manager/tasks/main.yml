@@ -24,10 +24,5 @@
     dest: "{{ K8S_KEY_FILES_DIR }}/ca.key"
     mode: 0400
 
-- name: controller-manager | Start controller-manager as a pod
-  import_tasks: controllerManagerAsPod.yml
-  when: CONTROLLER_MANAGER_AS_POD
-
 - name: controller-manager | Start controller-manager as a service
   import_tasks: controllerManagerAsService.yml
-  when: CONTROLLER_MANAGER_AS_SERVICE
