@@ -170,6 +170,7 @@ The apiserver is the management interface of the k8s cluster. It runs on the k8s
 
 | Name | Default Value | Description |
 |---|---|---|
+| ```CONTROL_BASE_DIR``` | ~ | Directory in which certificate infrastructure is persisted. |
 | ```CONTROL_KEY_DIR``` | ```CONTROL_BASE_DIR```/keys | All keys reside here (including private key of CA) |
 | ```K8S_BASE_DIR``` | /opt/k8s | Kubernetes base directory |
 | ```K8S_DEPLOYMENT_CONTEXT``` | dev | Name of the cluster |
@@ -219,6 +220,7 @@ This role sets up all machines (install packages & certificates, creates directo
 
 | Name | Default Value | Description |
 |---|---|---|
+| ```CONTROL_BASE_DIR``` | ~ | Directory in which certificate infrastructure is persisted. |
 | ```CONTROL_CERT_DIR``` | ```CONTROL_BASE_DIR```/certs | All certificates reside here (including CA certificate) |
 | ```CONTROL_KEY_DIR``` | ```CONTROL_BASE_DIR```/keys | All keys reside here (including private key of CA) |
 | ```K8S_BASE_DIR``` | /opt/k8s | Kubernetes base directory |
@@ -236,17 +238,51 @@ This role sets up all machines (install packages & certificates, creates directo
 
 The controller-manager runs on all master instances as a systemd-service and distributes the deployments and pods to the kubelets running on the node instances.
 
+**Variables:**
+
+| Name | Default Value | Description |
+|---|---|---|
+| ```CONTROL_BASE_DIR``` | ~ | Directory in which certificate infrastructure is persisted. |
+| ```CONTROL_KEY_DIR``` | ```CONTROL_BASE_DIR```/keys | All keys reside here (including private key of CA) |
+| ```K8S_BASE_DIR``` | /opt/k8s | Kubernetes base directory |
+| ```K8S_CERT_FILES_DIR``` | {{```K8S_BASE_DIR```}}/certs | Kubernetes cluster certificate location |
+| ```K8S_KEY_FILES_DIR``` | {{```K8S_BASE_DIR```}}/keys | Kubernetes cluster keys location |
+| ```K8S_KUBECONFIG``` | {{```K8S_BASE_DIR```}}/kubeconfig | Kubernetes kubeconfig location |
+| ```K8S_DEPLOYMENT_CONTEXT``` | dev | Name of the cluster |
+| ```K8S_SERVER_BIN_DIR``` | {{```K8S_K8S_DIR```}}/server/kubernetes/server/bin | Location of Kubernetes server binary |
+| ```K8S_CLUSTER_IP_PRE``` | 10.222 | IP Prefix of Kubernetes pods subnet |
+| ```K8S_CLUSTER_IP_SUBNET``` | {{```K8S_CLUSTER_IP_PRE```}}.0.0/15 | Kubernetes pods subnet |
+| ```K8S_GLOBAL_LOG_LEVEL``` | "v=1" | Kubernetes controller manager verbosity |
+
 <a name="cluster-dns"></a>
 
 ### cluster-dns
 
 Sets up dnsmasq and forces the loadbalancer to use kube-dns to resolve cluster internal domains.
 
+**Variables:**
+
+| Name | Default Value | Description |
+|---|---|---|
+| ```K8S_SERVICE_IP_PRE``` | 10.222 | IP Prefix of Kubernetes services subnet |
+| ```K8S_SERVICE_IP_SUBNET``` | {{```K8S_SERVICE_IP_PRE```}}.0.0/16 | Kubernetes services subnet |
+| ```K8S_DNS_IP``` | {{```K8S_SERVICE_IP_PRE```}}.0.10 | kube-dns service IP |
+
 <a name="cni"></a>
 
 ### cni
 
 This role handles the setup of the network cni plugin used by kubernetes.
+
+**Variables:**
+
+| Name | Default Value | Description |
+|---|---|---|
+| ```K8S_BASE_DIR``` | /opt/k8s | Kubernetes base directory |
+| ```CNI_VERSION``` | v0.5.2 | CNI version |
+| ```CNI_DIR``` | {{```K8S_BASE_DIR```}}/cni-{{```CNI_VERSION```}} | CNI binary location |
+| ```CNI_CONF_DIR``` | /etc/cni/net.d | CNI config location|
+| ```CNI_DOWNLOAD_URL``` | https://github.com/containernetworking/cni/releases/download/<br>{{```CNI_VERSION```}}/cni-{{```CNI_VERSION```}}.tgz | CNI binary download URL |
 
 <a name="docker"></a>
 
