@@ -151,11 +151,35 @@ Created using: http://asciiflow.com/
 
 Handles the setup of the SSL termination infrastructure involving an apache proxy webserver.
 
+**Variables:**
+| Name | Default Value | Description |
+|---|---|---|
+| ```K8S_DEPLOYMENT_CONTEXT``` | "dev" | Name of the cluster |
+| ```K8S_DOMAIN_NAMESPACE``` | "gerdi.research.lrz.de" | domain name of the cluster |
+| ```MAIN_DOMAIN``` | www.{{```K8S_DEPLOYMENT_CONTEXT```}}.{{```K8S_DOMAIN_NAMESPACE```}} | apache.conf: ServerName |
+| ```OTHER_DOMAIN``` | {{```K8S_DEPLOYMENT_CONTEXT```}}.{{```K8S_DOMAIN_NAMESPACE```}} | apache.conf: AlternativeName<br> (Can be more than one) |
+
 <a name="apiserver"></a>
 
 ### apiserver
 
 The apiserver is the management interface of the k8s cluster. It runs on the k8s-master node as a systemd-service.
+
+**Variables:**
+| Name | Default Value | Description |
+|---|---|---|
+| ```CONTROL_KEY_DIR``` | ```CONTROL_BASE_DIR```/keys | All keys reside here (including private key of CA) |
+| ```K8S_BASE_DIR``` | /opt/k8s | Kubernetes base directory |
+| ```K8S_DEPLOYMENT_CONTEXT``` | dev | Name of the cluster |
+| ```K8S_DOMAIN_NAMESPACE``` | gerdi.research.lrz.de | domain name of the cluster |
+| ```K8S_MASTER_IP``` | {{hostvars[```K8S_MASTER_DOMAIN```]['altIP'] \|<br> default(lookup('dig', ```K8S_MASTER_DOMAIN```))}} | IP of the master, will default to a DNS lookup if no "altIP" given |
+| ```K8S_AUTH_FILES_DIR``` | {{```K8S_BASE_DIR```}}/tokens | Kubernetes cluster token location |
+| ```K8S_CERT_FILES_DIR``` | {{```K8S_BASE_DIR```}}/certs | Kubernetes cluster certificate location |
+| ```K8S_KEY_FILES_DIR``` | {{```K8S_BASE_DIR```}}/keys | Kubernetes cluster keys location |
+| ```K8S_SERVER_BIN_DIR``` | {{```K8S_K8S_DIR```}}/server/kubernetes/server/bin | Location of Kubernetes server binary |
+| ```K8S_SERVICE_IP_PRE``` | 10.222 | IP Prefix of Kubernetes services subnet |
+| ```K8S_SERVICE_IP_SUBNET``` | {{```K8S_SERVICE_IP_PRE```}}.0.0/16 | Kubernetes services subnet |
+| ```K8S_GLOBAL_LOG_LEVEL``` | "v=1" | Kubernetes apiserver verbosity |
 
 <a name="cert-infrastructure"></a>
 
@@ -164,10 +188,11 @@ The apiserver is the management interface of the k8s cluster. It runs on the k8s
 This role creates a CA ready infrastructure on a trusted host, the localhost should be the default.
 To get it working you'll have to set the following variables in group\_vars/all:
 
+**Variables:**
 | Name | Default Value | Description |
 |---|---|---|
 | ```CONTROL_MACHINE``` | 127.0.0.1 | Trusted machine on which certificates are issued and CA's private key resides |
-| ```CONTROL_BASE_DIR``` | "~" | Directory in which certificate infrastructure is persisted. |
+| ```CONTROL_BASE_DIR``` | ~ | Directory in which certificate infrastructure is persisted. |
 
 *The following subdirs shouldn't be altered in the group\_vars/all template, they are there for documentation purpose:*
 
@@ -217,6 +242,18 @@ Docker is the container engine running on both the nodes and the master.
 
 Etcd is a distributed key-value store to persist the k8s configuration serviced by the apiserver. It is also used to synchronize several masters (and therefore several apiservers).
 
+<a name="helm"></a>
+
+### helm
+
+TBA
+
+<a name="jhub"></a>
+
+### jhub
+
+TBA
+
 <a name="k8s-addons"></a>
 
 ### k8s-addons
@@ -236,6 +273,12 @@ It also creates a kubeconfig that is used system wide to configure the k8s compo
 
 This role makes sure that the kubernetes master and loadbalancer are excluded from having pods scheduled upon them.
 
+<a name="keycloak"></a>
+
+### keycloak
+
+TBA
+
 <a name="kubelet"></a>
 
 ### kubelet
@@ -247,6 +290,12 @@ The kubelet component is the interface to the docker daemon which makes sure the
 ### kube-proxy
 
 The kube-proxy takes care of proxying requests inside the k8s cluster. It runs as a systemd-service on all nodes.
+
+<a name="secrets"></a>
+
+### secrets
+
+TBA
 
 <a name="network-interfaces"></a>
 
@@ -267,6 +316,12 @@ Responsible for setting up a NFS server alongside the k8s cluster and adding all
 ### network-ovn
 
 OVN/OVS is one of the possible k8s network driver (see [k8s network model](https://kubernetes.io/docs/concepts/cluster-administration/networking/#kubernetes-model)). This role sets up a geneve interface to tunnel and encrypt pod to pod traffic.
+
+<a name="persistent-volumes"></a>
+
+### persistent-volumes
+
+TBA
 
 <a name="prometheus"></a>
 
