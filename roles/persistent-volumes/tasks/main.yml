@@ -30,7 +30,7 @@
   shell: |
     helm install \
     --name "nfs-{{ K8S_DEPLOYMENT_CONTEXT }}" \
-    --set nfs.server="{{ NFS_SERVER_DOMAIN }}" \
+    --set nfs.server="{{ hostvars[NFS_SERVER_DOMAIN]['altIP'] | default(NFS_SERVER_DOMAIN) + ':' + NFS_VOLUME_PATH }}" \
     --set nfs.path="{{ NFS_VOLUME_PATH }}/nfs-{{ K8S_DEPLOYMENT_CONTEXT}}" \
     --set storageClass.defaultClass=true \
     --set storageClass.name=managed-nfs-storage \

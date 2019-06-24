@@ -22,28 +22,6 @@
   retries: 3
   delay: 3
 
-- name: Enable necessary apache modules
-  apache2_module:
-    state: present
-    name: "{{ item }}"
-  with_items:
-    - headers
-    - proxy
-    - proxy_http
-    - proxy_wstunnel
-    - rewrite
-    - ssl
-    - remoteip
-  retries: 3
-  delay: 3
-
-- name: Install server configuration
-  template:
-    src: apache.conf.j2
-    dest: "/etc/apache2/sites-enabled/{{ MAIN_DOMAIN }}.conf"
-  notify:
-    - restart apache
-
 - name: Copy cert and key for apache2
   copy:
     src: "{{ K8S_DEPLOYMENT_CONTEXT }}.{{ K8S_DOMAIN_NAMESPACE }}.{{ item.ext }}"
@@ -96,5 +74,27 @@
   file:
     path: "/etc/apache2/sites-enabled/000-default.conf"
     state: absent
+  notify:
+    - restart apache
+
+- name: Enable necessary apache modules
+  apache2_module:
+    state: present
+    name: "{{ item }}"
+  with_items:
+    - headers
+    - proxy
+    - proxy_http
+    - proxy_wstunnel
+    - rewrite
+    - ssl
+    - remoteip
+  retries: 3
+  delay: 3
+
+- name: Install server configuration
+  template:
+    src: apache.conf.j2
+    dest: "/etc/apache2/sites-enabled/{{ MAIN_DOMAIN }}.conf"
   notify:
     - restart apache
