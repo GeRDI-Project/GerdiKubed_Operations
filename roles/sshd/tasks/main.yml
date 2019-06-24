@@ -92,20 +92,20 @@
     - Restart OpenSSH
   when: alreadySetup is defined and alreadySetup.rc > 0
 
-- name: Install Fail2Ban
-  apt:
-    name: fail2ban
-    state: present
-  when: alreadySetup is defined and alreadySetup.rc > 0
-
-- name: Configure fail2ban
-  template:
-    src: jail.local.j2
-    dest: /etc/fail2ban/jail.local
-  when: alreadySetup is defined and alreadySetup.rc > 0
-
-- name: Restart Fail2Ban
-  systemd:
-    name: fail2ban
-    state: restarted
-  when: alreadySetup is defined and alreadySetup.rc > 0
+#- name: Install Fail2Ban
+#  apt:
+#    name: fail2ban
+#    state: present
+#  when: alreadySetup is defined and alreadySetup.rc > 0
+#
+#- name: Configure fail2ban
+#  template:
+#    src: jail.local.j2
+#    dest: /etc/fail2ban/jail.local
+#  when: alreadySetup is defined and alreadySetup.rc > 0
+#
+#- name: Restart Fail2Ban
+#  systemd:
+#    name: fail2ban
+#    state: restarted
+#  when: alreadySetup is defined and alreadySetup.rc > 0
