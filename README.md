@@ -290,11 +290,30 @@ This role handles the setup of the network cni plugin used by kubernetes.
 
 Docker is the container engine running on both the nodes and the master.
 
+**Variables:**
+
+| Name | Default Value | Description |
+|---|---|---|
+| ```DOCKER_VERSION``` | 5:18.09.1~3-0~debian-stretch | Docker version to install, must be a valid apt package |
+| ```NODE_NAMESERVER``` | 1.1.1.1 | Nameserver the node (systemd-resolved) should use |
+| ```DOCKER_NAMESERVER``` | {{```NODE_NAMESERVER```}} | The nameserver docker should use to resolve domains |
+| ```NETWORK_MTU``` | 1500 | Adapts software MTUs incase of local network limitation |
+| ```DOCKER_MTU``` | {{```NETWORK_MTU```}} | The MTU docker containers should utilize. If undefined, defaults to 1500 |
+
 <a name="etcd"></a>
 
 ### etcd
 
 Etcd is a distributed key-value store to persist the k8s configuration serviced by the apiserver. It is also used to synchronize several masters (and therefore several apiservers).
+
+**Variables:**
+
+| Name | Default Value | Description |
+|---|---|---|
+| ```K8S_BASE_DIR``` | /opt/k8s | Kubernetes base directory |
+| ```ETCD_VERSION``` | v3.0.17 | Etcd version to install |
+| ```ETCD_DOWNLOAD_URL``` | https://github.com/coreos/etcd/releases/download/ {{```ETCD_VERSION```}}/etcd-{{```ETCD_VERSION```}}-linux-amd64.tar.gz | Etcd download URL |
+| ```ETCD_DIR``` | {{```K8S_BASE_DIR```}}/etcd-{{```ETCD_VERSION```}}-linux-amd64 | Etcd installation directory |
 
 <a name="helm"></a>
 
@@ -302,11 +321,29 @@ Etcd is a distributed key-value store to persist the k8s configuration serviced 
 
 TBA
 
+**Variables:**
+
+| Name | Default Value | Description |
+|---|---|---|
+| ```HELM_BASE_DIR``` | /opt/helm | Helm base directory |
+| ```HELM_VERSION``` | v2.12.0 | Helm version to install |
+| ```HELM_DOWNLOAD_URL``` | https://storage.googleapis.com/kubernetes-helm/helm-{{```HELM_VERSION```}}-linux-amd64.tar.gz | Helm download URL |
+
 <a name="jhub"></a>
 
 ### jhub
 
 TBA
+
+**Variables:**
+
+| Name | Default Value | Description |
+|---|---|---|
+| ```JHUB_REPO``` | https://jupyterhub.github.io/helm-chart/ | Jhub git repository |
+| ```JHUB_RELEASE``` | jhub | TBA |
+| ```JHUB_NAMESPACE``` | jhub | TBA |
+| ```JHUB_VERSION``` | 0.8.0 | Jhub version |
+| ```JHUB_CONFIG``` | /root/jhub-chart.yml | Path to jhub config |
 
 <a name="k8s-addons"></a>
 
