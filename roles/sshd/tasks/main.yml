@@ -74,7 +74,7 @@
   lineinfile:
     path: /root/.ssh/authorized_keys
     state: absent
-    regexp: "no-port-forwarding,no-agent-forwarding,no-X11-forwarding,command=\"echo 'Please login as the user \"debian\" rather than the user \"root\".';echo;sleep 10\"" 
+    regexp: "no-port-forwarding,no-agent-forwarding,no-X11-forwarding,command=\"echo 'Please login as the user \"debian\" rather than the user \"root\".';echo;sleep 10\""
   when: alreadySetup is defined and alreadySetup.rc > 0
 
 - name: Inject Public SSH Keys for Root Account
