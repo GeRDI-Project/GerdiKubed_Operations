@@ -12,11 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: ufw master | Allow access to apiserver
+- name: ufw master | Allow Access to k8s-API from LRZ Networks
   ufw:
     rule: allow
-    port: 443
+    port: "443"
     proto: tcp
+    src: "{{ item.addr }}"
+    comment: "{{ item.comment }}"
+  with_items:
+    - { addr: 129.187.12.0/24, comment: "LRZ Mitarbeiternetz"}
+    - { addr: 129.187.15.0/24, comment: "LRZ Mitarbeiternetz"}
+    - { addr: 129.187.48.0/24, comment: "LRZ Mitarbeiter VPN"}
+    - { addr: 129.187.49.0/24, comment: "LRZ Mitarbeiter VPN"}
+    - { addr: 10.156.10.20, comment: "LRZ SSH-Gateways wsc20/wsc40"}
+    - { addr: 10.156.10.40, comment: "LRZ SSH-Gateways wsc20/wsc40"}
+  notify: Restart UFW
 
 - name: ufw master | Allow access to ovsdb
   ufw:
@@ -39,7 +49,7 @@
 - name: ufw master | Allow access to kubedns
   ufw:
     rule: allow
-    port: 53
+    port: "53"
     proto: any
 
 - name: ufw master | Allow access to kubedns
@@ -51,5 +61,5 @@
 - name: ufw master | Allow access to kubedns
   ufw:
     rule: allow
-    port: 10053
+    port: "10053"
     proto: udp
