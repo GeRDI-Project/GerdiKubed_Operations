@@ -22,12 +22,13 @@ certain ports for ingress traffic. The according ports, protocols and Targets ar
 ### k8s-nodes-group
 
 This groups contains all nodes, masters and loadbalancer nodes. As they have to communicate with each other, TCP and
-ICMP traffic between nodes in the security group is allowed.
+ICMP traffic between nodes in the security group is allowed as well as UDP. UDP is required for the geneve tunnel.
 
 | Direction | Protocol  | Port Range    | Remote IP/Security Group  |
 | --------- | --------- | ------------- | ------------------------- |
 | Egress    | Any       | Any           | 0.0.0.0/0                 |
 | Ingress   | ICMP      | Any           | k8s-nodes-group           |
+| Ingress   | UDP       | Any           | k8s-nodes-group           |
 | Ingress   | TCP       | Any           | k8s-nodes-group           |
 | Ingress   | TCP       | 22            | <private-network>         |
 
