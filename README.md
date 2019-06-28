@@ -7,7 +7,7 @@ There are three major playbooks in the root of the git-repo (for the others see 
 * k8s-nodes.yml
 * k8s-mgmt.yml
 
-# Usage
+## Usage
 
 ```bash
 
@@ -37,7 +37,7 @@ ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-lb.yml
 ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-stack.yml
 ```
 
-# Requirements
+## Requirements
 
 * Debian 9.1 or higher on the remote machines (you can use the [recipe](util/CreateVMImage.md) to create a VM image against which these scripts have been tested).
 * Running sshd on the remote machines and on the control machine (preferrably localhost) and the package python-dnspython
@@ -81,9 +81,15 @@ SSH+--+    iface1    +----+
 
 ```
 Created using: http://asciiflow.com/
-# Documentation
 
-## Tags
+## Documentation
+
+The documentation in this README is only a very limited. Further documentation can be found in the [docs](docs)
+directory, which also contains specific instructions for usage with different private cloud providers that have
+been tested during the development process. For each role, the documentation can be found in the README.md file
+in the according role directory.
+
+### Tags
 
 In order to allows certain deployment and update mechanisms, tags are used in the notebooks in order to prevent or
 specifically trigger the execution of certian tasks. To skipt roles which hold a certain tag you can use the 
@@ -103,7 +109,7 @@ All available tags, their functionality and occurences are listed in the followi
 | --------- | --------------------------------------------------- |
 | cert      | Skips deployment of certificate files to k8s hosts  |
 
-## Role Overview
+### Role Overview
 Note: For readability purposes, not in order of execution!
 
 | Role             							 |  k8s-master |  k8s-node  |  k8s-lb  |   k8s-management-machine |
@@ -126,7 +132,7 @@ Note: For readability purposes, not in order of execution!
 | [apache-proxy](#apache-proxy) 	         |             |            |    x     |						  |
 | [cert-infrastructure](#cert-infrastructure)|  		   |  			|  		   |			x			  |
 
-## Role Descriptions
+### Role Descriptions
 
 <a name="apache-proxy"></a> 
 ### apache-proxy
