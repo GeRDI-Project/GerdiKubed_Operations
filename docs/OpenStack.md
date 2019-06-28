@@ -35,10 +35,13 @@ ICMP traffic between nodes in the security group is allowed as well as UDP. UDP 
 ### k8s-master-group
 
 This group only contains hosts, which act as k8s-master server. As the master hosts the API server, access to port 443
-from a private network is necessary. We do not recommend acces from any IP, although it is possible
+from a private network is necessary. We do not recommend acces from any IP, although it is possible. In addition, the
+API server needs to be accessible from the nodes in the cluster. Therefore, port 443 is opened for the nodes security
+group. As the nodes don't need to be accessible at port 443, we make this change at the master level.
 
 | Direction | Protocol  | Port Range    | Remote IP/Security Group  |
 | --------- | --------- | ------------- | ------------------------- |
+| Ingress   | TCP       | 443           | k8s-nodes-group           |
 | Ingress   | TCP       | 443           | <private-network>         |
 
 ### k8s-lb-group
