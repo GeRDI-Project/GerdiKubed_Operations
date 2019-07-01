@@ -59,6 +59,3 @@ CONTROL_KEY_DIR:        "{{ CONTROL_BASE_DIR }}/keys"
 CONTROL_CONFIG_DIR:     "{{ CONTROL_BASE_DIR }}/configs"
 CONTROL_CSR_DIR:        "{{ CONTROL_BASE_DIR }}/csrs"
 CONTROL_CA_DIR:         "{{ CONTROL_BASE_DIR }}/ca"
-
-
-
