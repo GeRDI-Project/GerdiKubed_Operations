@@ -39,8 +39,8 @@
     - "{{ groups['kubernetes_nodes'] }}"
 
 - name: nfs-server | Ensure directories to export exist
-  file: 
-    path: "{{ item.strip().split()[0] }}" 
+  file:
+    path: "{{ item.strip().split()[0] }}"
     state: directory
   with_items: "{{ nfs_exports }}"
 
@@ -54,8 +54,8 @@
   notify: reload nfs
 
 - name: nfs-server | Ensure nfs is running.
-  service: 
+  service:
     name: "{{ nfs_server_daemon }}"
-    state: started 
+    state: started
     enabled: yes
   when: nfs_exports|length
