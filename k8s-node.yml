@@ -15,32 +15,32 @@
 # Replace remote_user with whatever distro you are using
 # Defaults to root
 - name: Secure and setup sshd
-  hosts: kubernetes-nodes
+  hosts: kubernetes_nodes
   remote_user: debian
   become: true
   roles:
     - sshd
 
 - name: Setup VMWare nodes
-  hosts: kubernetes-nodes:&vmware-nodes
+  hosts: kubernetes_nodes:&vmware_nodes
   remote_user: root
   roles:
     - vmware-node
 
 - name: Setup OpenNebula nodes
-  hosts: kubernetes-nodes:&opennebula-nodes
+  hosts: kubernetes_nodes:&opennebula_nodes
   remote_user: root
   roles:
     - nebula-node
 
 - name: Setup OpenStack nodes
-  hosts: kubernetes-nodes:&openstack-nodes
+  hosts: kubernetes_nodes:&openstack_nodes
   remote_user: root
   roles:
     - openstack-node
 
 - name: Initialize kubernetes nodes
-  hosts: kubernetes-nodes
+  hosts: kubernetes_nodes
   remote_user: root
   roles:
     - network-interfaces

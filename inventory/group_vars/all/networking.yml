@@ -1,0 +1,44 @@
+# Copyright 2019 Alexander Goetz goetz@lrz.de
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+####################
+# FIX SAI-1573, will be obsoleted by SAI-1492, SAI-1493, and SAI-1494
+####################
+EXTERNAL_LB:          # Ip Adress of the loadbalancer/gateway node
+EXTERNAL_GW:          # IP Adress of the Network Gateway
+EXTERNAL_DEV:         "eth1"
+LB_ROUTES_TABLE:      8
+INTERNAL_NET:         # CIDR of the Internal Network
+K8S_INTERNAL_ROUTING_TABLE: "180485"
+
+
+NICDEVICEPREFIX:      "eth"
+NETWORK_MTU:          "1450"
+NODE_NAMESERVER:      "1.1.1.1"
+
+
+################################################################################
+# Configuration for CNI Container Network Plugin
+################################################################################
+CNI_DOWNLOAD_URL:     "https://github.com/containernetworking/cni/releases/download/{{ CNI_VERSION }}/cni-{{ CNI_VERSION }}.tgz"
+CNI_DIR:              "{{ K8S_BASE_DIR }}/cni-{{ CNI_VERSION }}"
+CNI_CONF_DIR:         /etc/cni/net.d
+
+################################################################################
+# Configuration for OVN/OVS Overly Network
+################################################################################
+OVN_API_TOKEN:        "someValue"
+OVN_HOST_VERSION:     "{{ OPENVSWITCH_VERSION }}"
+OVN_CENTRAL_VERSION:  "{{ OPENVSWITCH_VERSION }}"
+OVN_MTU:              "{{ (( NETWORK_MTU | int) - 100) | int | abs }}"   # Should always be set to: (default MTU)-100

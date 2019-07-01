@@ -22,8 +22,8 @@
     state: present
     line: "{{ hostvars[item]['altIP'] }} {{ item }}"
   with_items:
-    - "{{ groups['kubernetes-masters'] }}"
-    - "{{ groups['kubernetes-nodes'] }}"
+    - "{{ groups['kubernetes_masters'] }}"
+    - "{{ groups['kubernetes_nodes'] }}"
 
 - name: Remove update_etc_hosts from cloud config to make /etc/hosts reboot persistent
   lineinfile:
