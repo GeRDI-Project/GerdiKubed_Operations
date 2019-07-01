@@ -18,17 +18,17 @@
     src: add-routes-lb.sh.j2
     dest: /etc/kubernetes/add-routes-lb.sh
     mode: 0700
-  when: inventory_hostname in groups['loadbalancer-nodes']
+  when: inventory_hostname in groups['loadbalancer_nodes']
 
 - name: lb-routes | Install add-routes-lb script as a service
   copy:
     src: add-routes-lb.service
     dest: /etc/systemd/system/add-routes-lb.service
-  when: inventory_hostname in groups['loadbalancer-nodes']
+  when: inventory_hostname in groups['loadbalancer_nodes']
 
 - name: lb-routes | Register add-routes-lb to systemd and start it
   systemd:
     name: add-routes-lb.service
     enabled: yes
     daemon-reload: yes
-  when: inventory_hostname in groups['loadbalancer-nodes']
+  when: inventory_hostname in groups['loadbalancer_nodes']

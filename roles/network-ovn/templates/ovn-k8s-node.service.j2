@@ -3,7 +3,7 @@ Description=OVN-Kubernetes node init
 Documentation=https://github.com/openvswitch/ovn-kubernetes/README.md
 After=openvswitch-switch.service ovn-host.service
 Requires=ovn-host.service
-{% if inventory_hostname in groups['kubernetes-masters'] %}
+{% if inventory_hostname in groups['kubernetes_masters'] %}
 Requires=ovn-k8s-master.service
 After=ovn-k8s-master.service
 {% endif %}
@@ -23,7 +23,7 @@ ExecStart=/usr/bin/ovnkube \
   -gateway-nexthop="{{ host_private_gateway.split('/')[0] }}" \
   -nb-address="tcp://{{ K8S_MASTER_IP }}:6641" \
   -sb-address="tcp://{{ K8S_MASTER_IP }}:6642"
-{% if inventory_hostname not in groups['loadbalancer-nodes'] %}
+{% if inventory_hostname not in groups['loadbalancer_nodes'] %}
 # Move interface routes to bridge interface
 ExecStartPost=/usr/bin/ovn-kube-util nics-to-bridge {{ host_private_interface }}
 {% else %}

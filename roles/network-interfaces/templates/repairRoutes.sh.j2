@@ -15,7 +15,7 @@ ip rule del to {{ host_private_network }}/{{ (host_private_address + '/' + host_
 {% if NFS_SERVER_DOMAIN is defined %}
 ip rule del to {{ lookup('dig', NFS_SERVER_DOMAIN, 'qtype=A') }} table {{ host_private_rtable }} > /dev/null 2>&1
 {% endif %}
-{% if LRZ_INTERNAL and inventory_hostname in groups['vmware-nodes'] %}
+{% if LRZ_INTERNAL and inventory_hostname in groups['vmware_nodes'] %}
 ip rule del from all to 10.156.10.20 lookup {{ host_private_rtable }} > /dev/null 2>&1
 ip rule del from all to 10.156.10.40 lookup {{ host_private_rtable }} > /dev/null 2>&1
 {% endif %}
@@ -26,13 +26,13 @@ ip rule add to {{ host_private_network }}/{{ (host_private_address + '/' + host_
 # Allow access to NFS
 ip rule add to {{ lookup('dig', NFS_SERVER_DOMAIN, 'qtype=A') }} table {{ host_private_rtable }}
 {% endif %}
-{% if LRZ_INTERNAL and inventory_hostname in groups['vmware-nodes'] %}
+{% if LRZ_INTERNAL and inventory_hostname in groups['vmware_nodes'] %}
 # VMWare machines in the LRZ are using gateway machines, make sure we can reach them
 ip rule add from all to 10.156.10.20 lookup {{ host_private_rtable }}
 ip rule add from all to 10.156.10.40 lookup {{ host_private_rtable }}
 {% endif %}
 
-{% if inventory_hostname in groups['loadbalancer-nodes'] %}
+{% if inventory_hostname in groups['loadbalancer_nodes'] %}
 # Force restart dnsmasq because it depends on the new rules
 if service --status-all 2>&1 | grep -Fq dnsmasq; then
   service dnsmasq restart

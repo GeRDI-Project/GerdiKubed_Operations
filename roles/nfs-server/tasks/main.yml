@@ -36,11 +36,13 @@
   set_fact:
     nfs_exports: "{{ nfs_exports + [ ''+NFS_VOLUME_PATH+' '+hostvars[item]['altIP'] | default(item)+'(rw,sync,no_root_squash)' ] }}"
   with_items:
-    - "{{ groups['kubernetes-masters'] }}"
-    - "{{ groups['kubernetes-nodes'] }}"
+    - "{{ groups['kubernetes_masters'] }}"
+    - "{{ groups['kubernetes_nodes'] }}"
 
 - name: nfs-server | Ensure directories to export exist
-  file: 'path="{{ item.strip().split()[0] }}" state=directory'
+  file: 
+    path: "{{ item.strip().split()[0] }}" 
+    state: directory
   with_items: "{{ nfs_exports }}"
 
 - name: nfs-server | Copy exports file.
@@ -53,5 +55,8 @@
   notify: reload nfs
 
 - name: nfs-server | Ensure nfs is running.
-  service: "name={{ nfs_server_daemon }} state=started enabled=yes"
+  service: 
+    name: "{{ nfs_server_daemon }}"
+    state: started 
+    enabled: yes
   when: nfs_exports|length

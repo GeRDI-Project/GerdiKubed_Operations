@@ -2,7 +2,7 @@
 # Script that makes sure the networkd takeover
 # doesn't kill the ansible playbook execution
 
-{% if inventory_hostname in groups['loadbalancer-nodes'] %}
+{% if inventory_hostname in groups['loadbalancer_nodes'] %}
 systemctl enable --now repairRoutes.service > /dev/null 2>&1
 systemctl daemon-reload
 {% endif %}

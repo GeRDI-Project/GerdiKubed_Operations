@@ -13,6 +13,6 @@
 # limitations under the License.
 ---
 - name: Initialize k8s management machine
-  hosts: kubernetes-management
+  hosts: kubernetes_management
   roles:
     - cert-infrastructure
