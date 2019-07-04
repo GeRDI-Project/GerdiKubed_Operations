@@ -19,7 +19,9 @@ systemctl enable --now systemd-resolved.service > /dev/null 2>&1
 
 # Setup systemd DNS
 # Make sure to add our DNS
-sed -i 's/#DNS=/DNS={{ NODE_NAMESERVER }}/;' /etc/systemd/resolved.conf
+# Also prevent systemd-resolved from spawning a DNS on port 53
+sed -i -e 's/#DNS=/DNS={{ NODE_NAMESERVER }}/g' \
+       -e 's/#DNSStubListener=udp=/DNSStubListener=no/g' /etc/systemd/resolved.conf
 
 # Link our new resolv.conf to the right place
 ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
