@@ -157,8 +157,8 @@ Handles the setup of the SSL termination infrastructure involving an apache prox
 |---|---|---|
 | ```K8S_DEPLOYMENT_CONTEXT``` | dev | Name of the cluster |
 | ```K8S_DOMAIN_NAMESPACE``` | gerdi.research.lrz.de | domain name of the cluster |
-| ```MAIN_DOMAIN``` | www.{{```K8S_DEPLOYMENT_CONTEXT```}}.{{```K8S_DOMAIN_NAMESPACE```}} | apache.conf: ServerName |
-| ```OTHER_DOMAIN``` | {{```K8S_DEPLOYMENT_CONTEXT```}}.{{```K8S_DOMAIN_NAMESPACE```}} | apache.conf: AlternativeName<br> (Can be more than one) |
+| ```MAIN_DOMAIN``` | www.```K8S_DEPLOYMENT_CONTEXT```.<br>```K8S_DOMAIN_NAMESPACE``` | apache.conf: ServerName |
+| ```OTHER_DOMAIN``` | ```K8S_DEPLOYMENT_CONTEXT```.<br>```K8S_DOMAIN_NAMESPACE``` | apache.conf: AlternativeName<br> (Can be more than one) |
 
 <a name="apiserver"></a>
 
@@ -175,13 +175,14 @@ The apiserver is the management interface of the k8s cluster. It runs on the k8s
 | ```K8S_BASE_DIR``` | /opt/k8s | Kubernetes base directory |
 | ```K8S_DEPLOYMENT_CONTEXT``` | dev | Name of the cluster |
 | ```K8S_DOMAIN_NAMESPACE``` | gerdi.research.lrz.de | domain name of the cluster |
-| ```K8S_MASTER_IP``` | {{hostvars[```K8S_MASTER_DOMAIN```]['altIP'] \|<br> default(lookup('dig', ```K8S_MASTER_DOMAIN```))}} | IP of the master, will default to a DNS lookup if no "altIP" given |
-| ```K8S_AUTH_FILES_DIR``` | {{```K8S_BASE_DIR```}}/tokens | Kubernetes cluster token location |
-| ```K8S_CERT_FILES_DIR``` | {{```K8S_BASE_DIR```}}/certs | Kubernetes cluster certificate location |
-| ```K8S_KEY_FILES_DIR``` | {{```K8S_BASE_DIR```}}/keys | Kubernetes cluster keys location |
-| ```K8S_SERVER_BIN_DIR``` | {{```K8S_K8S_DIR```}}/server/kubernetes/server/bin | Location of Kubernetes server binary |
+| ```K8S_MASTER_DOMAIN``` | 'mstr-0.' + ```K8S_DEPLOYMENT_CONTEXT``` + '.' + ```K8S_DOMAIN_NAMESPACE``` | Domain of master |
+| ```K8S_MASTER_IP``` | hostvars[```K8S_MASTER_DOMAIN```]['altIP'] \|<br> default(lookup('dig', ```K8S_MASTER_DOMAIN```)) | IP of the master, will default to a DNS lookup if no "altIP" given |
+| ```K8S_AUTH_FILES_DIR``` | ```K8S_BASE_DIR```/tokens | Kubernetes cluster token location |
+| ```K8S_CERT_FILES_DIR``` | ```K8S_BASE_DIR```/certs | Kubernetes cluster certificate location |
+| ```K8S_KEY_FILES_DIR``` | ```K8S_BASE_DIR```/keys | Kubernetes cluster keys location |
+| ```K8S_SERVER_BIN_DIR``` | ```K8S_K8S_DIR```/server/kubernetes/server/bin | Location of Kubernetes server binary |
 | ```K8S_SERVICE_IP_PRE``` | 10.222 | IP Prefix of Kubernetes services subnet |
-| ```K8S_SERVICE_IP_SUBNET``` | {{```K8S_SERVICE_IP_PRE```}}.0.0/16 | Kubernetes services subnet |
+| ```K8S_SERVICE_IP_SUBNET``` | ```K8S_SERVICE_IP_PRE```.0.0/16 | Kubernetes services subnet |
 | ```K8S_GLOBAL_LOG_LEVEL``` | "v=1" | Kubernetes apiserver verbosity |
 
 <a name="cert-infrastructure"></a>
@@ -225,10 +226,11 @@ This role sets up all machines (install packages & certificates, creates directo
 | ```CONTROL_KEY_DIR``` | ```CONTROL_BASE_DIR```/keys | All keys reside here (including private key of CA) |
 | ```K8S_BASE_DIR``` | /opt/k8s | Kubernetes base directory |
 | ```K8S_DEPLOYMENT_CONTEXT``` | dev | Name of the cluster |
-| ```K8S_AUTH_FILES_DIR``` | {{```K8S_BASE_DIR```}}/tokens | Kubernetes cluster token location |
-| ```K8S_CERT_FILES_DIR``` | {{```K8S_BASE_DIR```}}/certs | Kubernetes cluster certificate location |
-| ```K8S_KEY_FILES_DIR``` | {{```K8S_BASE_DIR```}}/keys | Kubernetes cluster keys location |
-| ```NFS_SERVER_DOMAIN``` | nfs.{{```K8S_DEPLOYMENT_CONTEXT```}}.{{```K8S_DOMAIN_NAMESPACE```}} |  FQDN of the NFS server |
+| ```K8S_DOMAIN_NAMESPACE``` | gerdi.research.lrz.de | domain name of the cluster |
+| ```K8S_AUTH_FILES_DIR``` | ```K8S_BASE_DIR```/tokens | Kubernetes cluster token location |
+| ```K8S_CERT_FILES_DIR``` | ```K8S_BASE_DIR```/certs | Kubernetes cluster certificate location |
+| ```K8S_KEY_FILES_DIR``` | ```K8S_BASE_DIR```/keys | Kubernetes cluster keys location |
+| ```NFS_SERVER_DOMAIN``` | nfs.```K8S_DEPLOYMENT_CONTEXT```.<br>```K8S_DOMAIN_NAMESPACE``` |  FQDN of the NFS server |
 | ```NFS_VOLUME_PATH``` | /intern/gerdi01 | Path of the to be mounted directory on the NFS server |
 | ```NFS_MOUNT_PATH``` | /mnt/nfs | Path to be mounted to on the node |
 
@@ -245,13 +247,13 @@ The controller-manager runs on all master instances as a systemd-service and dis
 | ```CONTROL_BASE_DIR``` | ~ | Directory in which certificate infrastructure is persisted. |
 | ```CONTROL_KEY_DIR``` | ```CONTROL_BASE_DIR```/keys | All keys reside here (including private key of CA) |
 | ```K8S_BASE_DIR``` | /opt/k8s | Kubernetes base directory |
-| ```K8S_CERT_FILES_DIR``` | {{```K8S_BASE_DIR```}}/certs | Kubernetes cluster certificate location |
-| ```K8S_KEY_FILES_DIR``` | {{```K8S_BASE_DIR```}}/keys | Kubernetes cluster keys location |
-| ```K8S_KUBECONFIG``` | {{```K8S_BASE_DIR```}}/kubeconfig | Kubernetes kubeconfig location |
+| ```K8S_CERT_FILES_DIR``` | ```K8S_BASE_DIR```/certs | Kubernetes cluster certificate location |
+| ```K8S_KEY_FILES_DIR``` | ```K8S_BASE_DIR```/keys | Kubernetes cluster keys location |
+| ```K8S_KUBECONFIG``` | ```K8S_BASE_DIR```/kubeconfig | Kubernetes kubeconfig location |
 | ```K8S_DEPLOYMENT_CONTEXT``` | dev | Name of the cluster |
-| ```K8S_SERVER_BIN_DIR``` | {{```K8S_K8S_DIR```}}/server/kubernetes/server/bin | Location of Kubernetes server binary |
-| ```K8S_CLUSTER_IP_PRE``` | 10.222 | IP Prefix of Kubernetes pods subnet |
-| ```K8S_CLUSTER_IP_SUBNET``` | {{```K8S_CLUSTER_IP_PRE```}}.0.0/15 | Kubernetes pods subnet |
+| ```K8S_SERVER_BIN_DIR``` | ```K8S_K8S_DIR```/server/kubernetes/server/bin | Location of Kubernetes server binary |
+| ```K8S_CLUSTER_IP_PRE``` | 10.220 | IP Prefix of Kubernetes pods subnet |
+| ```K8S_CLUSTER_IP_SUBNET``` | ```K8S_CLUSTER_IP_PRE```.0.0/15 | Kubernetes pods subnet |
 | ```K8S_GLOBAL_LOG_LEVEL``` | "v=1" | Kubernetes controller manager verbosity |
 
 <a name="cluster-dns"></a>
@@ -265,8 +267,8 @@ Sets up dnsmasq and forces the loadbalancer to use kube-dns to resolve cluster i
 | Name | Default Value | Description |
 |---|---|---|
 | ```K8S_SERVICE_IP_PRE``` | 10.222 | IP Prefix of Kubernetes services subnet |
-| ```K8S_SERVICE_IP_SUBNET``` | {{```K8S_SERVICE_IP_PRE```}}.0.0/16 | Kubernetes services subnet |
-| ```K8S_DNS_IP``` | {{```K8S_SERVICE_IP_PRE```}}.0.10 | kube-dns service IP |
+| ```K8S_SERVICE_IP_SUBNET``` | ```K8S_SERVICE_IP_PRE```.0.0/16 | Kubernetes services subnet |
+| ```K8S_DNS_IP``` | ```K8S_SERVICE_IP_PRE```.0.10 | kube-dns service IP |
 
 <a name="cni"></a>
 
@@ -280,9 +282,9 @@ This role handles the setup of the network cni plugin used by kubernetes.
 |---|---|---|
 | ```K8S_BASE_DIR``` | /opt/k8s | Kubernetes base directory |
 | ```CNI_VERSION``` | v0.5.2 | CNI version |
-| ```CNI_DIR``` | {{```K8S_BASE_DIR```}}/cni-{{```CNI_VERSION```}} | CNI binary location |
+| ```CNI_DIR``` | ```K8S_BASE_DIR```/cni-```CNI_VERSION``` | CNI binary location |
 | ```CNI_CONF_DIR``` | /etc/cni/net.d | CNI config location|
-| ```CNI_DOWNLOAD_URL``` | https://github.com/containernetworking/cni/releases/download/<br>{{```CNI_VERSION```}}/cni-{{```CNI_VERSION```}}.tgz | CNI binary download URL |
+| ```CNI_DOWNLOAD_URL``` | https://github.com/containernetworking/cni/releases/download/<br>```CNI_VERSION```/cni-```CNI_VERSION```.tgz | CNI binary download URL |
 
 <a name="docker"></a>
 
@@ -296,9 +298,9 @@ Docker is the container engine running on both the nodes and the master.
 |---|---|---|
 | ```DOCKER_VERSION``` | 5:18.09.1~3-0~debian-stretch | Docker version to install, must be a valid apt package |
 | ```NODE_NAMESERVER``` | 1.1.1.1 | Nameserver the node (systemd-resolved) should use |
-| ```DOCKER_NAMESERVER``` | {{```NODE_NAMESERVER```}} | The nameserver docker should use to resolve domains |
+| ```DOCKER_NAMESERVER``` | ```NODE_NAMESERVER``` | The nameserver docker should use to resolve domains |
 | ```NETWORK_MTU``` | 1500 | Adapts software MTUs incase of local network limitation |
-| ```DOCKER_MTU``` | {{```NETWORK_MTU```}} | The MTU docker containers should utilize. If undefined, defaults to 1500 |
+| ```DOCKER_MTU``` | ```NETWORK_MTU``` | The MTU docker containers should utilize. If undefined, defaults to 1500 |
 
 <a name="etcd"></a>
 
@@ -312,8 +314,8 @@ Etcd is a distributed key-value store to persist the k8s configuration serviced 
 |---|---|---|
 | ```K8S_BASE_DIR``` | /opt/k8s | Kubernetes base directory |
 | ```ETCD_VERSION``` | v3.0.17 | Etcd version to install |
-| ```ETCD_DOWNLOAD_URL``` | https://github.com/coreos/etcd/releases/download/ {{```ETCD_VERSION```}}/etcd-{{```ETCD_VERSION```}}-linux-amd64.tar.gz | Etcd download URL |
-| ```ETCD_DIR``` | {{```K8S_BASE_DIR```}}/etcd-{{```ETCD_VERSION```}}-linux-amd64 | Etcd installation directory |
+| ```ETCD_DOWNLOAD_URL``` | https://github.com/coreos/etcd/releases/download/ ```ETCD_VERSION```/etcd-```ETCD_VERSION```-linux-amd64.tar.gz | Etcd download URL |
+| ```ETCD_DIR``` | ```K8S_BASE_DIR```/etcd-```ETCD_VERSION```-linux-amd64 | Etcd installation directory |
 
 <a name="helm"></a>
 
@@ -327,7 +329,7 @@ TBA
 |---|---|---|
 | ```HELM_BASE_DIR``` | /opt/helm | Helm base directory |
 | ```HELM_VERSION``` | v2.12.0 | Helm version to install |
-| ```HELM_DOWNLOAD_URL``` | https://storage.googleapis.com/kubernetes-helm/helm-{{```HELM_VERSION```}}-linux-amd64.tar.gz | Helm download URL |
+| ```HELM_DOWNLOAD_URL``` | https://storage.googleapis.com/kubernetes-helm/helm-```HELM_VERSION```-linux-amd64.tar.gz | Helm download URL |
 
 <a name="jhub"></a>
 
@@ -351,6 +353,16 @@ TBA
 
 This role sets up the kubernetes addon manager and handles the creation of the kube-dns service.
 
+**Variables:**
+
+| Name | Default Value | Description |
+|---|---|---|
+| ```K8S_BASE_DIR``` | /opt/k8s | Kubernetes base directory |
+| ```K8S_KUBECONFIG``` | ```K8S_BASE_DIR```/kubeconfig | Kubernetes kubeconfig location |
+| ```K8S_CLUSTER_IP_PRE``` | 10.220 | IP Prefix of Kubernetes pods subnet |
+| ```K8S_SERVICE_IP_PRE``` | 10.222 | IP Prefix of Kubernetes services subnet |
+| ```K8S_DNS_IP``` | ```K8S_SERVICE_IP_PRE```.0.10 | kube-dns service IP |
+
 <a name="k8s-binaries"></a>
 
 ### k8s-binaries
@@ -358,11 +370,34 @@ This role sets up the kubernetes addon manager and handles the creation of the k
 This role fetches the kubernetes binaries in a version defined by K8S\_VERSION.
 It also creates a kubeconfig that is used system wide to configure the k8s components with the whereabouts of and the credentials to the other components
 
+**Variables:**
+
+| Name | Default Value | Description |
+|---|---|---|
+| ```K8S_BASE_DIR``` | /opt/k8s | Kubernetes base directory |
+| ```K8S_DOWNLOAD_URL``` | https://github.com/kubernetes/kubernetes/releases/<br>download/```K8S_VERSION```/kubernetes.tar.gz | Kubernetes download url |
+| ```K8S_SERVER_BIN_DIR``` | ```K8S_K8S_DIR```/server/kubernetes/server/bin | Location of Kubernetes server binary |
+| ```K8S_KUBECONFIG``` | ```K8S_BASE_DIR```/kubeconfig | Kubernetes kubeconfig location |
+| ```K8S_DEPLOYMENT_CONTEXT``` | dev | Name of the cluster |
+| ```K8S_DOMAIN_NAMESPACE``` | gerdi.research.lrz.de | domain name of the cluster |
+| ```K8S_MASTER_DOMAIN``` | 'mstr-0.' + ```K8S_DEPLOYMENT_CONTEXT``` + '.' + ```K8S_DOMAIN_NAMESPACE``` | Domain of master |
+| ```K8S_MASTER_IP``` | hostvars[```K8S_MASTER_DOMAIN```]['altIP'] \|<br> default(lookup('dig', ```K8S_MASTER_DOMAIN```)) | IP of the master, will default to a DNS lookup if no "altIP" given |
+| ```K8S_DEPLOYMENT_CONTEXT``` | dev | Name of the cluster |
+| ```K8S_CERT_FILES_DIR``` | ```K8S_BASE_DIR```/certs | Kubernetes cluster certificate location |
+| ```K8S_KEY_FILES_DIR``` | ```K8S_BASE_DIR```/keys | Kubernetes cluster keys location |
+
 <a name="k8s-cordon"></a>
 
 ### k8s-cordon
 
 This role makes sure that the kubernetes master and loadbalancer are excluded from having pods scheduled upon them.
+
+**Variables:**
+
+| Name | Default Value | Description |
+|---|---|---|
+| ```K8S_BASE_DIR``` | /opt/k8s | Kubernetes base directory |
+| ```K8S_KUBECONFIG``` | ```K8S_BASE_DIR```/kubeconfig | Kubernetes kubeconfig location |
 
 <a name="keycloak"></a>
 
@@ -370,11 +405,32 @@ This role makes sure that the kubernetes master and loadbalancer are excluded fr
 
 TBA
 
+**Variables:**
+
+| Name | Default Value | Description |
+|---|---|---|
+| ```KEYCLOAK_BASEPATH``` | admin/auth | TBA |
+
 <a name="kubelet"></a>
 
 ### kubelet
 
 The kubelet component is the interface to the docker daemon which makes sure the Deployments and Pods are translated into running docker containers. Kubelet runs as a systemd-service on all node and master instances.
+
+**Variables:**
+
+| Name | Default Value | Description |
+|---|---|---|
+| ```K8S_BASE_DIR``` | /opt/k8s | Kubernetes base directory |
+| ```K8S_SERVER_BIN_DIR``` | ```K8S_K8S_DIR```/server/kubernetes/server/bin | Location of Kubernetes server binary |
+| ```K8S_KUBECONFIG``` | ```K8S_BASE_DIR```/kubeconfig | Kubernetes kubeconfig location |
+| ```K8S_GLOBAL_LOG_LEVEL``` | "v=1" | Kubernetes controller manager verbosity |
+| ```K8S_KEY_FILES_DIR``` | ```K8S_BASE_DIR```/keys | Kubernetes cluster keys location |
+| ```K8S_CERT_FILES_DIR``` | ```K8S_BASE_DIR```/certs | Kubernetes cluster certificate location |
+| ```K8S_DNS_IP``` | ```K8S_SERVICE_IP_PRE```.0.10 | kube-dns service IP |
+| ```CNI_VERSION``` | v0.5.2 | CNI version |
+| ```CNI_DIR``` | ```K8S_BASE_DIR```/cni-```CNI_VERSION``` | CNI binary location |
+| ```CNI_CONF_DIR``` | /etc/cni/net.d | CNI config location|
 
 <a name="kube-proxy"></a>
 
@@ -382,17 +438,44 @@ The kubelet component is the interface to the docker daemon which makes sure the
 
 The kube-proxy takes care of proxying requests inside the k8s cluster. It runs as a systemd-service on all nodes.
 
+**Variables:**
+
+| Name | Default Value | Description |
+|---|---|---|
+| ```K8S_BASE_DIR``` | /opt/k8s | Kubernetes base directory |
+| ```K8S_GLOBAL_LOG_LEVEL``` | "v=1" | Kubernetes controller manager verbosity |
+| ```K8S_CLUSTER_IP_PRE``` | 10.220 | IP Prefix of Kubernetes pods subnet |
+| ```K8S_CLUSTER_IP_SUBNET``` | ```K8S_CLUSTER_IP_PRE```.0.0/15 | Kubernetes pods subnet |
+| ```K8S_SERVER_BIN_DIR``` | ```K8S_K8S_DIR```/server/kubernetes/server/bin | Location of Kubernetes server binary |
+
 <a name="secrets"></a>
 
 ### secrets
 
 TBA
 
+**Variables:**
+
+| Name | Default Value | Description |
+|---|---|---|
+| ```K8S_BASE_DIR``` | /opt/k8s | Kubernetes base directory |
+| ```K8S_KUBECONFIG``` | ```K8S_BASE_DIR```/kubeconfig | Kubernetes kubeconfig location |
+
 <a name="network-interfaces"></a>
 
 ### network-interfaces
 
 Sets up systemd-networkd & systemd-resolved by *'hotswapping'* the default networking.service (/etc/interfaces). Configures nameservers and network interfaces' properties to correctly fall in line with expectations of subsequent roles.
+
+**Variables:**
+
+| Name | Default Value | Description |
+|---|---|---|
+| ```host_private_rtable``` | 1337 | Identifier for private interface routing table |
+| ```NODE_NAMESERVER``` | 1.1.1.1 | Nameserver the node (systemd-resolved) should use |
+| ```K8S_DEPLOYMENT_CONTEXT``` | dev | Name of the cluster |
+| ```K8S_DOMAIN_NAMESPACE``` | gerdi.research.lrz.de | domain name of the cluster |
+| ```NFS_SERVER_DOMAIN``` | nfs.```K8S_DEPLOYMENT_CONTEXT```.<br>```K8S_DOMAIN_NAMESPACE``` |  FQDN of the NFS server |
 
 <a name="nfs-server"></a>
 
@@ -402,17 +485,59 @@ Responsible for setting up a NFS server alongside the k8s cluster and adding all
 
 *Note: If you add additional nodes to the cluster, you have to execute this playbook again to add the new nodes to the exports. This will override manually added hosts!*
 
+**Variables:**
+
+| Name | Default Value | Description |
+|---|---|---|
+| ```nfs_server_daemon``` | nfs-kernel-server | NFS service name |
+| ```NFS_VOLUME_PATH``` | /intern/gerdi01 | Path of the to be mounted directory on the NFS server |
+| ```K8S_DEPLOYMENT_CONTEXT``` | dev | Name of the cluster |
+
 <a name="network-ovn"></a>
 
 ### network-ovn
 
 OVN/OVS is one of the possible k8s network driver (see [k8s network model](https://kubernetes.io/docs/concepts/cluster-administration/networking/#kubernetes-model)). This role sets up a geneve interface to tunnel and encrypt pod to pod traffic.
 
+**Variables:**
+
+| Name | Default Value | Description |
+|---|---|---|
+| ```OVN_API_TOKEN``` | someValue | OVN authentification token |
+| ```OVN_ENCAP_TYPE``` | geneve | OVN encapsulation mode |
+| ```OPENVSWITCH_VERSION``` | 2.10.0+2018.08.28+git.8ca7c82b7d+ds1-12 | OVN version to install |
+| ```OVN_HOST_VERSION``` | ```OPENVSWITCH_VERSION``` | OVN version to install on nodes |
+| ```OVN_CENTRAL_VERSION``` | ```OPENVSWITCH_VERSION``` | OVN version to install on master |
+| ```OVN_MTU``` | (( ```NETWORK_MTU``` \| int) - 100) \| int \| abs | OVN MTU, always 100 bytes less than ```NETWORK_MTU``` |
+| ```K8S_BASE_DIR``` | /opt/k8s | Kubernetes base directory |
+| ```OVN_K8S_DIR``` | ```K8S_BASE_DIR```/ovn-kubernetes | OVN installation location |
+| ```K8S_CERT_FILES_DIR``` | ```K8S_BASE_DIR```/certs | Kubernetes cluster certificate location |
+| ```K8S_CLUSTER_IP_PRE``` | 10.220 | IP Prefix of Kubernetes pods subnet |
+| ```K8S_CLUSTER_IP_SUBNET``` | ```K8S_CLUSTER_IP_PRE```.0.0/15 | Kubernetes pods subnet |
+| ```K8S_SERVICE_IP_PRE``` | 10.222 | IP Prefix of Kubernetes services subnet |
+| ```K8S_SERVICE_IP_SUBNET``` | ```K8S_SERVICE_IP_PRE```.0.0/16 | Kubernetes services subnet |
+| ```K8S_DEPLOYMENT_CONTEXT``` | dev | Name of the cluster |
+| ```K8S_DOMAIN_NAMESPACE``` | gerdi.research.lrz.de | domain name of the cluster |
+| ```K8S_MASTER_DOMAIN``` | 'mstr-0.' + ```K8S_DEPLOYMENT_CONTEXT``` + '.' + ```K8S_DOMAIN_NAMESPACE``` | Domain of master |
+| ```K8S_MASTER_IP``` | hostvars[```K8S_MASTER_DOMAIN```]['altIP'] \|<br> default(lookup('dig', ```K8S_MASTER_DOMAIN```)) | IP of the master, will default to a DNS lookup if no "altIP" given |
+| ```CNI_VERSION``` | v0.5.2 | CNI version |
+| ```CNI_DIR``` | ```K8S_BASE_DIR```/cni-```CNI_VERSION``` | CNI binary location |
+| ```GOLANG_VERSION``` | go1.12.4 | Go language version to install |
+
 <a name="persistent-volumes"></a>
 
 ### persistent-volumes
 
 TBA
+
+**Variables:**
+
+| Name | Default Value | Description |
+|---|---|---|
+| ```K8S_DEPLOYMENT_CONTEXT``` | dev | Name of the cluster |
+| ```K8S_DOMAIN_NAMESPACE``` | gerdi.research.lrz.de | domain name of the cluster |
+| ```NFS_SERVER_DOMAIN``` | nfs.```K8S_DEPLOYMENT_CONTEXT```.<br>```K8S_DOMAIN_NAMESPACE``` |  FQDN of the NFS server |
+| ```NFS_VOLUME_PATH``` | /intern/gerdi01 | Path of the to be mounted directory on the NFS server |
 
 <a name="prometheus"></a>
 
@@ -421,17 +546,35 @@ TBA
 Installs the prometheus monitoring system for central cluster and service monitoring. Prometheus [prometheus.io](https://prometheus.io/) is the default monitoring system for kubernetes and is maintained
 by the Cloud Native Foundation. It provides time series related monitoring and alerting. The role creates a dedicated kube-monitor namespace and deploys the prometheus master server into it.
 
+**Variables:**
+
+| Name | Default Value | Description |
+|---|---|---|
+| ```PROMETHEUS_BASE_DIR``` | /opt/prometheus |   Prometheus installation directory |
+| ```PROMETHEUS_SERVER_VERSION``` | 2.9.1 | Prometheus server version |
+| ```K8S_BASE_DIR``` | /opt/k8s | Kubernetes base directory |
+| ```K8S_DEPLOYMENT_CONTEXT``` | dev | Name of the cluster |
+| ```K8S_DOMAIN_NAMESPACE``` | gerdi.research.lrz.de | domain name of the cluster |
+| ```MAIN_DOMAIN``` | www.```K8S_DEPLOYMENT_CONTEXT```.<br>```K8S_DOMAIN_NAMESPACE``` | apache.conf: ServerName |
+
 <a name="scheduler"></a>
 
 ### scheduler
 
 The scheduler runs scheduled pods. It operates on the k8s-master as a systemd-service.
 
+**Variables:**
+
+| Name | Default Value | Description |
+|---|---|---|
+| ```K8S_BASE_DIR``` | /opt/k8s | Kubernetes base directory |
+| ```K8S_SERVER_BIN_DIR``` | ```K8S_K8S_DIR```/server/kubernetes/server/bin | Location of Kubernetes server binary |
+
 <a name="ufw"></a>
 
 ### ufw
 
-This role sets up the uncomplicated firewall (ufw). Depending on which node it's executed on, it will vary the port openings, for example the loadbalancer will receive additional openings at TCP/80 and TCP/443. 
+This role sets up the uncomplicated firewall (ufw). Depending on which node it's executed on, it will vary the port openings, for example the loadbalancer will receive additional openings at TCP/80 and TCP/443.
 
 ## Node Specific Roles
 
