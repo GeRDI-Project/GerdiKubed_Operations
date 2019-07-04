@@ -17,5 +17,4 @@
 ################################################################################
 NFS_SERVER_DOMAIN:    # DNS Entry of IP Address of NFS Server
 NFS_VOLUME_PATH:      # Exported path on the NFS server
-NFS_SERVER_PATH:      "{{ NFS_SERVER_DOMAIN }}:{{ NFS_VOLUME_PATH }}"
 NFS_MOUNT_PATH:       "/mnt/nfs"
