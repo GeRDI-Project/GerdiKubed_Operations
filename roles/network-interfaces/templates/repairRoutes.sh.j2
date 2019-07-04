@@ -33,6 +33,9 @@ ip rule add from all to 10.156.10.40 lookup {{ host_private_rtable }}
 {% endif %}
 
 {% if inventory_hostname in groups['loadbalancer-nodes'] %}
+# Fix for SAI-1691; Sometimes the LB looses its' default route for the public interface
+# This makes sure it gets added back if it is missing
+ip route add default via {{ host_private_gateway }} dev {{ host_public_interface }} > /dev/null 2>&1
 # Force restart dnsmasq because it depends on the new rules
 if service --status-all 2>&1 | grep -Fq dnsmasq; then
   service dnsmasq restart
