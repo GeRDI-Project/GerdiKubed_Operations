@@ -128,11 +128,9 @@ ansible-playbook -i inventory/<deployment-context>/hosts.ini --skip-tags certs k
 
 All available tags, their functionality and occurences are listed in the following table
 
-
-| Tag       | Description                                         |                         
-| --------- | --------------------------------------------------- |
-
-| cert      | Skips deployment of certificate files to k8s hosts  |
+| Tag | Description |
+|---|---|
+| cert | Skips deployment of certificate files to k8s hosts |
 
 ### Role Overview
 
