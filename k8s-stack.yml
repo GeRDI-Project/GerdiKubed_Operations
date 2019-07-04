@@ -16,6 +16,6 @@
   hosts: kubernetes_masters
   remote_user: root
   roles:
-    #- k8s-namespaces
-    #- prometheus
+    - k8s-namespaces
+    - prometheus
     - grafana
