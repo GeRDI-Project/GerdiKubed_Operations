@@ -24,6 +24,8 @@
 # GRAFANA_VERSION:          6.2.1
 # GRAFANA_BASE_DIR:         /opt/grafana
 
-# Relabeling of variables which are stored the secrets vault!
+################################################################################
+# Secrets, should be stored encrypted in ansible vaults
+################################################################################
 # GF_SECURITY_ADMIN_USER:     grafana
 # GF_SECURITY_ADMIN_PASSWORD: grafana
