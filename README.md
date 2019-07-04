@@ -107,10 +107,9 @@ ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-gerdi.yml
 ```
 
 Created using: http://asciiflow.com/
-# Documentation
-
 
 ## Documentation
+
 The documentation in this README is only a very limited. Further documentation can be found in the [docs](docs)
 directory, which also contains specific instructions for usage with different private cloud providers that have
 in the according role directory.
@@ -122,11 +121,9 @@ been tested during the development process. For each role, the documentation can
 specifically trigger the execution of certian tasks. To skipt roles which hold a certain tag you can use the 
 In order to allows certain deployment and update mechanisms, tags are used in the notebooks in order to prevent or
 of ne certificate files.
+
 ```bash
-
-
 ansible-playbook -i inventory/<deployment-context>/hosts.ini --skip-tags certs k8s-lb.yml
-
 ```
 
 All available tags, their functionality and occurences are listed in the following table
