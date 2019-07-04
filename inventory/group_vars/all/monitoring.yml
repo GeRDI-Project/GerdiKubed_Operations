@@ -23,5 +23,7 @@
 ################################################################################
 # GRAFANA_VERSION:          6.2.1
 # GRAFANA_BASE_DIR:         /opt/grafana
-# GF_SECURITY_ADMIN_USER:     "{{ SECRETS_GF_SECURITY_ADMIN_USER }}"
-# GF_SECURITY_ADMIN_PASSWORD: "{{ SECRETS_GF_SECURITY_ADMIN_PASSWORD }}"
+
+# Relabeling of variables which are stored the secrets vault!
+# GF_SECURITY_ADMIN_USER:     grafana
+# GF_SECURITY_ADMIN_PASSWORD: grafana
