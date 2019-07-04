@@ -20,8 +20,6 @@ EXTERNAL_GW:          # IP Adress of the Network Gateway
 EXTERNAL_DEV:         "eth1"
 LB_ROUTES_TABLE:      8
 INTERNAL_NET:         # CIDR of the Internal Network
-K8S_INTERNAL_ROUTING_TABLE: "180485"
-
 
 NICDEVICEPREFIX:      "eth"
 NETWORK_MTU:          "1450"

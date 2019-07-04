@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-K8S_DEPLOYMENT_CONTEXT: # Domain prefix
+K8S_DEPLOYMENT_CONTEXT: #  Domain prefix
 K8S_DOMAIN_NAMESPACE:   # Domain to reach the cluster
 MAIN_DOMAIN:            # Main domain to the reach the cluster loadbalancer/gateway maschine
 OTHER_DOMAINS:
