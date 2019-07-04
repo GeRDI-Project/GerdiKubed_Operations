@@ -14,7 +14,7 @@ There are multiple playbooks in the root of the git repository:
 * k8s-stack.yml
 * (k8s-gerdi.yml; *Optional*)
 
-# Usage
+## Usage
 
 ```bash
 # Initial setup
@@ -53,7 +53,7 @@ ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-stack.yml
 ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-gerdi.yml
 ```
 
-# Requirements
+## Requirements
 
 * Debian 9.1 or higher on the remote machines (you can use the [recipe](util/CreateVMImage.md) to create a VM image against which these scripts have been tested).
 * Running sshd on the remote machines and on the control machine (preferrably localhost) and the package python-dnspython
@@ -107,10 +107,37 @@ ansible-playbook -i inventory/<deployment-context>/hosts.ini k8s-gerdi.yml
 ```
 
 Created using: http://asciiflow.com/
-
 # Documentation
 
-## Role Overview
+
+## Documentation
+The documentation in this README is only a very limited. Further documentation can be found in the [docs](docs)
+directory, which also contains specific instructions for usage with different private cloud providers that have
+in the according role directory.
+been tested during the development process. For each role, the documentation can be found in the README.md file
+
+### Tags
+
+`--skip-tags <tags>` option. The following example shows the usage for the k8s-lb playbook, skipping the deployment
+specifically trigger the execution of certian tasks. To skipt roles which hold a certain tag you can use the 
+In order to allows certain deployment and update mechanisms, tags are used in the notebooks in order to prevent or
+of ne certificate files.
+```bash
+
+
+ansible-playbook -i inventory/<deployment-context>/hosts.ini --skip-tags certs k8s-lb.yml
+
+```
+
+All available tags, their functionality and occurences are listed in the following table
+
+
+| Tag       | Description                                         |                         
+| --------- | --------------------------------------------------- |
+
+| cert      | Skips deployment of certificate files to k8s hosts  |
+
+### Role Overview
 
 *Note: For readability purposes, not in order of execution!*
 
@@ -122,13 +149,13 @@ Created using: http://asciiflow.com/
 | [ufw](#ufw)|      <div align="center">x</div>      |      <div align="center">x</div>      |      |      |      |      |      |
 | [docker](#docker)      |      <div align="center">x</div>      |      <div align="center">x</div>      |      |      |      |      |      |
 | [k8s-binaries](#k8s-binaries)      |      <div align="center">x</div>      |      <div align="center">x</div>      |      |      |      |      |      |
-| [kubelet](#kubelet)      |      <div align="center">x</div>      |      <div align="center">x</div>      |      |      |      |      |      |
 | [kube-proxy](#kube-proxy)      |      <div align="center">x</div>      |      <div align="center">x</div>      |      |      |      |      |      |
+| [kubelet](#kubelet)      |      <div align="center">x</div>      |      <div align="center">x</div>      |      |      |      |      |      |
 | [network-ovn](#network-ovn)      |      <div align="center">x</div>      |      <div align="center">x</div>      |      |      |      |      |      |
 | [k8s-cordon](#k8s-cordon)      |      <div align="center">x</div>      |      <div align="center">x</div>      |      |      |      |      |      |
-| [apiserver](#apiserver)      |      <div align="center">x</div>      |      |      |      |      |      |      |
 | [scheduler](#scheduler)      |      <div align="center">x</div>      |      |      |      |      |      |      |
 | [controller-manager](#controller-manager)  |      <div align="center">x</div>      |      |      |      |      |      |      |
+| [apiserver](#apiserver)      |      <div align="center">x</div>      |      |      |      |      |      |      |
 | [etcd](#etcd)      |      <div align="center">x</div>      |      |      |      |      |      |      |
 | [k8s-addons](#k8s-addons)      |      <div align="center">x</div>      |      |      |      |      |      |      |
 | [cni](#cni)      |      <div align="center">x</div>      |      |      |      |      |      |      |
@@ -143,7 +170,7 @@ Created using: http://asciiflow.com/
 | [jhub](#jhub)|      |      |      |      |      |      |      <div align="center">x</div>      |
 | [keycloak](#keycloak)|      |      |      |      |      |      |      <div align="center">x</div>      |
 
-## Role Documentation
+### Role Descriptions
 
 <a name="apache-proxy"></a>
 

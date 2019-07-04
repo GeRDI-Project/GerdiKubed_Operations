@@ -18,12 +18,12 @@
 ---
 - name: Set public LRZ gateway server for OpenStack nodes
   set_fact:
-    host_public_gateway: "{{ (host_public_address + '/' + host_public_netmask) | ipaddr('-2') }}"
+    host_public_gateway: "{{ (host_public_address + '/' + host_public_netmask) | ipaddr(1) }}"
   when: (host_public_interface is defined) and (inventory_hostname in groups['openstack-nodes'])
 
 - name: Set public LRZ gateway server for non OpenStack nodes
   set_fact:
-    host_public_gateway: "{{ (host_public_address + '/' + host_public_netmask) | ipaddr('-2') }}"
+    host_public_gateway: "{{ (host_public_address + '/' + host_public_netmask) | ipaddr(-2) }}"
   when: (host_public_interface is defined) and (inventory_hostname not in groups['openstack-nodes'])
 
 - name: network-interfaces | Create systemd Entry for Public Interface

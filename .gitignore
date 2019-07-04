@@ -11,3 +11,6 @@ group_vars/all.yml
 # Edited Host Files on Control Maschines
 production.ini
 testing
+
+# Vaults
+*.vault-pass.*

@@ -17,20 +17,6 @@
     path: "{{ PROMETHEUS_BASE_DIR }}"
     state: directory
 
-- name: prometheus | Check if kube-monitor namespace exists
-  shell: kubectl get namespaces
-  register: registeredNamespaces
-
-- name: prometheus | Copy k8s namespace to cluster
-  copy:
-    src: kube-monitor-ns.yml
-    dest: "{{ K8S_BASE_DIR }}/kube-monitor-ns.yml"
-  when: registeredNamespaces.stdout.find('kube-monitor') == -1
-
-- name: prometheus | Create kube-monitor namespace
-  shell: " kubectl apply -f {{ K8S_BASE_DIR }}/kube-monitor-ns.yml"
-  when: registeredNamespaces.stdout.find('kube-monitor') == -1
-
 - name: prometheus | Check if prometheusServer is installed
   shell: |
     kubectl get pods  \
