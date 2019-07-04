@@ -27,7 +27,6 @@ CONTROL_BASE_DIR:   "/home/debian/{{ K8S_DEPLOYMENT_CONTEXT }}_k8s_mgmt"
 NFS_SERVER_DOMAIN: "nfs.{{K8S_DEPLOYMENT_CONTEXT}}.{{K8S_DOMAIN_NAMESPACE}}"
 # Will be created if you're using a cluster internal NFS node
 NFS_VOLUME_PATH: /intern/gerdi01
-NFS_SERVER_PATH: "{{ NFS_SERVER_DOMAIN }}:{{ NFS_VOLUME_PATH }}"
 # Network interface prefix
 # Make sure to use the traditional interface naming scheme (eth0, eth1,... | ens0, ens1,...)
 # Instead of Predictable Network Interface Names
@@ -131,8 +130,6 @@ OVN_HOST_VERSION: "{{ OPENVSWITCH_VERSION }}"
 OVN_CENTRAL_VERSION: "{{ OPENVSWITCH_VERSION }}"
 # Should always be set to: (default MTU)-100
 OVN_MTU: "{{ (( NETWORK_MTU | int) - 100) | int | abs }}"
-#Used by autoRepairRoutes.sh; Make sure number is unique
-K8S_INTERNAL_ROUTING_TABLE: "180485"
 
 ################################################################################
 # Configuration for the following roles:
