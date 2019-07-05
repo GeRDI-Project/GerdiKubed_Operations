@@ -3,7 +3,7 @@
 This folder contains template files (.tmpl) for an ansible inventory (hosts.ini.tmpl) as well as variables files which
 allow to configure the kubernetes setup according to the user's requirements. The variable file (main.yml) list all
 possible configuration options and shows the according default variables if defined. Varibales that have default
-configurations are commented out. However, to change the default configuration just remove the hashtag in front and 
+configurations are commented out. However, to change the default configuration just remove the hashtag in front and
 change the value.
 
 ## Usage
