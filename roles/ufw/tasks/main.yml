@@ -41,25 +41,17 @@
   import_tasks: setup_mastertables.yml
   when: inventory_hostname in groups['kubernetes-masters']
 
-- name: ufw common | Setup node iptables
-  import_tasks: setup_nodetables.yml
-  when: inventory_hostname in groups['kubernetes-nodes']
-
 - name: ufw common | Setup lb iptables
   import_tasks: setup_lbtables.yml
   when: inventory_hostname in groups['loadbalancer-nodes']
 
-- name: ufw common | Allow geneve (OVN) tunnel traffic
+- name: ufw common | Allow all cluster internal traffic: UDP, TCP and ICMP
   ufw:
     rule: allow
-    proto: udp
-    port: "6081"
-
-- name: ufw common | Allow Link-Local Multicast Name Resolution (LLMNR) (systemd)
-  ufw:
-    rule: allow
-    proto: udp
-    port: "5355"
+    src: "{{ item }}"
+  with_items:
+    - "{{ groups['kubernetes-masters'] }}"
+    - "{{ groups['kubernetes-nodes'] }}"
 
 - name: ufw common | Enable logging
   ufw:
