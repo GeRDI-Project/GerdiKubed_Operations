@@ -1,32 +1,62 @@
-# How to Configure the Ansible Inventory to Deploy a Kubernetes Cluster
+# Configuring the Ansible Inventory and Playbook to Deploy a Kubernetes Cluster
 
-This README describes how a user has to adjust the ansible inventory files in order to deploy a full kubernetes (k8s)
-cluster on a linux infrastructure. Such a deployment required the installation and configuration of many individual
-components. Most of them are configured automatically. However, a few input variables are required. In order to keep
-the configuration files short and readable, they were split into multiple files which can be found in the group_vars/all 
-directory.
+This folder contains template files (.tmpl) for an ansible inventory (hosts.ini.tmpl) as well as variables files which
+allow to configure the kubernetes setup according to the user's requirements. The variable file (main.yml) list all
+possible configuration options and shows the according default variables if defined. Varibales that have default
+configurations are commented out. However, to change the default configuration just remove the hashtag in front and 
+change the value.
 
-- common.yml        : Contains common configurations
-- kubernetes.yml    : Contains configurations and variables which are agnostic to k8s
-- networking.yml    : Configurations for the cluster networking
-- storage.yml       : Configurations of the NFS storage backend
-- monitoring.yml    : Configuration of the Prometheus/Grafana based Monitoring system
+## Usage
 
-Values which are outcommented own a respective default variables which is defined in the according role and shown in
-the configuration template file. Please be aware, that some variables define secrets which should not be public to
-other users. In this case use an ansible vault to securely store your variables. For details on the creation and usage
-of vaults please referre to <https://docs.ansible.com/ansible/latest/user_guide/vault.html>.
+As mentioned in the introduction, the whole playbook has default configuration variables, which allow the user to make
+an initital deployment as long as the inventory is complete. However, this might fail in many cases due to specific
+configurational requirements. The default variables which can be set by the user are shown at group_vars/all/main.yml.
+Variables are mainy commented out as the default values, which are shown with the outcommented variables, are used.
+To change a certain variable just remove the hashtag in front of it and change the value:
 
-## Requirements
+```yaml
+# Variable with default entry.
+# K8S_VERSION:                "v1.14.1"
 
-This playbooks have been tested on virtual maschines which run Debian 9. We don't guarantee that the playbooks will
-run on any other operating system as well as on infrastructers other than OpenStack or VMWare. In order to run the
-playbooks a recent version of Ansible (>=2.9) is required.
+# Modified value of the variable
+K8S_VERSION:                "v1.15.0"
+```
 
-- One host that acts as a loadbalancer/gateway to the k8s cluster network
-- One host that acts as the k8s master and api server. In addition this node runs the etcd key-value store
-- A least one further hosts that acts as a k8s compute node.
+## Securing Variables Containing Sensitive Information
+
+Passwords and credentials should not be stored in plain text in the variable files. Instead, it is advisable to store
+them encrypted in an ansible vault. To do so, just add the vault_file to the according group_vars folder and reference
+the variable, which is stored in the vault, to the according variable in the configuration file.
+
+In the following example, the variable GRAFANA_ADMIN_UNAME just references to an encrypted variable in an ansible vault
+that is stored at group_vars/all/secrets.yml. To setup the vault use the ansible-vault commands:
+
+```bash
+ansible-vault create group_vars/all/secrets.yml
+```
+
+In the secrets.yml we store the password in the variables SECRETS_GRAFANA_ADMIN_UNAME
+
+```yaml
+SECRETS_GRAFANA_ADMIN_UNAME: superadmin
+```
+
+In order to use the default varibale, we just reference the secrets variable in the main.yml file at group_vars/all
+
+```yaml
+# Default entry in the main.yml file
+# GRAFANA_ADMIN_UNAME: grafana
+
+# Usage of encrypted variable for grafana admin username
+GRAFANA_ADMIN_UNAME: "{{ SECRETS_GRAFANA_ADMIN_UNAME }}"
+```
+
+For further documentation on ansible vaults please see <https://docs.ansible.com/ansible/latest/user_guide/vault.html>
 
 ## Maintainer
 
 - Alexander Götz (2019-)
+
+## Copyright
+
+- Leibniz Supercomputing Centre (2019-)

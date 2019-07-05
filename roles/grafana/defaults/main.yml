@@ -18,5 +18,5 @@ GRAFANA_VERSION: 6.2.1
 ################################################################################
 # Secrets, don't use for production!
 ################################################################################
-GF_SECURITY_ADMIN_USER: grafana
-GF_SECURITY_ADMIN_PASSWORD: grafana
+GRAFANA_ADMIN_UNAME: grafana
+GRAFANA_ADMIN_PASSWORD: grafana
