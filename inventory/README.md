@@ -56,7 +56,3 @@ For further documentation on ansible vaults please see <https://docs.ansible.com
 ## Maintainer
 
 - Alexander Götz (2019-)
-
-## Copyright
-
-- Leibniz Supercomputing Centre (2019-)
