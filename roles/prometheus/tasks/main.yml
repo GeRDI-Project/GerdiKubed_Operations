@@ -17,14 +17,12 @@
     path: "{{ PROMETHEUS_BASE_DIR }}"
     state: directory
 
-- name: prometheus | Check if prometheusServer is installed
-  shell: |
-    kubectl get pods  \
-      --selector=app=prometheus-server \
-      --field-selector=status.phase=Running \
-      -n kube-monitor
-  register: prometheusServerInstalled
+- name: prometheus | Copy k8s manifests into {{ PROMETHEUS_BASE_DIR }}
+  template:
+    src: "{{ item }}"
+    dest: "{{ PROMETHEUS_BASE_DIR }}/{{ item | basename | regex_replace('.j2','') }}"
+  with_fileglob:
+    - ../templates/*
 
-- name: prometheus | Install and configure prometheusServer
-  include_tasks: prometheusServer.yml
-  when: prometheusServerInstalled.stdout.find("Running") == -1
+- name: prometheus | Deploy prometheus server to k8s cluster
+  shell: "kubectl apply -f {{ PROMETHEUS_BASE_DIR }}"

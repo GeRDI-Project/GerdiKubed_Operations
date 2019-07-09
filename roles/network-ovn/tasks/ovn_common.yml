@@ -115,7 +115,7 @@
     path: /lib/systemd/system/openvswitch-switch.service
     state: absent
     line: 'Before=networking.service'
-  when: inventory_hostname in groups['loadbalancer-nodes']
+  when: inventory_hostname in groups['loadbalancer_nodes']
 
 - name: network-ovn common | Create OVN configuration
   template:

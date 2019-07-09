@@ -1,8 +1,0 @@
-########################################
-# Grafana Dashboard Settings
-########################################
-GRAFANA_VERSION: 6.2.1          # See https://hub.docker.com/r/grafana/grafana/tags for latest availanle version
-GRAFANA_BASE_DIR: /opt/grafana  # Location of the kubernetes manifests
-GRAFANA_CONTAINER_PORT: 3000
-GF_SECURITY_ADMIN_USER: "{{ K8S_SECRETS_GF_SECURITY_ADMIN_USER }}"
-GF_SECURITY_ADMIN_PASSWORD: "{{ K8S_SECRETS_GF_SECURITY_ADMIN_PASSWORD }}"

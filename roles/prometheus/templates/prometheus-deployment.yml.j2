@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: prometheus-server
+  name: prometheus
   namespace: kube-monitor
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: prometheus-server
+      app: prometheus
   template:
     metadata:
       labels:
-        app: prometheus-server
+        app: prometheus
         service: monitoring
     spec:
       containers:
-        - name: prometheus-server
+        - name: prometheus
           image: prom/prometheus:v{{ PROMETHEUS_SERVER_VERSION }}
           args:
             - "--config.file=/etc/prometheus/prometheus.yml"
@@ -41,7 +41,7 @@ spec:
         - name: prometheus-config-volume
           configMap:
             defaultMode: 420
-            name: prometheus-server
+            name: prometheus
         - name: prometheus-tsdb-volume
           persistentVolumeClaim:
             claimName: prometheus-tsdb

@@ -14,7 +14,7 @@
 ---
 - name: network-ovn node | install ovs and ovn node packages
   package:
-    name={{ item }}
+    name: "{{ item }}"
   with_items:
     - ovn-host={{ OVN_HOST_VERSION }}
 
@@ -42,24 +42,24 @@
   systemd:
     name: ovn-k8s-master.service
     state: restarted
-  when: inventory_hostname in groups['kubernetes-masters']
+  when: inventory_hostname in groups['kubernetes_masters']
 
 # Install addons fixer after we have setup the ovn-master and its ovn-node
 - name: network-ovn master | Install fix-k8s-addons script
   template:
     src: fix-k8s-addons.sh.j2
     dest: /etc/kubernetes/fix-k8s-addons.sh
-  when: inventory_hostname in groups['kubernetes-masters']
+  when: inventory_hostname in groups['kubernetes_masters']
 
 - name: network-ovn master | Install fix-k8s-addons script as a service
   copy:
     src: ovn-k8s-addons-fix.service
     dest: /etc/systemd/system/ovn-k8s-addons-fix.service
-  when: inventory_hostname in groups['kubernetes-masters']
+  when: inventory_hostname in groups['kubernetes_masters']
 
 - name: network-ovn master | Register fix-k8s-addons to systemd and start it
   systemd:
     name: ovn-k8s-addons-fix.service
     enabled: yes
     daemon-reload: yes
-  when: inventory_hostname in groups['kubernetes-masters']
+  when: inventory_hostname in groups['kubernetes_masters']

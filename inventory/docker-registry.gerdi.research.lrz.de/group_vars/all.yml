@@ -1,5 +1,0 @@
-LDAP_PASSWD: 'G$rd1.2017-03-28'
-DOCKER_VERSION: "5:18.09.6~3-0~debian-stretch"
-DOCKER_NAMESERVER: "1.1.1.1"
-REGISTRY_PORT: "5043"
-SERVERNAME: "docker-registry.gerdi.research.lrz.de"

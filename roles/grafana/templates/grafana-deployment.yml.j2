@@ -39,7 +39,7 @@ spec:
               memory: 2Gi
               cpu: 1.0
           ports:
-            - containerPort: {{ GRAFANA_CONTAINER_PORT }}
+            - containerPort: 3000
           volumeMounts:
             - name: grafana-config-volume
               mountPath: /etc/grafana/

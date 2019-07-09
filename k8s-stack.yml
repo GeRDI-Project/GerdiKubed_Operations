@@ -13,9 +13,9 @@
 # limitations under the License.
 ---
 - name: Install the k8s software stack
-  hosts: kubernetes-masters
+  hosts: kubernetes_masters
   remote_user: root
   roles:
-    #- k8s-namespaces
-    #- prometheus
+    - k8s-namespaces
+    - prometheus
     - grafana

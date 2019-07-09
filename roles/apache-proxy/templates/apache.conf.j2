@@ -214,8 +214,8 @@
     ProxyPassReverse  /admin/logs         http://graylog-web.default.svc.cluster.local:9000/admin/logs
     ProxyPass         /admin/kafka        http://kafka-manager.default.svc.cluster.local:9000/admin/kafka
     ProxyPassReverse  /admin/kafka        http://kafka-manager.default.svc.cluster.local:9000/admin/kafka
-    ProxyPass         /admin/prometheus   http://prometheus-server.kube-monitor.svc.cluster.local:9090/admin/prometheus
-    ProxyPassReverse  /admin/prometheus   http://prometheus-server.kube-monitor.svc.cluster.local:9090/admin/prometheus
+    ProxyPass         /admin/prometheus   http://prometheus.kube-monitor.svc.cluster.local:9090/admin/prometheus
+    ProxyPassReverse  /admin/prometheus   http://prometheus.kube-monitor.svc.cluster.local:9090/admin/prometheus
     ProxyPass         /admin/grafana      http://grafana.kube-monitor.svc.cluster.local:3000
     ProxyPassReverse  /admin/grafana      http://grafana.kube-monitor.svc.cluster.local:3000
     ProxyPass         /admin/mongo/       http://mongo-express.default.svc.cluster.local:8081/admin/mongo/
