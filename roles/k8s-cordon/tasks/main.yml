@@ -27,10 +27,10 @@
   until: result.stdout.find("Running") != -1
   retries: 10
   delay: 5
-  when: inventory_hostname in groups['kubernetes-masters']
+  when: inventory_hostname in groups['kubernetes_masters']
 
 - name: k8s-cordon master & loadbalancer | Cordon node, if master or loadbalancer
   shell: kubectl cordon {{ inventory_hostname }}
-  when: inventory_hostname in groups['kubernetes-masters'] + groups['loadbalancer-nodes']
+  when: inventory_hostname in groups['kubernetes_masters'] + groups['loadbalancer_nodes']
   environment:
     KUBECONFIG: '{{ K8S_KUBECONFIG }}'

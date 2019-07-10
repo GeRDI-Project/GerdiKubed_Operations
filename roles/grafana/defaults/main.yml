@@ -13,6 +13,10 @@
 # limitations under the License.
 
 GRAFANA_BASE_DIR: /opt/grafana
-
-# ################### Grafana Related Variables ################### #
 GRAFANA_VERSION: 6.2.1
+
+################################################################################
+# Secrets, don't use for production!
+################################################################################
+GRAFANA_ADMIN_UNAME: grafana
+GRAFANA_ADMIN_PASSWORD: grafana

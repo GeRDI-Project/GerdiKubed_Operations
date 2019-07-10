@@ -39,11 +39,11 @@
 
 - name: ufw common | Setup master iptables
   import_tasks: setup_mastertables.yml
-  when: inventory_hostname in groups['kubernetes-masters']
+  when: inventory_hostname in groups['kubernetes_masters']
 
 - name: ufw common | Setup lb iptables
   import_tasks: setup_lbtables.yml
-  when: inventory_hostname in groups['loadbalancer-nodes']
+  when: inventory_hostname in groups['loadbalancer_nodes']
 
 - name: ufw common | Allow all cluster internal traffic: UDP, TCP and ICMP
   ufw:
