@@ -23,6 +23,11 @@
     state: absent
   tags: [ 'never', 'force' ]
 
+# Ignore errors, because some files might be unencrypted
+- name: Decrypt all certificates locally using ansible-vault
+  shell: "find {{ CONTROL_BASE_DIR }} -type f -exec ansible-vault decrypt --vault-password-file {{ ANSIBLE_VAULT_PASSWORD_DIR }} {} \\;"
+  ignore_errors: true
+
 # create canonical place for certs and keys on control machine
 - name: Create directory structure for certs and keys on control machine
   file:
@@ -94,3 +99,8 @@
   with_items:
     - "{{ groups['kubernetes_masters'] }}"
     - "{{ groups['kubernetes_nodes'] }}"
+
+# Ignore errors, because some files might already be encrypted
+- name: Encrypt all certificates locally using ansible-vault
+  shell: "find {{ CONTROL_BASE_DIR }} -type f -exec ansible-vault encrypt --vault-password-file {{ ANSIBLE_VAULT_PASSWORD_DIR }} {} \\;"
+  ignore_errors: true
