@@ -1,0 +1,1999 @@
+
+PLAY [Setup VMWare nodes] *************************************************************************************************************************************************************************************************************************************
+
+TASK [Gathering Facts] ****************************************************************************************************************************************************************************************************************************************
+ok: [mstr-0.b.gerdi.org]
+
+TASK [vmware-node : vmware-node | Create script to setup NICs of VMware machine] ******************************************************************************************************************************************************************************
+skipping: [mstr-0.b.gerdi.org]
+
+TASK [vmware-node : vmware-node | Setup NICs of VMware machine] ***********************************************************************************************************************************************************************************************
+skipping: [mstr-0.b.gerdi.org]
+
+PLAY [Setup OpenNebula nodes] *********************************************************************************************************************************************************************************************************************************
+skipping: no hosts matched
+
+PLAY [Setup OpenStack nodes] **********************************************************************************************************************************************************************************************************************************
+skipping: no hosts matched
+
+PLAY [Initialize kubernetes nodes] ****************************************************************************************************************************************************************************************************************************
+
+TASK [Gathering Facts] ****************************************************************************************************************************************************************************************************************************************
+ok: [mstr-0.b.gerdi.org]
+
+TASK [sshd : Check if we are already setup] *******************************************************************************************************************************************************************************************************************
+fatal: [mstr-0.b.gerdi.org]: FAILED! => {"changed": true, "cmd": "grep 'AllowGroups root root' /etc/ssh/sshd_config", "delta": "0:00:00.003514", "end": "2019-07-10 13:00:04.065953", "msg": "non-zero return code", "rc": 1, "start": "2019-07-10 13:00:04.062439", "stderr": "", "stderr_lines": [], "stdout": "", "stdout_lines": []}
+...ignoring
+
+TASK [sshd : Get Private Interface] ***************************************************************************************************************************************************************************************************************************
+skipping: [mstr-0.b.gerdi.org] => (item=lo) 
+ok: [mstr-0.b.gerdi.org] => (item=eth0)
+
+TASK [sshd : Remove junk from /root/.ssh/authorized_keys] *****************************************************************************************************************************************************************************************************
+ok: [mstr-0.b.gerdi.org]
+
+TASK [sshd : Inject Public SSH Keys for Root Account] *********************************************************************************************************************************************************************************************************
+ok: [mstr-0.b.gerdi.org] => (item=/Users/di39num/.ssh/id_ed25519.pub)
+ok: [mstr-0.b.gerdi.org] => (item=/Users/di39num/.ssh/id_rsa.pub)
+ok: [mstr-0.b.gerdi.org] => (item=/Users/di39num/.ssh/gitlab_lrz_iot_deploy.pub)
+
+TASK [sshd : Delete password of the provided user, only allow ssh pub key] ************************************************************************************************************************************************************************************
+changed: [mstr-0.b.gerdi.org]
+
+TASK [sshd : Update /etc/ssh/sshd_config for High Security One] ***********************************************************************************************************************************************************************************************
+ok: [mstr-0.b.gerdi.org]
+
+TASK [network-interfaces : network-interfaces | Get Private Interface] ****************************************************************************************************************************************************************************************
+skipping: [mstr-0.b.gerdi.org] => (item=lo) 
+ok: [mstr-0.b.gerdi.org] => (item=eth0)
+
+TASK [network-interfaces : network-interfaces | Get Public Interface] *****************************************************************************************************************************************************************************************
+skipping: [mstr-0.b.gerdi.org] => (item=lo) 
+skipping: [mstr-0.b.gerdi.org] => (item=eth0) 
+
+TASK [network-interfaces : network-interfaces | Configure private interface] **********************************************************************************************************************************************************************************
+included: /Users/di39num/Code/GeRDI/GerdiKubed/roles/network-interfaces/tasks/privateIface.yml for mstr-0.b.gerdi.org
+
+TASK [network-interfaces : Set private LRZ gateway server for  OpenStack nodes] *******************************************************************************************************************************************************************************
+skipping: [mstr-0.b.gerdi.org]
+
+TASK [network-interfaces : Set private LRZ gateway server for non OpenStack nodes] ****************************************************************************************************************************************************************************
+ok: [mstr-0.b.gerdi.org]
+
+TASK [network-interfaces : network-interfaces | Create systemd Entry for Private Interface] *******************************************************************************************************************************************************************
+ok: [mstr-0.b.gerdi.org]
+
+TASK [network-interfaces : network-interfaces | Create systemd Entry for Private Bridge Interface] ************************************************************************************************************************************************************
+skipping: [mstr-0.b.gerdi.org]
+
+TASK [network-interfaces : network-interfaces | Configure private interface] **********************************************************************************************************************************************************************************
+included: /Users/di39num/Code/GeRDI/GerdiKubed/roles/network-interfaces/tasks/publicIface.yml for mstr-0.b.gerdi.org
+
+TASK [network-interfaces : Set public LRZ gateway server for OpenStack nodes] *********************************************************************************************************************************************************************************
+skipping: [mstr-0.b.gerdi.org]
+
+TASK [network-interfaces : Set public LRZ gateway server for non OpenStack nodes] *****************************************************************************************************************************************************************************
+skipping: [mstr-0.b.gerdi.org]
+
+TASK [network-interfaces : network-interfaces | Create systemd Entry for Public Interface] ********************************************************************************************************************************************************************
+skipping: [mstr-0.b.gerdi.org]
+
+TASK [network-interfaces : network-interfaces | Apply route repair in case of two interfaces] *****************************************************************************************************************************************************************
+skipping: [mstr-0.b.gerdi.org]
+
+TASK [network-interfaces : network-interfaces | Create script for hot-swapping networking and networkd] *******************************************************************************************************************************************************
+ok: [mstr-0.b.gerdi.org]
+
+TASK [network-interfaces : network-interfaces | Hot-Swap networking and networkd] *****************************************************************************************************************************************************************************
+changed: [mstr-0.b.gerdi.org]
+
+TASK [common : common | Install additional requirements] ******************************************************************************************************************************************************************************************************
+ok: [mstr-0.b.gerdi.org]
+
+TASK [common : common | Create k8s directories] ***************************************************************************************************************************************************************************************************************
+ok: [mstr-0.b.gerdi.org] => (item={'path': '/opt/k8s', 'mode': '0755'})
+ok: [mstr-0.b.gerdi.org] => (item={'path': '/opt/k8s/certs', 'mode': '0755'})
+ok: [mstr-0.b.gerdi.org] => (item={'path': '/opt/k8s/tokens', 'mode': '0755'})
+ok: [mstr-0.b.gerdi.org] => (item={'path': '/opt/k8s/keys', 'mode': '0700'})
+ok: [mstr-0.b.gerdi.org] => (item={'path': '/etc/kubernetes/manifests', 'mode': '0755'})
+
+TASK [common : common | Install server key and cert] **********************************************************************************************************************************************************************************************************
+ok: [mstr-0.b.gerdi.org] => (item={'src': '/Users/di39num/Netzlaufwerke/di39num/GeRDI/Certs/b_k8s_mgmt/keys/mstr-0.b.gerdi.org.key', 'dest': '/opt/k8s/keys/mstr-0.b.gerdi.org.key', 'mode': '0400'})
+ok: [mstr-0.b.gerdi.org] => (item={'src': '/Users/di39num/Netzlaufwerke/di39num/GeRDI/Certs/b_k8s_mgmt/certs/mstr-0.b.gerdi.org.crt.pem', 'dest': '/opt/k8s/certs/mstr-0.b.gerdi.org.crt.pem', 'mode': '0444'})
+ok: [mstr-0.b.gerdi.org] => (item={'src': '/Users/di39num/Netzlaufwerke/di39num/GeRDI/Certs/b_k8s_mgmt/certs/ca.crt.pem', 'dest': '/opt/k8s/certs/ca.crt.pem', 'mode': '0444'})
+ok: [mstr-0.b.gerdi.org] => (item={'src': '/Users/di39num/Netzlaufwerke/di39num/GeRDI/Certs/b_k8s_mgmt/certs/admin.crt.pem', 'dest': '/opt/k8s/certs/admin.crt.pem', 'mode': '0444'})
+ok: [mstr-0.b.gerdi.org] => (item={'src': '/Users/di39num/Netzlaufwerke/di39num/GeRDI/Certs/b_k8s_mgmt/keys/admin.key', 'dest': '/opt/k8s/keys/admin.key', 'mode': '0400'})
+
+TASK [common : common| Debug] *********************************************************************************************************************************************************************************************************************************
+ok: [mstr-0.b.gerdi.org] => {
+    "msg": {
+        "lb-0.b.gerdi.org": {
+            "CNI_CONF_DIR": "/etc/cni/net.d",
+            "CNI_DIR": "{{ K8S_BASE_DIR }}/cni-{{ CNI_VERSION }}",
+            "CNI_DOWNLOAD_URL": "https://github.com/containernetworking/cni/releases/download/{{ CNI_VERSION }}/cni-{{ CNI_VERSION }}.tgz",
+            "CNI_VERSION": "v0.5.2",
+            "CONTROL_BASE_DIR": "/Users/di39num/Netzlaufwerke/di39num/GeRDI/Certs/{{ K8S_DEPLOYMENT_CONTEXT }}_k8s_mgmt",
+            "CONTROL_CA_DIR": "{{ CONTROL_BASE_DIR }}/ca",
+            "CONTROL_CERT_DIR": "{{ CONTROL_BASE_DIR }}/certs",
+            "CONTROL_CONFIG_DIR": "{{ CONTROL_BASE_DIR }}/configs",
+            "CONTROL_CSR_DIR": "{{ CONTROL_BASE_DIR }}/csrs",
+            "CONTROL_KEY_DIR": "{{ CONTROL_BASE_DIR }}/keys",
+            "CONTROL_MACHINE": "127.0.0.1",
+            "DOCKER_VERSION": "5:18.09.1~3-0~debian-stretch",
+            "EXTERNAL_DEV": "eth1",
+            "EXTERNAL_GW": "138.246.225.254",
+            "EXTERNAL_LB": "138.246.225.14",
+            "GOLANG_VERSION": "go1.12.4",
+            "GRAFANA_ADMIN_PASSWORD": "{{ SECRETS_GRAFANA_ADMIN_PASSWORD }}",
+            "GRAFANA_ADMIN_UNAME": "{{ SECRETS_GRAFANA_ADMIN_UNAME }}",
+            "GRAFANA_BASE_DIR": "/opt/grafana",
+            "GRAFANA_VERSION": "6.2.1",
+            "INTERNAL_NET": "10.155.92.0/22",
+            "K8S_AUTH_FILES_DIR": "{{ K8S_BASE_DIR }}/tokens",
+            "K8S_BASE_DIR": "/opt/k8s",
+            "K8S_CERT_FILES_DIR": "{{ K8S_BASE_DIR }}/certs",
+            "K8S_CLUSTER_IP_PRE": "10.220",
+            "K8S_CLUSTER_IP_SUBNET": "{{ K8S_CLUSTER_IP_PRE }}.0.0/15",
+            "K8S_DEPLOYMENT_CONTEXT": "b",
+            "K8S_DNS_IP": "{{ K8S_SERVICE_IP_PRE }}.0.10",
+            "K8S_DOMAIN_NAMESPACE": "gerdi.org",
+            "K8S_DOWNLOAD_URL": "https://github.com/kubernetes/kubernetes/releases/download/{{K8S_VERSION}}/kubernetes.tar.gz",
+            "K8S_GLOBAL_LOG_LEVEL": "v=1",
+            "K8S_K8S_DIR": "{{ K8S_BASE_DIR }}/kubernetes",
+            "K8S_KEY_FILES_DIR": "{{ K8S_BASE_DIR }}/keys",
+            "K8S_KUBECONFIG": "{{ K8S_BASE_DIR }}/kubeconfig",
+            "K8S_MASTER_DOMAIN": "{{ 'mstr-0.' + K8S_DEPLOYMENT_CONTEXT + '.' + K8S_DOMAIN_NAMESPACE }}",
+            "K8S_MASTER_IP": "{{ hostvars[K8S_MASTER_DOMAIN]['altIP'] | default(lookup('dig', K8S_MASTER_DOMAIN)) }}",
+            "K8S_SERVER_BIN_DIR": "{{ K8S_K8S_DIR }}/server/kubernetes/server/bin",
+            "K8S_SERVICE_IP_PRE": "10.222",
+            "K8S_SERVICE_IP_SUBNET": "{{ K8S_SERVICE_IP_PRE }}.0.0/16",
+            "K8S_VERSION": "v1.14.1",
+            "LB_ROUTES_TABLE": 8,
+            "LRZ_INTERNAL": true,
+            "MAIN_DOMAIN": "www.demo.gerdi.org",
+            "NETWORK_MTU": 1500,
+            "NFS_MOUNT_PATH": "/mnt/nfs",
+            "NFS_SERVER_DOMAIN": "intern05.nas.lrz.de",
+            "NFS_VOLUME_PATH": "/intern/gerdi01",
+            "NICDEVICEPREFIX": "eth",
+            "NODE_NAMESERVER": "1.1.1.1",
+            "OPENVSWITCH_VERSION": "2.10.0+2018.08.28+git.8ca7c82b7d+ds1-12",
+            "OTHER_DOMAINS": [
+                "demo.gerdi.org",
+                "canaray.gerdi.org",
+                "www.canary.gerdi.org"
+            ],
+            "OVN_API_TOKEN": "someValue",
+            "OVN_CENTRAL_VERSION": "{{ OPENVSWITCH_VERSION }}",
+            "OVN_HOST_VERSION": "{{ OPENVSWITCH_VERSION }}",
+            "PROMETHEUS_BASE_DIR": "/opt/prometheus",
+            "PROMETHEUS_VERSION": "2.10.0",
+            "SECRETS_GRAFANA_ADMIN_PASSWORD": "aay9W274dhCT3dajE2Rp",
+            "SECRETS_GRAFANA_ADMIN_UNAME": "gerdiGrafana",
+            "ansible_check_mode": false,
+            "ansible_diff_mode": false,
+            "ansible_facts": {},
+            "ansible_forks": 5,
+            "ansible_inventory_sources": [
+                "/Users/di39num/Code/LRZ-RDM/ansible-inventories/gerdi/b.gerdi.org/hosts.yaml"
+            ],
+            "ansible_playbook_python": "/Users/di39num/anaconda3/bin/python",
+            "ansible_run_tags": [
+                "all"
+            ],
+            "ansible_skip_tags": [],
+            "ansible_verbosity": 0,
+            "ansible_version": {
+                "full": "2.8.0",
+                "major": 2,
+                "minor": 8,
+                "revision": 0,
+                "string": "2.8.0"
+            },
+            "group_names": [
+                "kubernetes_nodes",
+                "loadbalancer_nodes",
+                "vmware_nodes"
+            ],
+            "groups": {
+                "all": [
+                    "lb-0.b.gerdi.org",
+                    "mstr-0.b.gerdi.org",
+                    "nd-0.b.gerdi.org",
+                    "nd-1.b.gerdi.org",
+                    "nd-2.b.gerdi.org",
+                    "nd-3.b.gerdi.org",
+                    "localhost"
+                ],
+                "kubernetes_management": [
+                    "localhost"
+                ],
+                "kubernetes_masters": [
+                    "mstr-0.b.gerdi.org"
+                ],
+                "kubernetes_nodes": [
+                    "lb-0.b.gerdi.org",
+                    "nd-0.b.gerdi.org",
+                    "nd-1.b.gerdi.org",
+                    "nd-2.b.gerdi.org",
+                    "nd-3.b.gerdi.org"
+                ],
+                "loadbalancer_nodes": [
+                    "lb-0.b.gerdi.org"
+                ],
+                "openstack_nodes": [],
+                "ungrouped": [],
+                "vmware_nodes": [
+                    "lb-0.b.gerdi.org",
+                    "mstr-0.b.gerdi.org",
+                    "nd-0.b.gerdi.org",
+                    "nd-1.b.gerdi.org",
+                    "nd-2.b.gerdi.org",
+                    "nd-3.b.gerdi.org"
+                ]
+            },
+            "inventory_dir": "/Users/di39num/Code/LRZ-RDM/ansible-inventories/gerdi/b.gerdi.org",
+            "inventory_file": "/Users/di39num/Code/LRZ-RDM/ansible-inventories/gerdi/b.gerdi.org/hosts.yaml",
+            "inventory_hostname": "lb-0.b.gerdi.org",
+            "inventory_hostname_short": "lb-0",
+            "playbook_dir": "/Users/di39num/Code/GeRDI/GerdiKubed"
+        },
+        "localhost": {
+            "CNI_CONF_DIR": "/etc/cni/net.d",
+            "CNI_DIR": "{{ K8S_BASE_DIR }}/cni-{{ CNI_VERSION }}",
+            "CNI_DOWNLOAD_URL": "https://github.com/containernetworking/cni/releases/download/{{ CNI_VERSION }}/cni-{{ CNI_VERSION }}.tgz",
+            "CNI_VERSION": "v0.5.2",
+            "CONTROL_BASE_DIR": "/Users/di39num/Netzlaufwerke/di39num/GeRDI/Certs/{{ K8S_DEPLOYMENT_CONTEXT }}_k8s_mgmt",
+            "CONTROL_CA_DIR": "{{ CONTROL_BASE_DIR }}/ca",
+            "CONTROL_CERT_DIR": "{{ CONTROL_BASE_DIR }}/certs",
+            "CONTROL_CONFIG_DIR": "{{ CONTROL_BASE_DIR }}/configs",
+            "CONTROL_CSR_DIR": "{{ CONTROL_BASE_DIR }}/csrs",
+            "CONTROL_KEY_DIR": "{{ CONTROL_BASE_DIR }}/keys",
+            "CONTROL_MACHINE": "127.0.0.1",
+            "DOCKER_VERSION": "5:18.09.1~3-0~debian-stretch",
+            "EXTERNAL_DEV": "eth1",
+            "EXTERNAL_GW": "138.246.225.254",
+            "EXTERNAL_LB": "138.246.225.14",
+            "GOLANG_VERSION": "go1.12.4",
+            "GRAFANA_ADMIN_PASSWORD": "{{ SECRETS_GRAFANA_ADMIN_PASSWORD }}",
+            "GRAFANA_ADMIN_UNAME": "{{ SECRETS_GRAFANA_ADMIN_UNAME }}",
+            "GRAFANA_BASE_DIR": "/opt/grafana",
+            "GRAFANA_VERSION": "6.2.1",
+            "INTERNAL_NET": "10.155.92.0/22",
+            "K8S_AUTH_FILES_DIR": "{{ K8S_BASE_DIR }}/tokens",
+            "K8S_BASE_DIR": "/opt/k8s",
+            "K8S_CERT_FILES_DIR": "{{ K8S_BASE_DIR }}/certs",
+            "K8S_CLUSTER_IP_PRE": "10.220",
+            "K8S_CLUSTER_IP_SUBNET": "{{ K8S_CLUSTER_IP_PRE }}.0.0/15",
+            "K8S_DEPLOYMENT_CONTEXT": "b",
+            "K8S_DNS_IP": "{{ K8S_SERVICE_IP_PRE }}.0.10",
+            "K8S_DOMAIN_NAMESPACE": "gerdi.org",
+            "K8S_DOWNLOAD_URL": "https://github.com/kubernetes/kubernetes/releases/download/{{K8S_VERSION}}/kubernetes.tar.gz",
+            "K8S_GLOBAL_LOG_LEVEL": "v=1",
+            "K8S_K8S_DIR": "{{ K8S_BASE_DIR }}/kubernetes",
+            "K8S_KEY_FILES_DIR": "{{ K8S_BASE_DIR }}/keys",
+            "K8S_KUBECONFIG": "{{ K8S_BASE_DIR }}/kubeconfig",
+            "K8S_MASTER_DOMAIN": "{{ 'mstr-0.' + K8S_DEPLOYMENT_CONTEXT + '.' + K8S_DOMAIN_NAMESPACE }}",
+            "K8S_MASTER_IP": "{{ hostvars[K8S_MASTER_DOMAIN]['altIP'] | default(lookup('dig', K8S_MASTER_DOMAIN)) }}",
+            "K8S_SERVER_BIN_DIR": "{{ K8S_K8S_DIR }}/server/kubernetes/server/bin",
+            "K8S_SERVICE_IP_PRE": "10.222",
+            "K8S_SERVICE_IP_SUBNET": "{{ K8S_SERVICE_IP_PRE }}.0.0/16",
+            "K8S_VERSION": "v1.14.1",
+            "LB_ROUTES_TABLE": 8,
+            "LRZ_INTERNAL": true,
+            "MAIN_DOMAIN": "www.demo.gerdi.org",
+            "NETWORK_MTU": 1500,
+            "NFS_MOUNT_PATH": "/mnt/nfs",
+            "NFS_SERVER_DOMAIN": "intern05.nas.lrz.de",
+            "NFS_VOLUME_PATH": "/intern/gerdi01",
+            "NICDEVICEPREFIX": "eth",
+            "NODE_NAMESERVER": "1.1.1.1",
+            "OPENVSWITCH_VERSION": "2.10.0+2018.08.28+git.8ca7c82b7d+ds1-12",
+            "OTHER_DOMAINS": [
+                "demo.gerdi.org",
+                "canaray.gerdi.org",
+                "www.canary.gerdi.org"
+            ],
+            "OVN_API_TOKEN": "someValue",
+            "OVN_CENTRAL_VERSION": "{{ OPENVSWITCH_VERSION }}",
+            "OVN_HOST_VERSION": "{{ OPENVSWITCH_VERSION }}",
+            "PROMETHEUS_BASE_DIR": "/opt/prometheus",
+            "PROMETHEUS_VERSION": "2.10.0",
+            "SECRETS_GRAFANA_ADMIN_PASSWORD": "aay9W274dhCT3dajE2Rp",
+            "SECRETS_GRAFANA_ADMIN_UNAME": "gerdiGrafana",
+            "ansible_check_mode": false,
+            "ansible_connection": "local",
+            "ansible_diff_mode": false,
+            "ansible_facts": {},
+            "ansible_forks": 5,
+            "ansible_inventory_sources": [
+                "/Users/di39num/Code/LRZ-RDM/ansible-inventories/gerdi/b.gerdi.org/hosts.yaml"
+            ],
+            "ansible_playbook_python": "/Users/di39num/anaconda3/bin/python",
+            "ansible_run_tags": [
+                "all"
+            ],
+            "ansible_skip_tags": [],
+            "ansible_verbosity": 0,
+            "ansible_version": {
+                "full": "2.8.0",
+                "major": 2,
+                "minor": 8,
+                "revision": 0,
+                "string": "2.8.0"
+            },
+            "group_names": [
+                "kubernetes_management"
+            ],
+            "groups": {
+                "all": [
+                    "lb-0.b.gerdi.org",
+                    "mstr-0.b.gerdi.org",
+                    "nd-0.b.gerdi.org",
+                    "nd-1.b.gerdi.org",
+                    "nd-2.b.gerdi.org",
+                    "nd-3.b.gerdi.org",
+                    "localhost"
+                ],
+                "kubernetes_management": [
+                    "localhost"
+                ],
+                "kubernetes_masters": [
+                    "mstr-0.b.gerdi.org"
+                ],
+                "kubernetes_nodes": [
+                    "lb-0.b.gerdi.org",
+                    "nd-0.b.gerdi.org",
+                    "nd-1.b.gerdi.org",
+                    "nd-2.b.gerdi.org",
+                    "nd-3.b.gerdi.org"
+                ],
+                "loadbalancer_nodes": [
+                    "lb-0.b.gerdi.org"
+                ],
+                "openstack_nodes": [],
+                "ungrouped": [],
+                "vmware_nodes": [
+                    "lb-0.b.gerdi.org",
+                    "mstr-0.b.gerdi.org",
+                    "nd-0.b.gerdi.org",
+                    "nd-1.b.gerdi.org",
+                    "nd-2.b.gerdi.org",
+                    "nd-3.b.gerdi.org"
+                ]
+            },
+            "inventory_dir": "/Users/di39num/Code/LRZ-RDM/ansible-inventories/gerdi/b.gerdi.org",
+            "inventory_file": "/Users/di39num/Code/LRZ-RDM/ansible-inventories/gerdi/b.gerdi.org/hosts.yaml",
+            "inventory_hostname": "localhost",
+            "inventory_hostname_short": "localhost",
+            "playbook_dir": "/Users/di39num/Code/GeRDI/GerdiKubed"
+        },
+        "mstr-0.b.gerdi.org": {
+            "CNI_CONF_DIR": "/etc/cni/net.d",
+            "CNI_DIR": "{{ K8S_BASE_DIR }}/cni-{{ CNI_VERSION }}",
+            "CNI_DOWNLOAD_URL": "https://github.com/containernetworking/cni/releases/download/{{ CNI_VERSION }}/cni-{{ CNI_VERSION }}.tgz",
+            "CNI_VERSION": "v0.5.2",
+            "CONTROL_BASE_DIR": "/Users/di39num/Netzlaufwerke/di39num/GeRDI/Certs/{{ K8S_DEPLOYMENT_CONTEXT }}_k8s_mgmt",
+            "CONTROL_CA_DIR": "{{ CONTROL_BASE_DIR }}/ca",
+            "CONTROL_CERT_DIR": "{{ CONTROL_BASE_DIR }}/certs",
+            "CONTROL_CONFIG_DIR": "{{ CONTROL_BASE_DIR }}/configs",
+            "CONTROL_CSR_DIR": "{{ CONTROL_BASE_DIR }}/csrs",
+            "CONTROL_KEY_DIR": "{{ CONTROL_BASE_DIR }}/keys",
+            "CONTROL_MACHINE": "127.0.0.1",
+            "DOCKER_VERSION": "5:18.09.1~3-0~debian-stretch",
+            "EXTERNAL_DEV": "eth1",
+            "EXTERNAL_GW": "138.246.225.254",
+            "EXTERNAL_LB": "138.246.225.14",
+            "GOLANG_VERSION": "go1.12.4",
+            "GRAFANA_ADMIN_PASSWORD": "{{ SECRETS_GRAFANA_ADMIN_PASSWORD }}",
+            "GRAFANA_ADMIN_UNAME": "{{ SECRETS_GRAFANA_ADMIN_UNAME }}",
+            "GRAFANA_BASE_DIR": "/opt/grafana",
+            "GRAFANA_VERSION": "6.2.1",
+            "INTERNAL_NET": "10.155.92.0/22",
+            "K8S_AUTH_FILES_DIR": "{{ K8S_BASE_DIR }}/tokens",
+            "K8S_BASE_DIR": "/opt/k8s",
+            "K8S_CERT_FILES_DIR": "{{ K8S_BASE_DIR }}/certs",
+            "K8S_CLUSTER_IP_PRE": "10.220",
+            "K8S_CLUSTER_IP_SUBNET": "{{ K8S_CLUSTER_IP_PRE }}.0.0/15",
+            "K8S_DEPLOYMENT_CONTEXT": "b",
+            "K8S_DNS_IP": "{{ K8S_SERVICE_IP_PRE }}.0.10",
+            "K8S_DOMAIN_NAMESPACE": "gerdi.org",
+            "K8S_DOWNLOAD_URL": "https://github.com/kubernetes/kubernetes/releases/download/{{K8S_VERSION}}/kubernetes.tar.gz",
+            "K8S_GLOBAL_LOG_LEVEL": "v=1",
+            "K8S_K8S_DIR": "{{ K8S_BASE_DIR }}/kubernetes",
+            "K8S_KEY_FILES_DIR": "{{ K8S_BASE_DIR }}/keys",
+            "K8S_KUBECONFIG": "{{ K8S_BASE_DIR }}/kubeconfig",
+            "K8S_MASTER_DOMAIN": "{{ 'mstr-0.' + K8S_DEPLOYMENT_CONTEXT + '.' + K8S_DOMAIN_NAMESPACE }}",
+            "K8S_MASTER_IP": "{{ hostvars[K8S_MASTER_DOMAIN]['altIP'] | default(lookup('dig', K8S_MASTER_DOMAIN)) }}",
+            "K8S_SERVER_BIN_DIR": "{{ K8S_K8S_DIR }}/server/kubernetes/server/bin",
+            "K8S_SERVICE_IP_PRE": "10.222",
+            "K8S_SERVICE_IP_SUBNET": "{{ K8S_SERVICE_IP_PRE }}.0.0/16",
+            "K8S_VERSION": "v1.14.1",
+            "LB_ROUTES_TABLE": 8,
+            "LRZ_INTERNAL": true,
+            "MAIN_DOMAIN": "www.demo.gerdi.org",
+            "NETWORK_MTU": 1500,
+            "NFS_MOUNT_PATH": "/mnt/nfs",
+            "NFS_SERVER_DOMAIN": "intern05.nas.lrz.de",
+            "NFS_VOLUME_PATH": "/intern/gerdi01",
+            "NICDEVICEPREFIX": "eth",
+            "NODE_NAMESERVER": "1.1.1.1",
+            "OPENVSWITCH_VERSION": "2.10.0+2018.08.28+git.8ca7c82b7d+ds1-12",
+            "OTHER_DOMAINS": [
+                "demo.gerdi.org",
+                "canaray.gerdi.org",
+                "www.canary.gerdi.org"
+            ],
+            "OVN_API_TOKEN": "someValue",
+            "OVN_CENTRAL_VERSION": "{{ OPENVSWITCH_VERSION }}",
+            "OVN_HOST_VERSION": "{{ OPENVSWITCH_VERSION }}",
+            "PROMETHEUS_BASE_DIR": "/opt/prometheus",
+            "PROMETHEUS_VERSION": "2.10.0",
+            "SECRETS_GRAFANA_ADMIN_PASSWORD": "aay9W274dhCT3dajE2Rp",
+            "SECRETS_GRAFANA_ADMIN_UNAME": "gerdiGrafana",
+            "alreadySetup": {
+                "changed": true,
+                "cmd": "grep 'AllowGroups root root' /etc/ssh/sshd_config",
+                "delta": "0:00:00.003514",
+                "end": "2019-07-10 13:00:04.065953",
+                "failed": true,
+                "msg": "non-zero return code",
+                "rc": 1,
+                "start": "2019-07-10 13:00:04.062439",
+                "stderr": "",
+                "stderr_lines": [],
+                "stdout": "",
+                "stdout_lines": []
+            },
+            "ansible_all_ipv4_addresses": [
+                "10.155.92.75"
+            ],
+            "ansible_all_ipv6_addresses": [
+                "fe80::250:56ff:fe8f:663e"
+            ],
+            "ansible_apparmor": {
+                "status": "disabled"
+            },
+            "ansible_architecture": "x86_64",
+            "ansible_bios_date": "12/12/2018",
+            "ansible_bios_version": "6.00",
+            "ansible_check_mode": false,
+            "ansible_cmdline": {
+                "BOOT_IMAGE": "/boot/vmlinuz-4.9.0-9-amd64",
+                "consoleblank": "0",
+                "ro": true,
+                "root": "UUID=1883d5a2-81ee-407d-acfb-b4074246effe"
+            },
+            "ansible_date_time": {
+                "date": "2019-07-10",
+                "day": "10",
+                "epoch": "1562756403",
+                "hour": "13",
+                "iso8601": "2019-07-10T11:00:03Z",
+                "iso8601_basic": "20190710T130003698872",
+                "iso8601_basic_short": "20190710T130003",
+                "iso8601_micro": "2019-07-10T11:00:03.698985Z",
+                "minute": "00",
+                "month": "07",
+                "second": "03",
+                "time": "13:00:03",
+                "tz": "CEST",
+                "tz_offset": "+0200",
+                "weekday": "Wednesday",
+                "weekday_number": "3",
+                "weeknumber": "27",
+                "year": "2019"
+            },
+            "ansible_default_ipv4": {
+                "address": "10.155.92.75",
+                "alias": "eth0",
+                "broadcast": "10.155.95.255",
+                "gateway": "10.155.95.254",
+                "interface": "eth0",
+                "macaddress": "00:50:56:8f:66:3e",
+                "mtu": 1500,
+                "netmask": "255.255.252.0",
+                "network": "10.155.92.0",
+                "type": "ether"
+            },
+            "ansible_default_ipv6": {
+                "address": "fe80::250:56ff:fe8f:663e",
+                "gateway": "fe80::5:73ff:fea0:1",
+                "interface": "eth0",
+                "macaddress": "00:50:56:8f:66:3e",
+                "mtu": 1500,
+                "prefix": "64",
+                "scope": "link",
+                "type": "ether"
+            },
+            "ansible_device_links": {
+                "ids": {
+                    "sr0": [
+                        "ata-VMware_Virtual_SATA_CDRW_Drive_00000000000000000001"
+                    ]
+                },
+                "labels": {},
+                "masters": {},
+                "uuids": {
+                    "sda1": [
+                        "1883d5a2-81ee-407d-acfb-b4074246effe"
+                    ]
+                }
+            },
+            "ansible_devices": {
+                "sda": {
+                    "holders": [],
+                    "host": "Serial Attached SCSI controller: VMware PVSCSI SCSI Controller (rev 02)",
+                    "links": {
+                        "ids": [],
+                        "labels": [],
+                        "masters": [],
+                        "uuids": []
+                    },
+                    "model": "Virtual disk",
+                    "partitions": {
+                        "sda1": {
+                            "holders": [],
+                            "links": {
+                                "ids": [],
+                                "labels": [],
+                                "masters": [],
+                                "uuids": [
+                                    "1883d5a2-81ee-407d-acfb-b4074246effe"
+                                ]
+                            },
+                            "sectors": "524285952",
+                            "sectorsize": 512,
+                            "size": "250.00 GB",
+                            "start": "2048",
+                            "uuid": "1883d5a2-81ee-407d-acfb-b4074246effe"
+                        }
+                    },
+                    "removable": "0",
+                    "rotational": "1",
+                    "sas_address": null,
+                    "sas_device_handle": null,
+                    "scheduler_mode": "cfq",
+                    "sectors": "524288000",
+                    "sectorsize": "512",
+                    "size": "250.00 GB",
+                    "support_discard": "0",
+                    "vendor": "VMware",
+                    "virtual": 1
+                },
+                "sr0": {
+                    "holders": [],
+                    "host": "SATA controller: VMware SATA AHCI controller",
+                    "links": {
+                        "ids": [
+                            "ata-VMware_Virtual_SATA_CDRW_Drive_00000000000000000001"
+                        ],
+                        "labels": [],
+                        "masters": [],
+                        "uuids": []
+                    },
+                    "model": "VMware SATA CD00",
+                    "partitions": {},
+                    "removable": "1",
+                    "rotational": "1",
+                    "sas_address": null,
+                    "sas_device_handle": null,
+                    "scheduler_mode": "cfq",
+                    "sectors": "2097151",
+                    "sectorsize": "512",
+                    "size": "1024.00 MB",
+                    "support_discard": "0",
+                    "vendor": "NECVMWar",
+                    "virtual": 1
+                }
+            },
+            "ansible_diff_mode": false,
+            "ansible_distribution": "Debian",
+            "ansible_distribution_file_parsed": true,
+            "ansible_distribution_file_path": "/etc/os-release",
+            "ansible_distribution_file_variety": "Debian",
+            "ansible_distribution_major_version": "9",
+            "ansible_distribution_release": "stretch",
+            "ansible_distribution_version": "9",
+            "ansible_dns": {
+                "nameservers": [
+                    "1.1.1.1"
+                ]
+            },
+            "ansible_domain": "srv.mwn.de",
+            "ansible_effective_group_id": 0,
+            "ansible_effective_user_id": 0,
+            "ansible_env": {
+                "HOME": "/root",
+                "LANG": "en_US.UTF-8",
+                "LANGUAGE": "en_US:en",
+                "LOGNAME": "root",
+                "MAIL": "/var/mail/root",
+                "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "PWD": "/root",
+                "SHELL": "/bin/bash",
+                "SHLVL": "1",
+                "SSH_CLIENT": "129.187.12.19 56832 22",
+                "SSH_CONNECTION": "129.187.12.19 56832 10.155.92.75 22",
+                "SSH_TTY": "/dev/pts/1",
+                "TERM": "xterm-256color",
+                "USER": "root",
+                "XDG_RUNTIME_DIR": "/run/user/0",
+                "XDG_SESSION_ID": "2075",
+                "_": "/bin/sh"
+            },
+            "ansible_eth0": {
+                "active": true,
+                "device": "eth0",
+                "features": {
+                    "busy_poll": "off [fixed]",
+                    "fcoe_mtu": "off [fixed]",
+                    "generic_receive_offload": "on",
+                    "generic_segmentation_offload": "on",
+                    "highdma": "on",
+                    "hw_tc_offload": "off [fixed]",
+                    "l2_fwd_offload": "off [fixed]",
+                    "large_receive_offload": "on",
+                    "loopback": "off [fixed]",
+                    "netns_local": "off [fixed]",
+                    "ntuple_filters": "off [fixed]",
+                    "receive_hashing": "on",
+                    "rx_all": "off [fixed]",
+                    "rx_checksumming": "on",
+                    "rx_fcs": "off [fixed]",
+                    "rx_vlan_filter": "on [fixed]",
+                    "rx_vlan_offload": "on",
+                    "rx_vlan_stag_filter": "off [fixed]",
+                    "rx_vlan_stag_hw_parse": "off [fixed]",
+                    "scatter_gather": "on",
+                    "tcp_segmentation_offload": "on",
+                    "tx_checksum_fcoe_crc": "off [fixed]",
+                    "tx_checksum_ip_generic": "on",
+                    "tx_checksum_ipv4": "off [fixed]",
+                    "tx_checksum_ipv6": "off [fixed]",
+                    "tx_checksum_sctp": "off [fixed]",
+                    "tx_checksumming": "on",
+                    "tx_fcoe_segmentation": "off [fixed]",
+                    "tx_gre_csum_segmentation": "off [fixed]",
+                    "tx_gre_segmentation": "off [fixed]",
+                    "tx_gso_partial": "off [fixed]",
+                    "tx_gso_robust": "off [fixed]",
+                    "tx_ipxip4_segmentation": "off [fixed]",
+                    "tx_ipxip6_segmentation": "off [fixed]",
+                    "tx_lockless": "off [fixed]",
+                    "tx_nocache_copy": "off",
+                    "tx_scatter_gather": "on",
+                    "tx_scatter_gather_fraglist": "off [fixed]",
+                    "tx_sctp_segmentation": "off [fixed]",
+                    "tx_tcp6_segmentation": "on",
+                    "tx_tcp_ecn_segmentation": "off [fixed]",
+                    "tx_tcp_mangleid_segmentation": "off",
+                    "tx_tcp_segmentation": "on",
+                    "tx_udp_tnl_csum_segmentation": "off [fixed]",
+                    "tx_udp_tnl_segmentation": "off [fixed]",
+                    "tx_vlan_offload": "on",
+                    "tx_vlan_stag_hw_insert": "off [fixed]",
+                    "udp_fragmentation_offload": "off [fixed]",
+                    "vlan_challenged": "off [fixed]"
+                },
+                "hw_timestamp_filters": [],
+                "ipv4": {
+                    "address": "10.155.92.75",
+                    "broadcast": "10.155.95.255",
+                    "netmask": "255.255.252.0",
+                    "network": "10.155.92.0"
+                },
+                "ipv6": [
+                    {
+                        "address": "fe80::250:56ff:fe8f:663e",
+                        "prefix": "64",
+                        "scope": "link"
+                    }
+                ],
+                "macaddress": "00:50:56:8f:66:3e",
+                "module": "vmxnet3",
+                "mtu": 1500,
+                "pciid": "0000:0b:00.0",
+                "promisc": false,
+                "speed": 10000,
+                "timestamping": [
+                    "rx_software",
+                    "software"
+                ],
+                "type": "ether"
+            },
+            "ansible_facts": {
+                "_facts_gathered": true,
+                "all_ipv4_addresses": [
+                    "10.155.92.75"
+                ],
+                "all_ipv6_addresses": [
+                    "fe80::250:56ff:fe8f:663e"
+                ],
+                "ansible_local": {},
+                "apparmor": {
+                    "status": "disabled"
+                },
+                "architecture": "x86_64",
+                "bios_date": "12/12/2018",
+                "bios_version": "6.00",
+                "cmdline": {
+                    "BOOT_IMAGE": "/boot/vmlinuz-4.9.0-9-amd64",
+                    "consoleblank": "0",
+                    "ro": true,
+                    "root": "UUID=1883d5a2-81ee-407d-acfb-b4074246effe"
+                },
+                "date_time": {
+                    "date": "2019-07-10",
+                    "day": "10",
+                    "epoch": "1562756403",
+                    "hour": "13",
+                    "iso8601": "2019-07-10T11:00:03Z",
+                    "iso8601_basic": "20190710T130003698872",
+                    "iso8601_basic_short": "20190710T130003",
+                    "iso8601_micro": "2019-07-10T11:00:03.698985Z",
+                    "minute": "00",
+                    "month": "07",
+                    "second": "03",
+                    "time": "13:00:03",
+                    "tz": "CEST",
+                    "tz_offset": "+0200",
+                    "weekday": "Wednesday",
+                    "weekday_number": "3",
+                    "weeknumber": "27",
+                    "year": "2019"
+                },
+                "default_ipv4": {
+                    "address": "10.155.92.75",
+                    "alias": "eth0",
+                    "broadcast": "10.155.95.255",
+                    "gateway": "10.155.95.254",
+                    "interface": "eth0",
+                    "macaddress": "00:50:56:8f:66:3e",
+                    "mtu": 1500,
+                    "netmask": "255.255.252.0",
+                    "network": "10.155.92.0",
+                    "type": "ether"
+                },
+                "default_ipv6": {
+                    "address": "fe80::250:56ff:fe8f:663e",
+                    "gateway": "fe80::5:73ff:fea0:1",
+                    "interface": "eth0",
+                    "macaddress": "00:50:56:8f:66:3e",
+                    "mtu": 1500,
+                    "prefix": "64",
+                    "scope": "link",
+                    "type": "ether"
+                },
+                "device_links": {
+                    "ids": {
+                        "sr0": [
+                            "ata-VMware_Virtual_SATA_CDRW_Drive_00000000000000000001"
+                        ]
+                    },
+                    "labels": {},
+                    "masters": {},
+                    "uuids": {
+                        "sda1": [
+                            "1883d5a2-81ee-407d-acfb-b4074246effe"
+                        ]
+                    }
+                },
+                "devices": {
+                    "sda": {
+                        "holders": [],
+                        "host": "Serial Attached SCSI controller: VMware PVSCSI SCSI Controller (rev 02)",
+                        "links": {
+                            "ids": [],
+                            "labels": [],
+                            "masters": [],
+                            "uuids": []
+                        },
+                        "model": "Virtual disk",
+                        "partitions": {
+                            "sda1": {
+                                "holders": [],
+                                "links": {
+                                    "ids": [],
+                                    "labels": [],
+                                    "masters": [],
+                                    "uuids": [
+                                        "1883d5a2-81ee-407d-acfb-b4074246effe"
+                                    ]
+                                },
+                                "sectors": "524285952",
+                                "sectorsize": 512,
+                                "size": "250.00 GB",
+                                "start": "2048",
+                                "uuid": "1883d5a2-81ee-407d-acfb-b4074246effe"
+                            }
+                        },
+                        "removable": "0",
+                        "rotational": "1",
+                        "sas_address": null,
+                        "sas_device_handle": null,
+                        "scheduler_mode": "cfq",
+                        "sectors": "524288000",
+                        "sectorsize": "512",
+                        "size": "250.00 GB",
+                        "support_discard": "0",
+                        "vendor": "VMware",
+                        "virtual": 1
+                    },
+                    "sr0": {
+                        "holders": [],
+                        "host": "SATA controller: VMware SATA AHCI controller",
+                        "links": {
+                            "ids": [
+                                "ata-VMware_Virtual_SATA_CDRW_Drive_00000000000000000001"
+                            ],
+                            "labels": [],
+                            "masters": [],
+                            "uuids": []
+                        },
+                        "model": "VMware SATA CD00",
+                        "partitions": {},
+                        "removable": "1",
+                        "rotational": "1",
+                        "sas_address": null,
+                        "sas_device_handle": null,
+                        "scheduler_mode": "cfq",
+                        "sectors": "2097151",
+                        "sectorsize": "512",
+                        "size": "1024.00 MB",
+                        "support_discard": "0",
+                        "vendor": "NECVMWar",
+                        "virtual": 1
+                    }
+                },
+                "discovered_interpreter_python": "/usr/bin/python",
+                "distribution": "Debian",
+                "distribution_file_parsed": true,
+                "distribution_file_path": "/etc/os-release",
+                "distribution_file_variety": "Debian",
+                "distribution_major_version": "9",
+                "distribution_release": "stretch",
+                "distribution_version": "9",
+                "dns": {
+                    "nameservers": [
+                        "1.1.1.1"
+                    ]
+                },
+                "domain": "srv.mwn.de",
+                "effective_group_id": 0,
+                "effective_user_id": 0,
+                "env": {
+                    "HOME": "/root",
+                    "LANG": "en_US.UTF-8",
+                    "LANGUAGE": "en_US:en",
+                    "LOGNAME": "root",
+                    "MAIL": "/var/mail/root",
+                    "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                    "PWD": "/root",
+                    "SHELL": "/bin/bash",
+                    "SHLVL": "1",
+                    "SSH_CLIENT": "129.187.12.19 56832 22",
+                    "SSH_CONNECTION": "129.187.12.19 56832 10.155.92.75 22",
+                    "SSH_TTY": "/dev/pts/1",
+                    "TERM": "xterm-256color",
+                    "USER": "root",
+                    "XDG_RUNTIME_DIR": "/run/user/0",
+                    "XDG_SESSION_ID": "2075",
+                    "_": "/bin/sh"
+                },
+                "eth0": {
+                    "active": true,
+                    "device": "eth0",
+                    "features": {
+                        "busy_poll": "off [fixed]",
+                        "fcoe_mtu": "off [fixed]",
+                        "generic_receive_offload": "on",
+                        "generic_segmentation_offload": "on",
+                        "highdma": "on",
+                        "hw_tc_offload": "off [fixed]",
+                        "l2_fwd_offload": "off [fixed]",
+                        "large_receive_offload": "on",
+                        "loopback": "off [fixed]",
+                        "netns_local": "off [fixed]",
+                        "ntuple_filters": "off [fixed]",
+                        "receive_hashing": "on",
+                        "rx_all": "off [fixed]",
+                        "rx_checksumming": "on",
+                        "rx_fcs": "off [fixed]",
+                        "rx_vlan_filter": "on [fixed]",
+                        "rx_vlan_offload": "on",
+                        "rx_vlan_stag_filter": "off [fixed]",
+                        "rx_vlan_stag_hw_parse": "off [fixed]",
+                        "scatter_gather": "on",
+                        "tcp_segmentation_offload": "on",
+                        "tx_checksum_fcoe_crc": "off [fixed]",
+                        "tx_checksum_ip_generic": "on",
+                        "tx_checksum_ipv4": "off [fixed]",
+                        "tx_checksum_ipv6": "off [fixed]",
+                        "tx_checksum_sctp": "off [fixed]",
+                        "tx_checksumming": "on",
+                        "tx_fcoe_segmentation": "off [fixed]",
+                        "tx_gre_csum_segmentation": "off [fixed]",
+                        "tx_gre_segmentation": "off [fixed]",
+                        "tx_gso_partial": "off [fixed]",
+                        "tx_gso_robust": "off [fixed]",
+                        "tx_ipxip4_segmentation": "off [fixed]",
+                        "tx_ipxip6_segmentation": "off [fixed]",
+                        "tx_lockless": "off [fixed]",
+                        "tx_nocache_copy": "off",
+                        "tx_scatter_gather": "on",
+                        "tx_scatter_gather_fraglist": "off [fixed]",
+                        "tx_sctp_segmentation": "off [fixed]",
+                        "tx_tcp6_segmentation": "on",
+                        "tx_tcp_ecn_segmentation": "off [fixed]",
+                        "tx_tcp_mangleid_segmentation": "off",
+                        "tx_tcp_segmentation": "on",
+                        "tx_udp_tnl_csum_segmentation": "off [fixed]",
+                        "tx_udp_tnl_segmentation": "off [fixed]",
+                        "tx_vlan_offload": "on",
+                        "tx_vlan_stag_hw_insert": "off [fixed]",
+                        "udp_fragmentation_offload": "off [fixed]",
+                        "vlan_challenged": "off [fixed]"
+                    },
+                    "hw_timestamp_filters": [],
+                    "ipv4": {
+                        "address": "10.155.92.75",
+                        "broadcast": "10.155.95.255",
+                        "netmask": "255.255.252.0",
+                        "network": "10.155.92.0"
+                    },
+                    "ipv6": [
+                        {
+                            "address": "fe80::250:56ff:fe8f:663e",
+                            "prefix": "64",
+                            "scope": "link"
+                        }
+                    ],
+                    "macaddress": "00:50:56:8f:66:3e",
+                    "module": "vmxnet3",
+                    "mtu": 1500,
+                    "pciid": "0000:0b:00.0",
+                    "promisc": false,
+                    "speed": 10000,
+                    "timestamping": [
+                        "rx_software",
+                        "software"
+                    ],
+                    "type": "ether"
+                },
+                "fibre_channel_wwn": [],
+                "fips": false,
+                "form_factor": "Other",
+                "fqdn": "badwlrz-gerdi-b-mstr-0.srv.mwn.de",
+                "gather_subset": [
+                    "all"
+                ],
+                "hostname": "badwlrz-gerdi-b-mstr-0",
+                "hostnqn": "",
+                "interfaces": [
+                    "lo",
+                    "eth0"
+                ],
+                "is_chroot": false,
+                "iscsi_iqn": "",
+                "kernel": "4.9.0-9-amd64",
+                "lo": {
+                    "active": true,
+                    "device": "lo",
+                    "features": {
+                        "busy_poll": "off [fixed]",
+                        "fcoe_mtu": "off [fixed]",
+                        "generic_receive_offload": "on",
+                        "generic_segmentation_offload": "on",
+                        "highdma": "on [fixed]",
+                        "hw_tc_offload": "off [fixed]",
+                        "l2_fwd_offload": "off [fixed]",
+                        "large_receive_offload": "off [fixed]",
+                        "loopback": "on [fixed]",
+                        "netns_local": "on [fixed]",
+                        "ntuple_filters": "off [fixed]",
+                        "receive_hashing": "off [fixed]",
+                        "rx_all": "off [fixed]",
+                        "rx_checksumming": "on [fixed]",
+                        "rx_fcs": "off [fixed]",
+                        "rx_vlan_filter": "off [fixed]",
+                        "rx_vlan_offload": "off [fixed]",
+                        "rx_vlan_stag_filter": "off [fixed]",
+                        "rx_vlan_stag_hw_parse": "off [fixed]",
+                        "scatter_gather": "on",
+                        "tcp_segmentation_offload": "on",
+                        "tx_checksum_fcoe_crc": "off [fixed]",
+                        "tx_checksum_ip_generic": "on [fixed]",
+                        "tx_checksum_ipv4": "off [fixed]",
+                        "tx_checksum_ipv6": "off [fixed]",
+                        "tx_checksum_sctp": "on [fixed]",
+                        "tx_checksumming": "on",
+                        "tx_fcoe_segmentation": "off [fixed]",
+                        "tx_gre_csum_segmentation": "off [fixed]",
+                        "tx_gre_segmentation": "off [fixed]",
+                        "tx_gso_partial": "off [fixed]",
+                        "tx_gso_robust": "off [fixed]",
+                        "tx_ipxip4_segmentation": "off [fixed]",
+                        "tx_ipxip6_segmentation": "off [fixed]",
+                        "tx_lockless": "on [fixed]",
+                        "tx_nocache_copy": "off [fixed]",
+                        "tx_scatter_gather": "on [fixed]",
+                        "tx_scatter_gather_fraglist": "on [fixed]",
+                        "tx_sctp_segmentation": "on",
+                        "tx_tcp6_segmentation": "on",
+                        "tx_tcp_ecn_segmentation": "on",
+                        "tx_tcp_mangleid_segmentation": "on",
+                        "tx_tcp_segmentation": "on",
+                        "tx_udp_tnl_csum_segmentation": "off [fixed]",
+                        "tx_udp_tnl_segmentation": "off [fixed]",
+                        "tx_vlan_offload": "off [fixed]",
+                        "tx_vlan_stag_hw_insert": "off [fixed]",
+                        "udp_fragmentation_offload": "on",
+                        "vlan_challenged": "on [fixed]"
+                    },
+                    "hw_timestamp_filters": [],
+                    "ipv4": {
+                        "address": "127.0.0.1",
+                        "broadcast": "host",
+                        "netmask": "255.0.0.0",
+                        "network": "127.0.0.0"
+                    },
+                    "ipv6": [
+                        {
+                            "address": "::1",
+                            "prefix": "128",
+                            "scope": "host"
+                        }
+                    ],
+                    "mtu": 65536,
+                    "promisc": false,
+                    "timestamping": [
+                        "rx_software",
+                        "software"
+                    ],
+                    "type": "loopback"
+                },
+                "lsb": {
+                    "codename": "stretch",
+                    "description": "Debian GNU/Linux 9.9 (stretch)",
+                    "id": "Debian",
+                    "major_release": "9",
+                    "release": "9.9"
+                },
+                "machine": "x86_64",
+                "machine_id": "441d7afd26e749d6821b9bc63173376a",
+                "memfree_mb": 7251,
+                "memory_mb": {
+                    "nocache": {
+                        "free": 7671,
+                        "used": 298
+                    },
+                    "real": {
+                        "free": 7251,
+                        "total": 7969,
+                        "used": 718
+                    },
+                    "swap": {
+                        "cached": 0,
+                        "free": 0,
+                        "total": 0,
+                        "used": 0
+                    }
+                },
+                "memtotal_mb": 7969,
+                "module_setup": true,
+                "mounts": [
+                    {
+                        "block_available": 65160140,
+                        "block_size": 4096,
+                        "block_total": 65533184,
+                        "block_used": 373044,
+                        "device": "/dev/sda1",
+                        "fstype": "xfs",
+                        "inode_available": 131030697,
+                        "inode_total": 131071488,
+                        "inode_used": 40791,
+                        "mount": "/",
+                        "options": "rw,noatime,attr2,inode64,noquota",
+                        "size_available": 266895933440,
+                        "size_total": 268423921664,
+                        "uuid": "1883d5a2-81ee-407d-acfb-b4074246effe"
+                    }
+                ],
+                "nodename": "badwlrz-gerdi-b-mstr-0",
+                "os_family": "Debian",
+                "pkg_mgr": "apt",
+                "proc_cmdline": {
+                    "BOOT_IMAGE": "/boot/vmlinuz-4.9.0-9-amd64",
+                    "consoleblank": "0",
+                    "ro": true,
+                    "root": "UUID=1883d5a2-81ee-407d-acfb-b4074246effe"
+                },
+                "processor": [
+                    "0",
+                    "GenuineIntel",
+                    "Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz",
+                    "1",
+                    "GenuineIntel",
+                    "Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz",
+                    "2",
+                    "GenuineIntel",
+                    "Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz",
+                    "3",
+                    "GenuineIntel",
+                    "Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz"
+                ],
+                "processor_cores": 1,
+                "processor_count": 4,
+                "processor_threads_per_core": 1,
+                "processor_vcpus": 4,
+                "product_name": "VMware Virtual Platform",
+                "product_serial": "VMware-42 0f 16 cd c4 67 4e 98-22 95 3d 2d 01 70 94 e6",
+                "product_uuid": "420F16CD-C467-4E98-2295-3D2D017094E6",
+                "product_version": "None",
+                "python": {
+                    "executable": "/usr/bin/python",
+                    "has_sslcontext": true,
+                    "type": "CPython",
+                    "version": {
+                        "major": 2,
+                        "micro": 13,
+                        "minor": 7,
+                        "releaselevel": "final",
+                        "serial": 0
+                    },
+                    "version_info": [
+                        2,
+                        7,
+                        13,
+                        "final",
+                        0
+                    ]
+                },
+                "python_version": "2.7.13",
+                "real_group_id": 0,
+                "real_user_id": 0,
+                "selinux": {
+                    "status": "Missing selinux Python library"
+                },
+                "selinux_python_present": false,
+                "service_mgr": "systemd",
+                "ssh_host_key_dsa_public": "AAAAB3NzaC1kc3MAAACBAIeUDxovROdNqeKe5OEPuCqVkD70bvfZ6MmQGjaYkkNQ92G6Vm8P3lNl66JBpihUr7gvPK9Ncm2oEmtg75TtAuvblEzxL6vU6YRyPMKMwvU2fMltrQbrax3jsARh7jhdWXw9hlLlHR+yUjReUqU6O/0l0/9UtIyu/4WZazS0ga/1AAAAFQDirS7rl2PBoOPPEkG4xb6atQsyrwAAAIAZYHS88cK7ldRbSKGXVvYhMSODHSUzsTvD5zbScnyYIUsQyOibAAIkhxMyWNclSHiLOnbSrKGJY9PiCXDZGI/556kh9TkdIbHnct/vFGLAENsecFff/UZhhjVeJm7A+FhLtOFPBtvSOM1HiV60n77AjmGekYMrVGR3/7QhFjUyvwAAAIB7phQbTqTEf2JN9K1BAe4OfN+Mw3ZuQK0IFQcFatarms6vLvt0r1xPPGFMrc56oCe9bG0c5MdWBhjel7OoCrRCnkpJFIZluKXLzGZMbrq7pZsWsJElqPGa26FFqgV/7yijIpe1tXB44l6zhtLdHMflo43ijHRj2Ncg2tA1heIPcw==",
+                "ssh_host_key_ecdsa_public": "AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBN01/1/8uwKTp74Jb460gbNC8XErU2gxhWXDndZFfCSMArRDuc0GXC0A2MpxxHYAIJkEinsxUA/SN4pAqf1YSsA=",
+                "ssh_host_key_ed25519_public": "AAAAC3NzaC1lZDI1NTE5AAAAIARESE6GwBt4IgsT5oJw504QS0gA476sl0CsVWW6zfX2",
+                "ssh_host_key_rsa_public": "AAAAB3NzaC1yc2EAAAADAQABAAABAQDOiHNv+WJ6aOjDiexyU9nTnop0j+zufwwVHlE7h7Yik9JGHB6D/z9zxWNHDx6bgoEKnMMplPRGkEcG848EWyv/zF688gea7Za3hZlexitZVwg1pFR7tlBRT/7oErgydjlsWcWkyf5D6fau9hbgK3lSYiYw+sIA32S49ZpxxKrlALJ+alHqTb8PYvjdZ1WX2UBz03KrNVieWzKVEQfA9LZxZJs21AUsPYy3SY13PHWs6n6uHl1iSfBfmc+Yyl3/e+3/pS29RmH0gb/yAo3i8sEdODcN+tN3T/0+8XYtewfzc1Bb4gNbf2bJ5fnPz5wh9EvDAMO/X5ZMhgs4O5W3223J",
+                "swapfree_mb": 0,
+                "swaptotal_mb": 0,
+                "system": "Linux",
+                "system_vendor": "VMware, Inc.",
+                "uptime_seconds": 1041536,
+                "user_dir": "/root",
+                "user_gecos": "root",
+                "user_gid": 0,
+                "user_id": "root",
+                "user_shell": "/bin/bash",
+                "user_uid": 0,
+                "userspace_architecture": "x86_64",
+                "userspace_bits": "64",
+                "virtualization_role": "guest",
+                "virtualization_type": "VMware"
+            },
+            "ansible_fibre_channel_wwn": [],
+            "ansible_fips": false,
+            "ansible_forks": 5,
+            "ansible_form_factor": "Other",
+            "ansible_fqdn": "badwlrz-gerdi-b-mstr-0.srv.mwn.de",
+            "ansible_hostname": "badwlrz-gerdi-b-mstr-0",
+            "ansible_hostnqn": "",
+            "ansible_interfaces": [
+                "lo",
+                "eth0"
+            ],
+            "ansible_inventory_sources": [
+                "/Users/di39num/Code/LRZ-RDM/ansible-inventories/gerdi/b.gerdi.org/hosts.yaml"
+            ],
+            "ansible_is_chroot": false,
+            "ansible_iscsi_iqn": "",
+            "ansible_kernel": "4.9.0-9-amd64",
+            "ansible_lo": {
+                "active": true,
+                "device": "lo",
+                "features": {
+                    "busy_poll": "off [fixed]",
+                    "fcoe_mtu": "off [fixed]",
+                    "generic_receive_offload": "on",
+                    "generic_segmentation_offload": "on",
+                    "highdma": "on [fixed]",
+                    "hw_tc_offload": "off [fixed]",
+                    "l2_fwd_offload": "off [fixed]",
+                    "large_receive_offload": "off [fixed]",
+                    "loopback": "on [fixed]",
+                    "netns_local": "on [fixed]",
+                    "ntuple_filters": "off [fixed]",
+                    "receive_hashing": "off [fixed]",
+                    "rx_all": "off [fixed]",
+                    "rx_checksumming": "on [fixed]",
+                    "rx_fcs": "off [fixed]",
+                    "rx_vlan_filter": "off [fixed]",
+                    "rx_vlan_offload": "off [fixed]",
+                    "rx_vlan_stag_filter": "off [fixed]",
+                    "rx_vlan_stag_hw_parse": "off [fixed]",
+                    "scatter_gather": "on",
+                    "tcp_segmentation_offload": "on",
+                    "tx_checksum_fcoe_crc": "off [fixed]",
+                    "tx_checksum_ip_generic": "on [fixed]",
+                    "tx_checksum_ipv4": "off [fixed]",
+                    "tx_checksum_ipv6": "off [fixed]",
+                    "tx_checksum_sctp": "on [fixed]",
+                    "tx_checksumming": "on",
+                    "tx_fcoe_segmentation": "off [fixed]",
+                    "tx_gre_csum_segmentation": "off [fixed]",
+                    "tx_gre_segmentation": "off [fixed]",
+                    "tx_gso_partial": "off [fixed]",
+                    "tx_gso_robust": "off [fixed]",
+                    "tx_ipxip4_segmentation": "off [fixed]",
+                    "tx_ipxip6_segmentation": "off [fixed]",
+                    "tx_lockless": "on [fixed]",
+                    "tx_nocache_copy": "off [fixed]",
+                    "tx_scatter_gather": "on [fixed]",
+                    "tx_scatter_gather_fraglist": "on [fixed]",
+                    "tx_sctp_segmentation": "on",
+                    "tx_tcp6_segmentation": "on",
+                    "tx_tcp_ecn_segmentation": "on",
+                    "tx_tcp_mangleid_segmentation": "on",
+                    "tx_tcp_segmentation": "on",
+                    "tx_udp_tnl_csum_segmentation": "off [fixed]",
+                    "tx_udp_tnl_segmentation": "off [fixed]",
+                    "tx_vlan_offload": "off [fixed]",
+                    "tx_vlan_stag_hw_insert": "off [fixed]",
+                    "udp_fragmentation_offload": "on",
+                    "vlan_challenged": "on [fixed]"
+                },
+                "hw_timestamp_filters": [],
+                "ipv4": {
+                    "address": "127.0.0.1",
+                    "broadcast": "host",
+                    "netmask": "255.0.0.0",
+                    "network": "127.0.0.0"
+                },
+                "ipv6": [
+                    {
+                        "address": "::1",
+                        "prefix": "128",
+                        "scope": "host"
+                    }
+                ],
+                "mtu": 65536,
+                "promisc": false,
+                "timestamping": [
+                    "rx_software",
+                    "software"
+                ],
+                "type": "loopback"
+            },
+            "ansible_local": {},
+            "ansible_lsb": {
+                "codename": "stretch",
+                "description": "Debian GNU/Linux 9.9 (stretch)",
+                "id": "Debian",
+                "major_release": "9",
+                "release": "9.9"
+            },
+            "ansible_machine": "x86_64",
+            "ansible_machine_id": "441d7afd26e749d6821b9bc63173376a",
+            "ansible_memfree_mb": 7251,
+            "ansible_memory_mb": {
+                "nocache": {
+                    "free": 7671,
+                    "used": 298
+                },
+                "real": {
+                    "free": 7251,
+                    "total": 7969,
+                    "used": 718
+                },
+                "swap": {
+                    "cached": 0,
+                    "free": 0,
+                    "total": 0,
+                    "used": 0
+                }
+            },
+            "ansible_memtotal_mb": 7969,
+            "ansible_mounts": [
+                {
+                    "block_available": 65160140,
+                    "block_size": 4096,
+                    "block_total": 65533184,
+                    "block_used": 373044,
+                    "device": "/dev/sda1",
+                    "fstype": "xfs",
+                    "inode_available": 131030697,
+                    "inode_total": 131071488,
+                    "inode_used": 40791,
+                    "mount": "/",
+                    "options": "rw,noatime,attr2,inode64,noquota",
+                    "size_available": 266895933440,
+                    "size_total": 268423921664,
+                    "uuid": "1883d5a2-81ee-407d-acfb-b4074246effe"
+                }
+            ],
+            "ansible_nodename": "badwlrz-gerdi-b-mstr-0",
+            "ansible_os_family": "Debian",
+            "ansible_pkg_mgr": "apt",
+            "ansible_playbook_python": "/Users/di39num/anaconda3/bin/python",
+            "ansible_proc_cmdline": {
+                "BOOT_IMAGE": "/boot/vmlinuz-4.9.0-9-amd64",
+                "consoleblank": "0",
+                "ro": true,
+                "root": "UUID=1883d5a2-81ee-407d-acfb-b4074246effe"
+            },
+            "ansible_processor": [
+                "0",
+                "GenuineIntel",
+                "Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz",
+                "1",
+                "GenuineIntel",
+                "Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz",
+                "2",
+                "GenuineIntel",
+                "Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz",
+                "3",
+                "GenuineIntel",
+                "Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz"
+            ],
+            "ansible_processor_cores": 1,
+            "ansible_processor_count": 4,
+            "ansible_processor_threads_per_core": 1,
+            "ansible_processor_vcpus": 4,
+            "ansible_product_name": "VMware Virtual Platform",
+            "ansible_product_serial": "VMware-42 0f 16 cd c4 67 4e 98-22 95 3d 2d 01 70 94 e6",
+            "ansible_product_uuid": "420F16CD-C467-4E98-2295-3D2D017094E6",
+            "ansible_product_version": "None",
+            "ansible_python": {
+                "executable": "/usr/bin/python",
+                "has_sslcontext": true,
+                "type": "CPython",
+                "version": {
+                    "major": 2,
+                    "micro": 13,
+                    "minor": 7,
+                    "releaselevel": "final",
+                    "serial": 0
+                },
+                "version_info": [
+                    2,
+                    7,
+                    13,
+                    "final",
+                    0
+                ]
+            },
+            "ansible_python_version": "2.7.13",
+            "ansible_real_group_id": 0,
+            "ansible_real_user_id": 0,
+            "ansible_run_tags": [
+                "all"
+            ],
+            "ansible_selinux": {
+                "status": "Missing selinux Python library"
+            },
+            "ansible_selinux_python_present": false,
+            "ansible_service_mgr": "systemd",
+            "ansible_skip_tags": [],
+            "ansible_ssh_host_key_dsa_public": "AAAAB3NzaC1kc3MAAACBAIeUDxovROdNqeKe5OEPuCqVkD70bvfZ6MmQGjaYkkNQ92G6Vm8P3lNl66JBpihUr7gvPK9Ncm2oEmtg75TtAuvblEzxL6vU6YRyPMKMwvU2fMltrQbrax3jsARh7jhdWXw9hlLlHR+yUjReUqU6O/0l0/9UtIyu/4WZazS0ga/1AAAAFQDirS7rl2PBoOPPEkG4xb6atQsyrwAAAIAZYHS88cK7ldRbSKGXVvYhMSODHSUzsTvD5zbScnyYIUsQyOibAAIkhxMyWNclSHiLOnbSrKGJY9PiCXDZGI/556kh9TkdIbHnct/vFGLAENsecFff/UZhhjVeJm7A+FhLtOFPBtvSOM1HiV60n77AjmGekYMrVGR3/7QhFjUyvwAAAIB7phQbTqTEf2JN9K1BAe4OfN+Mw3ZuQK0IFQcFatarms6vLvt0r1xPPGFMrc56oCe9bG0c5MdWBhjel7OoCrRCnkpJFIZluKXLzGZMbrq7pZsWsJElqPGa26FFqgV/7yijIpe1tXB44l6zhtLdHMflo43ijHRj2Ncg2tA1heIPcw==",
+            "ansible_ssh_host_key_ecdsa_public": "AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBN01/1/8uwKTp74Jb460gbNC8XErU2gxhWXDndZFfCSMArRDuc0GXC0A2MpxxHYAIJkEinsxUA/SN4pAqf1YSsA=",
+            "ansible_ssh_host_key_ed25519_public": "AAAAC3NzaC1lZDI1NTE5AAAAIARESE6GwBt4IgsT5oJw504QS0gA476sl0CsVWW6zfX2",
+            "ansible_ssh_host_key_rsa_public": "AAAAB3NzaC1yc2EAAAADAQABAAABAQDOiHNv+WJ6aOjDiexyU9nTnop0j+zufwwVHlE7h7Yik9JGHB6D/z9zxWNHDx6bgoEKnMMplPRGkEcG848EWyv/zF688gea7Za3hZlexitZVwg1pFR7tlBRT/7oErgydjlsWcWkyf5D6fau9hbgK3lSYiYw+sIA32S49ZpxxKrlALJ+alHqTb8PYvjdZ1WX2UBz03KrNVieWzKVEQfA9LZxZJs21AUsPYy3SY13PHWs6n6uHl1iSfBfmc+Yyl3/e+3/pS29RmH0gb/yAo3i8sEdODcN+tN3T/0+8XYtewfzc1Bb4gNbf2bJ5fnPz5wh9EvDAMO/X5ZMhgs4O5W3223J",
+            "ansible_swapfree_mb": 0,
+            "ansible_swaptotal_mb": 0,
+            "ansible_system": "Linux",
+            "ansible_system_vendor": "VMware, Inc.",
+            "ansible_uptime_seconds": 1041536,
+            "ansible_user_dir": "/root",
+            "ansible_user_gecos": "root",
+            "ansible_user_gid": 0,
+            "ansible_user_id": "root",
+            "ansible_user_shell": "/bin/bash",
+            "ansible_user_uid": 0,
+            "ansible_userspace_architecture": "x86_64",
+            "ansible_userspace_bits": "64",
+            "ansible_verbosity": 0,
+            "ansible_version": {
+                "full": "2.8.0",
+                "major": 2,
+                "minor": 8,
+                "revision": 0,
+                "string": "2.8.0"
+            },
+            "ansible_virtualization_role": "guest",
+            "ansible_virtualization_type": "VMware",
+            "discovered_interpreter_python": "/usr/bin/python",
+            "gather_subset": [
+                "all"
+            ],
+            "group_names": [
+                "kubernetes_masters",
+                "vmware_nodes"
+            ],
+            "groups": {
+                "all": [
+                    "lb-0.b.gerdi.org",
+                    "mstr-0.b.gerdi.org",
+                    "nd-0.b.gerdi.org",
+                    "nd-1.b.gerdi.org",
+                    "nd-2.b.gerdi.org",
+                    "nd-3.b.gerdi.org",
+                    "localhost"
+                ],
+                "kubernetes_management": [
+                    "localhost"
+                ],
+                "kubernetes_masters": [
+                    "mstr-0.b.gerdi.org"
+                ],
+                "kubernetes_nodes": [
+                    "lb-0.b.gerdi.org",
+                    "nd-0.b.gerdi.org",
+                    "nd-1.b.gerdi.org",
+                    "nd-2.b.gerdi.org",
+                    "nd-3.b.gerdi.org"
+                ],
+                "loadbalancer_nodes": [
+                    "lb-0.b.gerdi.org"
+                ],
+                "openstack_nodes": [],
+                "ungrouped": [],
+                "vmware_nodes": [
+                    "lb-0.b.gerdi.org",
+                    "mstr-0.b.gerdi.org",
+                    "nd-0.b.gerdi.org",
+                    "nd-1.b.gerdi.org",
+                    "nd-2.b.gerdi.org",
+                    "nd-3.b.gerdi.org"
+                ]
+            },
+            "host_private_address": "10.155.92.75",
+            "host_private_gateway": "10.155.95.254/22",
+            "host_private_interface": "eth0",
+            "host_private_netmask": "255.255.252.0",
+            "host_private_network": "10.155.92.0",
+            "inventory_dir": "/Users/di39num/Code/LRZ-RDM/ansible-inventories/gerdi/b.gerdi.org",
+            "inventory_file": "/Users/di39num/Code/LRZ-RDM/ansible-inventories/gerdi/b.gerdi.org/hosts.yaml",
+            "inventory_hostname": "mstr-0.b.gerdi.org",
+            "inventory_hostname_short": "mstr-0",
+            "module_setup": true,
+            "playbook_dir": "/Users/di39num/Code/GeRDI/GerdiKubed"
+        },
+        "nd-0.b.gerdi.org": {
+            "CNI_CONF_DIR": "/etc/cni/net.d",
+            "CNI_DIR": "{{ K8S_BASE_DIR }}/cni-{{ CNI_VERSION }}",
+            "CNI_DOWNLOAD_URL": "https://github.com/containernetworking/cni/releases/download/{{ CNI_VERSION }}/cni-{{ CNI_VERSION }}.tgz",
+            "CNI_VERSION": "v0.5.2",
+            "CONTROL_BASE_DIR": "/Users/di39num/Netzlaufwerke/di39num/GeRDI/Certs/{{ K8S_DEPLOYMENT_CONTEXT }}_k8s_mgmt",
+            "CONTROL_CA_DIR": "{{ CONTROL_BASE_DIR }}/ca",
+            "CONTROL_CERT_DIR": "{{ CONTROL_BASE_DIR }}/certs",
+            "CONTROL_CONFIG_DIR": "{{ CONTROL_BASE_DIR }}/configs",
+            "CONTROL_CSR_DIR": "{{ CONTROL_BASE_DIR }}/csrs",
+            "CONTROL_KEY_DIR": "{{ CONTROL_BASE_DIR }}/keys",
+            "CONTROL_MACHINE": "127.0.0.1",
+            "DOCKER_VERSION": "5:18.09.1~3-0~debian-stretch",
+            "EXTERNAL_DEV": "eth1",
+            "EXTERNAL_GW": "138.246.225.254",
+            "EXTERNAL_LB": "138.246.225.14",
+            "GOLANG_VERSION": "go1.12.4",
+            "GRAFANA_ADMIN_PASSWORD": "{{ SECRETS_GRAFANA_ADMIN_PASSWORD }}",
+            "GRAFANA_ADMIN_UNAME": "{{ SECRETS_GRAFANA_ADMIN_UNAME }}",
+            "GRAFANA_BASE_DIR": "/opt/grafana",
+            "GRAFANA_VERSION": "6.2.1",
+            "INTERNAL_NET": "10.155.92.0/22",
+            "K8S_AUTH_FILES_DIR": "{{ K8S_BASE_DIR }}/tokens",
+            "K8S_BASE_DIR": "/opt/k8s",
+            "K8S_CERT_FILES_DIR": "{{ K8S_BASE_DIR }}/certs",
+            "K8S_CLUSTER_IP_PRE": "10.220",
+            "K8S_CLUSTER_IP_SUBNET": "{{ K8S_CLUSTER_IP_PRE }}.0.0/15",
+            "K8S_DEPLOYMENT_CONTEXT": "b",
+            "K8S_DNS_IP": "{{ K8S_SERVICE_IP_PRE }}.0.10",
+            "K8S_DOMAIN_NAMESPACE": "gerdi.org",
+            "K8S_DOWNLOAD_URL": "https://github.com/kubernetes/kubernetes/releases/download/{{K8S_VERSION}}/kubernetes.tar.gz",
+            "K8S_GLOBAL_LOG_LEVEL": "v=1",
+            "K8S_K8S_DIR": "{{ K8S_BASE_DIR }}/kubernetes",
+            "K8S_KEY_FILES_DIR": "{{ K8S_BASE_DIR }}/keys",
+            "K8S_KUBECONFIG": "{{ K8S_BASE_DIR }}/kubeconfig",
+            "K8S_MASTER_DOMAIN": "{{ 'mstr-0.' + K8S_DEPLOYMENT_CONTEXT + '.' + K8S_DOMAIN_NAMESPACE }}",
+            "K8S_MASTER_IP": "{{ hostvars[K8S_MASTER_DOMAIN]['altIP'] | default(lookup('dig', K8S_MASTER_DOMAIN)) }}",
+            "K8S_SERVER_BIN_DIR": "{{ K8S_K8S_DIR }}/server/kubernetes/server/bin",
+            "K8S_SERVICE_IP_PRE": "10.222",
+            "K8S_SERVICE_IP_SUBNET": "{{ K8S_SERVICE_IP_PRE }}.0.0/16",
+            "K8S_VERSION": "v1.14.1",
+            "LB_ROUTES_TABLE": 8,
+            "LRZ_INTERNAL": true,
+            "MAIN_DOMAIN": "www.demo.gerdi.org",
+            "NETWORK_MTU": 1500,
+            "NFS_MOUNT_PATH": "/mnt/nfs",
+            "NFS_SERVER_DOMAIN": "intern05.nas.lrz.de",
+            "NFS_VOLUME_PATH": "/intern/gerdi01",
+            "NICDEVICEPREFIX": "eth",
+            "NODE_NAMESERVER": "1.1.1.1",
+            "OPENVSWITCH_VERSION": "2.10.0+2018.08.28+git.8ca7c82b7d+ds1-12",
+            "OTHER_DOMAINS": [
+                "demo.gerdi.org",
+                "canaray.gerdi.org",
+                "www.canary.gerdi.org"
+            ],
+            "OVN_API_TOKEN": "someValue",
+            "OVN_CENTRAL_VERSION": "{{ OPENVSWITCH_VERSION }}",
+            "OVN_HOST_VERSION": "{{ OPENVSWITCH_VERSION }}",
+            "PROMETHEUS_BASE_DIR": "/opt/prometheus",
+            "PROMETHEUS_VERSION": "2.10.0",
+            "SECRETS_GRAFANA_ADMIN_PASSWORD": "aay9W274dhCT3dajE2Rp",
+            "SECRETS_GRAFANA_ADMIN_UNAME": "gerdiGrafana",
+            "ansible_check_mode": false,
+            "ansible_diff_mode": false,
+            "ansible_facts": {},
+            "ansible_forks": 5,
+            "ansible_inventory_sources": [
+                "/Users/di39num/Code/LRZ-RDM/ansible-inventories/gerdi/b.gerdi.org/hosts.yaml"
+            ],
+            "ansible_playbook_python": "/Users/di39num/anaconda3/bin/python",
+            "ansible_run_tags": [
+                "all"
+            ],
+            "ansible_skip_tags": [],
+            "ansible_verbosity": 0,
+            "ansible_version": {
+                "full": "2.8.0",
+                "major": 2,
+                "minor": 8,
+                "revision": 0,
+                "string": "2.8.0"
+            },
+            "group_names": [
+                "kubernetes_nodes",
+                "vmware_nodes"
+            ],
+            "groups": {
+                "all": [
+                    "lb-0.b.gerdi.org",
+                    "mstr-0.b.gerdi.org",
+                    "nd-0.b.gerdi.org",
+                    "nd-1.b.gerdi.org",
+                    "nd-2.b.gerdi.org",
+                    "nd-3.b.gerdi.org",
+                    "localhost"
+                ],
+                "kubernetes_management": [
+                    "localhost"
+                ],
+                "kubernetes_masters": [
+                    "mstr-0.b.gerdi.org"
+                ],
+                "kubernetes_nodes": [
+                    "lb-0.b.gerdi.org",
+                    "nd-0.b.gerdi.org",
+                    "nd-1.b.gerdi.org",
+                    "nd-2.b.gerdi.org",
+                    "nd-3.b.gerdi.org"
+                ],
+                "loadbalancer_nodes": [
+                    "lb-0.b.gerdi.org"
+                ],
+                "openstack_nodes": [],
+                "ungrouped": [],
+                "vmware_nodes": [
+                    "lb-0.b.gerdi.org",
+                    "mstr-0.b.gerdi.org",
+                    "nd-0.b.gerdi.org",
+                    "nd-1.b.gerdi.org",
+                    "nd-2.b.gerdi.org",
+                    "nd-3.b.gerdi.org"
+                ]
+            },
+            "inventory_dir": "/Users/di39num/Code/LRZ-RDM/ansible-inventories/gerdi/b.gerdi.org",
+            "inventory_file": "/Users/di39num/Code/LRZ-RDM/ansible-inventories/gerdi/b.gerdi.org/hosts.yaml",
+            "inventory_hostname": "nd-0.b.gerdi.org",
+            "inventory_hostname_short": "nd-0",
+            "playbook_dir": "/Users/di39num/Code/GeRDI/GerdiKubed"
+        },
+        "nd-1.b.gerdi.org": {
+            "CNI_CONF_DIR": "/etc/cni/net.d",
+            "CNI_DIR": "{{ K8S_BASE_DIR }}/cni-{{ CNI_VERSION }}",
+            "CNI_DOWNLOAD_URL": "https://github.com/containernetworking/cni/releases/download/{{ CNI_VERSION }}/cni-{{ CNI_VERSION }}.tgz",
+            "CNI_VERSION": "v0.5.2",
+            "CONTROL_BASE_DIR": "/Users/di39num/Netzlaufwerke/di39num/GeRDI/Certs/{{ K8S_DEPLOYMENT_CONTEXT }}_k8s_mgmt",
+            "CONTROL_CA_DIR": "{{ CONTROL_BASE_DIR }}/ca",
+            "CONTROL_CERT_DIR": "{{ CONTROL_BASE_DIR }}/certs",
+            "CONTROL_CONFIG_DIR": "{{ CONTROL_BASE_DIR }}/configs",
+            "CONTROL_CSR_DIR": "{{ CONTROL_BASE_DIR }}/csrs",
+            "CONTROL_KEY_DIR": "{{ CONTROL_BASE_DIR }}/keys",
+            "CONTROL_MACHINE": "127.0.0.1",
+            "DOCKER_VERSION": "5:18.09.1~3-0~debian-stretch",
+            "EXTERNAL_DEV": "eth1",
+            "EXTERNAL_GW": "138.246.225.254",
+            "EXTERNAL_LB": "138.246.225.14",
+            "GOLANG_VERSION": "go1.12.4",
+            "GRAFANA_ADMIN_PASSWORD": "{{ SECRETS_GRAFANA_ADMIN_PASSWORD }}",
+            "GRAFANA_ADMIN_UNAME": "{{ SECRETS_GRAFANA_ADMIN_UNAME }}",
+            "GRAFANA_BASE_DIR": "/opt/grafana",
+            "GRAFANA_VERSION": "6.2.1",
+            "INTERNAL_NET": "10.155.92.0/22",
+            "K8S_AUTH_FILES_DIR": "{{ K8S_BASE_DIR }}/tokens",
+            "K8S_BASE_DIR": "/opt/k8s",
+            "K8S_CERT_FILES_DIR": "{{ K8S_BASE_DIR }}/certs",
+            "K8S_CLUSTER_IP_PRE": "10.220",
+            "K8S_CLUSTER_IP_SUBNET": "{{ K8S_CLUSTER_IP_PRE }}.0.0/15",
+            "K8S_DEPLOYMENT_CONTEXT": "b",
+            "K8S_DNS_IP": "{{ K8S_SERVICE_IP_PRE }}.0.10",
+            "K8S_DOMAIN_NAMESPACE": "gerdi.org",
+            "K8S_DOWNLOAD_URL": "https://github.com/kubernetes/kubernetes/releases/download/{{K8S_VERSION}}/kubernetes.tar.gz",
+            "K8S_GLOBAL_LOG_LEVEL": "v=1",
+            "K8S_K8S_DIR": "{{ K8S_BASE_DIR }}/kubernetes",
+            "K8S_KEY_FILES_DIR": "{{ K8S_BASE_DIR }}/keys",
+            "K8S_KUBECONFIG": "{{ K8S_BASE_DIR }}/kubeconfig",
+            "K8S_MASTER_DOMAIN": "{{ 'mstr-0.' + K8S_DEPLOYMENT_CONTEXT + '.' + K8S_DOMAIN_NAMESPACE }}",
+            "K8S_MASTER_IP": "{{ hostvars[K8S_MASTER_DOMAIN]['altIP'] | default(lookup('dig', K8S_MASTER_DOMAIN)) }}",
+            "K8S_SERVER_BIN_DIR": "{{ K8S_K8S_DIR }}/server/kubernetes/server/bin",
+            "K8S_SERVICE_IP_PRE": "10.222",
+            "K8S_SERVICE_IP_SUBNET": "{{ K8S_SERVICE_IP_PRE }}.0.0/16",
+            "K8S_VERSION": "v1.14.1",
+            "LB_ROUTES_TABLE": 8,
+            "LRZ_INTERNAL": true,
+            "MAIN_DOMAIN": "www.demo.gerdi.org",
+            "NETWORK_MTU": 1500,
+            "NFS_MOUNT_PATH": "/mnt/nfs",
+            "NFS_SERVER_DOMAIN": "intern05.nas.lrz.de",
+            "NFS_VOLUME_PATH": "/intern/gerdi01",
+            "NICDEVICEPREFIX": "eth",
+            "NODE_NAMESERVER": "1.1.1.1",
+            "OPENVSWITCH_VERSION": "2.10.0+2018.08.28+git.8ca7c82b7d+ds1-12",
+            "OTHER_DOMAINS": [
+                "demo.gerdi.org",
+                "canaray.gerdi.org",
+                "www.canary.gerdi.org"
+            ],
+            "OVN_API_TOKEN": "someValue",
+            "OVN_CENTRAL_VERSION": "{{ OPENVSWITCH_VERSION }}",
+            "OVN_HOST_VERSION": "{{ OPENVSWITCH_VERSION }}",
+            "PROMETHEUS_BASE_DIR": "/opt/prometheus",
+            "PROMETHEUS_VERSION": "2.10.0",
+            "SECRETS_GRAFANA_ADMIN_PASSWORD": "aay9W274dhCT3dajE2Rp",
+            "SECRETS_GRAFANA_ADMIN_UNAME": "gerdiGrafana",
+            "ansible_check_mode": false,
+            "ansible_diff_mode": false,
+            "ansible_facts": {},
+            "ansible_forks": 5,
+            "ansible_inventory_sources": [
+                "/Users/di39num/Code/LRZ-RDM/ansible-inventories/gerdi/b.gerdi.org/hosts.yaml"
+            ],
+            "ansible_playbook_python": "/Users/di39num/anaconda3/bin/python",
+            "ansible_run_tags": [
+                "all"
+            ],
+            "ansible_skip_tags": [],
+            "ansible_verbosity": 0,
+            "ansible_version": {
+                "full": "2.8.0",
+                "major": 2,
+                "minor": 8,
+                "revision": 0,
+                "string": "2.8.0"
+            },
+            "group_names": [
+                "kubernetes_nodes",
+                "vmware_nodes"
+            ],
+            "groups": {
+                "all": [
+                    "lb-0.b.gerdi.org",
+                    "mstr-0.b.gerdi.org",
+                    "nd-0.b.gerdi.org",
+                    "nd-1.b.gerdi.org",
+                    "nd-2.b.gerdi.org",
+                    "nd-3.b.gerdi.org",
+                    "localhost"
+                ],
+                "kubernetes_management": [
+                    "localhost"
+                ],
+                "kubernetes_masters": [
+                    "mstr-0.b.gerdi.org"
+                ],
+                "kubernetes_nodes": [
+                    "lb-0.b.gerdi.org",
+                    "nd-0.b.gerdi.org",
+                    "nd-1.b.gerdi.org",
+                    "nd-2.b.gerdi.org",
+                    "nd-3.b.gerdi.org"
+                ],
+                "loadbalancer_nodes": [
+                    "lb-0.b.gerdi.org"
+                ],
+                "openstack_nodes": [],
+                "ungrouped": [],
+                "vmware_nodes": [
+                    "lb-0.b.gerdi.org",
+                    "mstr-0.b.gerdi.org",
+                    "nd-0.b.gerdi.org",
+                    "nd-1.b.gerdi.org",
+                    "nd-2.b.gerdi.org",
+                    "nd-3.b.gerdi.org"
+                ]
+            },
+            "inventory_dir": "/Users/di39num/Code/LRZ-RDM/ansible-inventories/gerdi/b.gerdi.org",
+            "inventory_file": "/Users/di39num/Code/LRZ-RDM/ansible-inventories/gerdi/b.gerdi.org/hosts.yaml",
+            "inventory_hostname": "nd-1.b.gerdi.org",
+            "inventory_hostname_short": "nd-1",
+            "playbook_dir": "/Users/di39num/Code/GeRDI/GerdiKubed"
+        },
+        "nd-2.b.gerdi.org": {
+            "CNI_CONF_DIR": "/etc/cni/net.d",
+            "CNI_DIR": "{{ K8S_BASE_DIR }}/cni-{{ CNI_VERSION }}",
+            "CNI_DOWNLOAD_URL": "https://github.com/containernetworking/cni/releases/download/{{ CNI_VERSION }}/cni-{{ CNI_VERSION }}.tgz",
+            "CNI_VERSION": "v0.5.2",
+            "CONTROL_BASE_DIR": "/Users/di39num/Netzlaufwerke/di39num/GeRDI/Certs/{{ K8S_DEPLOYMENT_CONTEXT }}_k8s_mgmt",
+            "CONTROL_CA_DIR": "{{ CONTROL_BASE_DIR }}/ca",
+            "CONTROL_CERT_DIR": "{{ CONTROL_BASE_DIR }}/certs",
+            "CONTROL_CONFIG_DIR": "{{ CONTROL_BASE_DIR }}/configs",
+            "CONTROL_CSR_DIR": "{{ CONTROL_BASE_DIR }}/csrs",
+            "CONTROL_KEY_DIR": "{{ CONTROL_BASE_DIR }}/keys",
+            "CONTROL_MACHINE": "127.0.0.1",
+            "DOCKER_VERSION": "5:18.09.1~3-0~debian-stretch",
+            "EXTERNAL_DEV": "eth1",
+            "EXTERNAL_GW": "138.246.225.254",
+            "EXTERNAL_LB": "138.246.225.14",
+            "GOLANG_VERSION": "go1.12.4",
+            "GRAFANA_ADMIN_PASSWORD": "{{ SECRETS_GRAFANA_ADMIN_PASSWORD }}",
+            "GRAFANA_ADMIN_UNAME": "{{ SECRETS_GRAFANA_ADMIN_UNAME }}",
+            "GRAFANA_BASE_DIR": "/opt/grafana",
+            "GRAFANA_VERSION": "6.2.1",
+            "INTERNAL_NET": "10.155.92.0/22",
+            "K8S_AUTH_FILES_DIR": "{{ K8S_BASE_DIR }}/tokens",
+            "K8S_BASE_DIR": "/opt/k8s",
+            "K8S_CERT_FILES_DIR": "{{ K8S_BASE_DIR }}/certs",
+            "K8S_CLUSTER_IP_PRE": "10.220",
+            "K8S_CLUSTER_IP_SUBNET": "{{ K8S_CLUSTER_IP_PRE }}.0.0/15",
+            "K8S_DEPLOYMENT_CONTEXT": "b",
+            "K8S_DNS_IP": "{{ K8S_SERVICE_IP_PRE }}.0.10",
+            "K8S_DOMAIN_NAMESPACE": "gerdi.org",
+            "K8S_DOWNLOAD_URL": "https://github.com/kubernetes/kubernetes/releases/download/{{K8S_VERSION}}/kubernetes.tar.gz",
+            "K8S_GLOBAL_LOG_LEVEL": "v=1",
+            "K8S_K8S_DIR": "{{ K8S_BASE_DIR }}/kubernetes",
+            "K8S_KEY_FILES_DIR": "{{ K8S_BASE_DIR }}/keys",
+            "K8S_KUBECONFIG": "{{ K8S_BASE_DIR }}/kubeconfig",
+            "K8S_MASTER_DOMAIN": "{{ 'mstr-0.' + K8S_DEPLOYMENT_CONTEXT + '.' + K8S_DOMAIN_NAMESPACE }}",
+            "K8S_MASTER_IP": "{{ hostvars[K8S_MASTER_DOMAIN]['altIP'] | default(lookup('dig', K8S_MASTER_DOMAIN)) }}",
+            "K8S_SERVER_BIN_DIR": "{{ K8S_K8S_DIR }}/server/kubernetes/server/bin",
+            "K8S_SERVICE_IP_PRE": "10.222",
+            "K8S_SERVICE_IP_SUBNET": "{{ K8S_SERVICE_IP_PRE }}.0.0/16",
+            "K8S_VERSION": "v1.14.1",
+            "LB_ROUTES_TABLE": 8,
+            "LRZ_INTERNAL": true,
+            "MAIN_DOMAIN": "www.demo.gerdi.org",
+            "NETWORK_MTU": 1500,
+            "NFS_MOUNT_PATH": "/mnt/nfs",
+            "NFS_SERVER_DOMAIN": "intern05.nas.lrz.de",
+            "NFS_VOLUME_PATH": "/intern/gerdi01",
+            "NICDEVICEPREFIX": "eth",
+            "NODE_NAMESERVER": "1.1.1.1",
+            "OPENVSWITCH_VERSION": "2.10.0+2018.08.28+git.8ca7c82b7d+ds1-12",
+            "OTHER_DOMAINS": [
+                "demo.gerdi.org",
+                "canaray.gerdi.org",
+                "www.canary.gerdi.org"
+            ],
+            "OVN_API_TOKEN": "someValue",
+            "OVN_CENTRAL_VERSION": "{{ OPENVSWITCH_VERSION }}",
+            "OVN_HOST_VERSION": "{{ OPENVSWITCH_VERSION }}",
+            "PROMETHEUS_BASE_DIR": "/opt/prometheus",
+            "PROMETHEUS_VERSION": "2.10.0",
+            "SECRETS_GRAFANA_ADMIN_PASSWORD": "aay9W274dhCT3dajE2Rp",
+            "SECRETS_GRAFANA_ADMIN_UNAME": "gerdiGrafana",
+            "ansible_check_mode": false,
+            "ansible_diff_mode": false,
+            "ansible_facts": {},
+            "ansible_forks": 5,
+            "ansible_inventory_sources": [
+                "/Users/di39num/Code/LRZ-RDM/ansible-inventories/gerdi/b.gerdi.org/hosts.yaml"
+            ],
+            "ansible_playbook_python": "/Users/di39num/anaconda3/bin/python",
+            "ansible_run_tags": [
+                "all"
+            ],
+            "ansible_skip_tags": [],
+            "ansible_verbosity": 0,
+            "ansible_version": {
+                "full": "2.8.0",
+                "major": 2,
+                "minor": 8,
+                "revision": 0,
+                "string": "2.8.0"
+            },
+            "group_names": [
+                "kubernetes_nodes",
+                "vmware_nodes"
+            ],
+            "groups": {
+                "all": [
+                    "lb-0.b.gerdi.org",
+                    "mstr-0.b.gerdi.org",
+                    "nd-0.b.gerdi.org",
+                    "nd-1.b.gerdi.org",
+                    "nd-2.b.gerdi.org",
+                    "nd-3.b.gerdi.org",
+                    "localhost"
+                ],
+                "kubernetes_management": [
+                    "localhost"
+                ],
+                "kubernetes_masters": [
+                    "mstr-0.b.gerdi.org"
+                ],
+                "kubernetes_nodes": [
+                    "lb-0.b.gerdi.org",
+                    "nd-0.b.gerdi.org",
+                    "nd-1.b.gerdi.org",
+                    "nd-2.b.gerdi.org",
+                    "nd-3.b.gerdi.org"
+                ],
+                "loadbalancer_nodes": [
+                    "lb-0.b.gerdi.org"
+                ],
+                "openstack_nodes": [],
+                "ungrouped": [],
+                "vmware_nodes": [
+                    "lb-0.b.gerdi.org",
+                    "mstr-0.b.gerdi.org",
+                    "nd-0.b.gerdi.org",
+                    "nd-1.b.gerdi.org",
+                    "nd-2.b.gerdi.org",
+                    "nd-3.b.gerdi.org"
+                ]
+            },
+            "inventory_dir": "/Users/di39num/Code/LRZ-RDM/ansible-inventories/gerdi/b.gerdi.org",
+            "inventory_file": "/Users/di39num/Code/LRZ-RDM/ansible-inventories/gerdi/b.gerdi.org/hosts.yaml",
+            "inventory_hostname": "nd-2.b.gerdi.org",
+            "inventory_hostname_short": "nd-2",
+            "playbook_dir": "/Users/di39num/Code/GeRDI/GerdiKubed"
+        },
+        "nd-3.b.gerdi.org": {
+            "CNI_CONF_DIR": "/etc/cni/net.d",
+            "CNI_DIR": "{{ K8S_BASE_DIR }}/cni-{{ CNI_VERSION }}",
+            "CNI_DOWNLOAD_URL": "https://github.com/containernetworking/cni/releases/download/{{ CNI_VERSION }}/cni-{{ CNI_VERSION }}.tgz",
+            "CNI_VERSION": "v0.5.2",
+            "CONTROL_BASE_DIR": "/Users/di39num/Netzlaufwerke/di39num/GeRDI/Certs/{{ K8S_DEPLOYMENT_CONTEXT }}_k8s_mgmt",
+            "CONTROL_CA_DIR": "{{ CONTROL_BASE_DIR }}/ca",
+            "CONTROL_CERT_DIR": "{{ CONTROL_BASE_DIR }}/certs",
+            "CONTROL_CONFIG_DIR": "{{ CONTROL_BASE_DIR }}/configs",
+            "CONTROL_CSR_DIR": "{{ CONTROL_BASE_DIR }}/csrs",
+            "CONTROL_KEY_DIR": "{{ CONTROL_BASE_DIR }}/keys",
+            "CONTROL_MACHINE": "127.0.0.1",
+            "DOCKER_VERSION": "5:18.09.1~3-0~debian-stretch",
+            "EXTERNAL_DEV": "eth1",
+            "EXTERNAL_GW": "138.246.225.254",
+            "EXTERNAL_LB": "138.246.225.14",
+            "GOLANG_VERSION": "go1.12.4",
+            "GRAFANA_ADMIN_PASSWORD": "{{ SECRETS_GRAFANA_ADMIN_PASSWORD }}",
+            "GRAFANA_ADMIN_UNAME": "{{ SECRETS_GRAFANA_ADMIN_UNAME }}",
+            "GRAFANA_BASE_DIR": "/opt/grafana",
+            "GRAFANA_VERSION": "6.2.1",
+            "INTERNAL_NET": "10.155.92.0/22",
+            "K8S_AUTH_FILES_DIR": "{{ K8S_BASE_DIR }}/tokens",
+            "K8S_BASE_DIR": "/opt/k8s",
+            "K8S_CERT_FILES_DIR": "{{ K8S_BASE_DIR }}/certs",
+            "K8S_CLUSTER_IP_PRE": "10.220",
+            "K8S_CLUSTER_IP_SUBNET": "{{ K8S_CLUSTER_IP_PRE }}.0.0/15",
+            "K8S_DEPLOYMENT_CONTEXT": "b",
+            "K8S_DNS_IP": "{{ K8S_SERVICE_IP_PRE }}.0.10",
+            "K8S_DOMAIN_NAMESPACE": "gerdi.org",
+            "K8S_DOWNLOAD_URL": "https://github.com/kubernetes/kubernetes/releases/download/{{K8S_VERSION}}/kubernetes.tar.gz",
+            "K8S_GLOBAL_LOG_LEVEL": "v=1",
+            "K8S_K8S_DIR": "{{ K8S_BASE_DIR }}/kubernetes",
+            "K8S_KEY_FILES_DIR": "{{ K8S_BASE_DIR }}/keys",
+            "K8S_KUBECONFIG": "{{ K8S_BASE_DIR }}/kubeconfig",
+            "K8S_MASTER_DOMAIN": "{{ 'mstr-0.' + K8S_DEPLOYMENT_CONTEXT + '.' + K8S_DOMAIN_NAMESPACE }}",
+            "K8S_MASTER_IP": "{{ hostvars[K8S_MASTER_DOMAIN]['altIP'] | default(lookup('dig', K8S_MASTER_DOMAIN)) }}",
+            "K8S_SERVER_BIN_DIR": "{{ K8S_K8S_DIR }}/server/kubernetes/server/bin",
+            "K8S_SERVICE_IP_PRE": "10.222",
+            "K8S_SERVICE_IP_SUBNET": "{{ K8S_SERVICE_IP_PRE }}.0.0/16",
+            "K8S_VERSION": "v1.14.1",
+            "LB_ROUTES_TABLE": 8,
+            "LRZ_INTERNAL": true,
+            "MAIN_DOMAIN": "www.demo.gerdi.org",
+            "NETWORK_MTU": 1500,
+            "NFS_MOUNT_PATH": "/mnt/nfs",
+            "NFS_SERVER_DOMAIN": "intern05.nas.lrz.de",
+            "NFS_VOLUME_PATH": "/intern/gerdi01",
+            "NICDEVICEPREFIX": "eth",
+            "NODE_NAMESERVER": "1.1.1.1",
+            "OPENVSWITCH_VERSION": "2.10.0+2018.08.28+git.8ca7c82b7d+ds1-12",
+            "OTHER_DOMAINS": [
+                "demo.gerdi.org",
+                "canaray.gerdi.org",
+                "www.canary.gerdi.org"
+            ],
+            "OVN_API_TOKEN": "someValue",
+            "OVN_CENTRAL_VERSION": "{{ OPENVSWITCH_VERSION }}",
+            "OVN_HOST_VERSION": "{{ OPENVSWITCH_VERSION }}",
+            "PROMETHEUS_BASE_DIR": "/opt/prometheus",
+            "PROMETHEUS_VERSION": "2.10.0",
+            "SECRETS_GRAFANA_ADMIN_PASSWORD": "aay9W274dhCT3dajE2Rp",
+            "SECRETS_GRAFANA_ADMIN_UNAME": "gerdiGrafana",
+            "ansible_check_mode": false,
+            "ansible_diff_mode": false,
+            "ansible_facts": {},
+            "ansible_forks": 5,
+            "ansible_inventory_sources": [
+                "/Users/di39num/Code/LRZ-RDM/ansible-inventories/gerdi/b.gerdi.org/hosts.yaml"
+            ],
+            "ansible_playbook_python": "/Users/di39num/anaconda3/bin/python",
+            "ansible_run_tags": [
+                "all"
+            ],
+            "ansible_skip_tags": [],
+            "ansible_verbosity": 0,
+            "ansible_version": {
+                "full": "2.8.0",
+                "major": 2,
+                "minor": 8,
+                "revision": 0,
+                "string": "2.8.0"
+            },
+            "group_names": [
+                "kubernetes_nodes",
+                "vmware_nodes"
+            ],
+            "groups": {
+                "all": [
+                    "lb-0.b.gerdi.org",
+                    "mstr-0.b.gerdi.org",
+                    "nd-0.b.gerdi.org",
+                    "nd-1.b.gerdi.org",
+                    "nd-2.b.gerdi.org",
+                    "nd-3.b.gerdi.org",
+                    "localhost"
+                ],
+                "kubernetes_management": [
+                    "localhost"
+                ],
+                "kubernetes_masters": [
+                    "mstr-0.b.gerdi.org"
+                ],
+                "kubernetes_nodes": [
+                    "lb-0.b.gerdi.org",
+                    "nd-0.b.gerdi.org",
+                    "nd-1.b.gerdi.org",
+                    "nd-2.b.gerdi.org",
+                    "nd-3.b.gerdi.org"
+                ],
+                "loadbalancer_nodes": [
+                    "lb-0.b.gerdi.org"
+                ],
+                "openstack_nodes": [],
+                "ungrouped": [],
+                "vmware_nodes": [
+                    "lb-0.b.gerdi.org",
+                    "mstr-0.b.gerdi.org",
+                    "nd-0.b.gerdi.org",
+                    "nd-1.b.gerdi.org",
+                    "nd-2.b.gerdi.org",
+                    "nd-3.b.gerdi.org"
+                ]
+            },
+            "inventory_dir": "/Users/di39num/Code/LRZ-RDM/ansible-inventories/gerdi/b.gerdi.org",
+            "inventory_file": "/Users/di39num/Code/LRZ-RDM/ansible-inventories/gerdi/b.gerdi.org/hosts.yaml",
+            "inventory_hostname": "nd-3.b.gerdi.org",
+            "inventory_hostname_short": "nd-3",
+            "playbook_dir": "/Users/di39num/Code/GeRDI/GerdiKubed"
+        }
+    }
+}
+
+TASK [common : common | Set kernel param (max_map_count) higher for elasticsearch] ****************************************************************************************************************************************************************************
+ok: [mstr-0.b.gerdi.org]
+
+TASK [common : common | Mount NFS-Volume] *********************************************************************************************************************************************************************************************************************
+fatal: [mstr-0.b.gerdi.org]: FAILED! => {"msg": "The task includes an option with an undefined variable. The error was: \"hostvars['intern05.nas.lrz.de']\" is undefined\n\nThe error appears to be in '/Users/di39num/Code/GeRDI/GerdiKubed/roles/common/tasks/main.yml': line 87, column 3, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n\n- name: common | Mount NFS-Volume\n  ^ here\n"}
+
+PLAY RECAP ****************************************************************************************************************************************************************************************************************************************************
+mstr-0.b.gerdi.org         : ok=20   changed=3    unreachable=0    failed=1    skipped=9    rescued=0    ignored=1   
+

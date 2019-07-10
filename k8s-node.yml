@@ -14,12 +14,6 @@
 ---
 # Replace remote_user with whatever distro you are using
 # Defaults to root
-- name: Secure and setup sshd
-  hosts: kubernetes_nodes
-  remote_user: debian
-  become: true
-  roles:
-    - sshd
 
 - name: Setup VMWare nodes
   hosts: kubernetes_nodes:&vmware_nodes
@@ -43,6 +37,7 @@
   hosts: kubernetes_nodes
   remote_user: root
   roles:
+    - sshd
     - network-interfaces
     - common
     - ufw
