@@ -22,7 +22,7 @@
 
 - name: network-ovn | Initialize k8s master
   import_tasks: initialize_master.yml
-  when: inventory_hostname in groups['kubernetes-masters']
+  when: inventory_hostname in groups['kubernetes_masters']
 
 - name: network-ovn | Initialize k8s node
   import_tasks: initialize_node.yml

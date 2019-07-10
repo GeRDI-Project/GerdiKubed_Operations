@@ -15,3 +15,4 @@
 # role: network_ovn#
 OVN_ENCAP_TYPE: geneve
 OVN_K8S_DIR: "{{ K8S_BASE_DIR }}/ovn-kubernetes"
+OVN_MTU: "{{ (( NETWORK_MTU | default(1500) | int) - 100) | int | abs }}"
