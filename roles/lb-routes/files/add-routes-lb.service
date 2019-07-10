@@ -1,8 +1,0 @@
-[Unit]
-After=repairRoutes.service
-
-[Service]
-ExecStart=/etc/kubernetes/add-routes-lb.sh
-
-[Install]
-WantedBy=multi-user.target

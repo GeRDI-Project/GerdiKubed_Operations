@@ -32,14 +32,21 @@ ip rule add from all to 10.156.10.20 lookup {{ host_private_rtable }}
 ip rule add from all to 10.156.10.40 lookup {{ host_private_rtable }}
 {% endif %}
 
-<<<<<<< HEAD
-{% if inventory_hostname in groups['loadbalancer-nodes'] %}
+{% if inventory_hostname in groups['loadbalancer_nodes'] %}
 # Fix for SAI-1691; Sometimes the LB looses its' default route for the public interface
 # This makes sure it gets added back if it is missing
 ip route add default via {{ host_public_gateway.split('/')[0] }} dev {{ host_public_interface }} > /dev/null 2>&1
-=======
-{% if inventory_hostname in groups['loadbalancer_nodes'] %}
->>>>>>> 126361b05911bba82e8dcdde9138cf70791a46e3
+
+# Fix for SAI-1573; Moved here from lb-routes role (SAI-1618)
+ip route add {{ host_private_network }}/{{ (host_private_address + '/' + host_private_netmask) | ipaddr('prefix') }} via {{ host_public_gateway.split('/')[0] }} dev {{ host_public_interface }} proto static table {{ (( host_private_rtable | int) + 1) | int | abs }} > /dev/null 2>&1
+ip route add default via {{ host_public_address }} dev {{ host_public_interface }} proto static table {{ (( host_private_rtable | int) + 1) | int | abs }} > /dev/null 2>&1
+
+# Since ip rules can be duplicate, delete rule first
+
+ip rule del from {{ host_public_address }} to {{ host_private_network }}/{{ (host_private_address + '/' + host_private_netmask) | ipaddr('prefix') }} lookup {{ (( host_private_rtable | int) + 1) | int | abs }}
+# Readd rule
+ip rule add from {{ host_public_address }} to {{ host_private_network }}/{{ (host_private_address + '/' + host_private_netmask) | ipaddr('prefix') }} lookup {{ (( host_private_rtable | int) + 1) | int | abs }}
+
 # Force restart dnsmasq because it depends on the new rules
 if service --status-all 2>&1 | grep -Fq dnsmasq; then
   service dnsmasq restart
