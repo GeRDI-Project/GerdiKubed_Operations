@@ -45,13 +45,13 @@
   import_tasks: setup_lbtables.yml
   when: inventory_hostname in groups['loadbalancer_nodes']
 
-- name: ufw common | Allow all cluster internal traffic: UDP, TCP and ICMP
+- name: ufw common | Allow all cluster internal traffic UDP, TCP and ICMP
   ufw:
     rule: allow
-    src: "{{ item }}"
+    src: "{{ hostvars[item]['altIP'] | default(lookup('dig', item, 'qtype=A')) }}"
   with_items:
-    - "{{ groups['kubernetes-masters'] }}"
-    - "{{ groups['kubernetes-nodes'] }}"
+    - "{{ groups['kubernetes_masters'] }}"
+    - "{{ groups['kubernetes_nodes'] }}"
 
 - name: ufw common | Enable logging
   ufw:
