@@ -36,6 +36,8 @@ all:
         nd-2.dev.test.gerdi.org:
         nd-3.dev.test.gerdi.org:
 
+    openstack_nodes:
+
     # Nodes which act as loadbalancer/gateways
     loadbalancer_nodes:
       hosts:
@@ -44,7 +46,7 @@ all:
     # k8s compute nodes
     kubernetes_nodes:
       hosts:
-        nb-0.dev.test.gerdi.org:
+        lb-0.dev.test.gerdi.org:
         nd-0.dev.test.gerdi.org:
         nd-1.dev.test.gerdi.org:
         nd-2.dev.test.gerdi.org:
