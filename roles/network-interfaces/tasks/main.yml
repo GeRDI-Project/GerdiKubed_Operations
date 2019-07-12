@@ -49,9 +49,9 @@
   include_tasks: privateIface.yml
   when: host_private_interface is defined
 
-- name: network-interfaces | Configure private interface
+- name: network-interfaces | Configure public interface
   include_tasks: publicIface.yml
-  when: host_private_interface is defined
+  when: host_public_interface is defined
 
 - name: network-interfaces | Apply route repair in case of two interfaces
   include_tasks: routeRepair.yml
