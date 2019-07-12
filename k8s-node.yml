@@ -27,12 +27,6 @@
   roles:
     - vmware-node
 
-- name: Setup OpenNebula nodes
-  hosts: kubernetes_nodes:&opennebula_nodes
-  remote_user: root
-  roles:
-    - nebula-node
-
 - name: Setup OpenStack nodes
   hosts: kubernetes_nodes:&openstack_nodes
   remote_user: root
