@@ -87,15 +87,18 @@
     fstype: nfs
     opts:   tcp,nolock,nofail,x-systemd.device-timeout=1,rsize=65536,wsize=65536,timeo=600,intr
     state:  mounted
+  when: inventory_hostname not in groups['loadbalancer_nodes']
 
 - name: common | Create /local/nfs
   file:
     path: /local
     state: directory
     mode: 0775
+  when: inventory_hostname not in groups['loadbalancer_nodes']
 
 - name: common | Create symlink from /mnt/nfs/{{ K8S_DEPLOYMENT_CONTEXT}} to /local/nfs
   file:
     src: /mnt/nfs/{{ K8S_DEPLOYMENT_CONTEXT}}
     dest: /local/nfs
     state: link
+  when: inventory_hostname not in groups['loadbalancer_nodes']
