@@ -7,28 +7,18 @@ Requires=docker.service
 [Service]
 ExecStart=/usr/bin/kubelet \
       --{{ K8S_GLOBAL_LOG_LEVEL }} \
-      --address={{ host_private_address }} \
-      --allow-privileged=true \
-      --cgroup-driver=cgroupfs \
+      --config={{ K8S_BASE_DIR }}/kubeletconfig \
       --cloud-provider="" \
-      --cluster-dns={{ K8S_DNS_IP }} \
       --cni-conf-dir={{ CNI_CONF_DIR }} \
       --cni-bin-dir={{ CNI_DIR }} \
       --network-plugin=cni \
       --container-runtime="docker" \
-      --healthz_bind_address={{ host_private_address }} \
-      --healthz_port=0 \
-      --read-only-port=0 \
       --kubeconfig={{ K8S_KUBECONFIG }} \
       --hostname-override={{ inventory_hostname }} \
       --logtostderr=true \
       --node-ip={{ host_private_address }} \
       --pod-manifest-path=/etc/kubernetes/manifests \
-      --port=10250 \
-      --resolv-conf=/run/systemd/resolve/resolv.conf \
-      --register-node \
-      --tls-cert-file={{ K8S_CERT_FILES_DIR }}/{{ inventory_hostname }}.crt.pem \
-      --tls-private-key-file={{ K8S_KEY_FILES_DIR }}/{{ inventory_hostname }}.key
+      --register-node
 
 Restart=on-failure
 KillMode=process

@@ -1,0 +1,13 @@
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+address: {{ host_private_address }}
+cgroupDriver: cgroupfs
+clusterDNS:
+  - {{ K8S_DNS_IP }}
+healthzBindAddress: {{ host_private_address }}
+healthzPort: 0
+readOnlyPort: 0
+port: 10250
+resolvConf: /run/systemd/resolve/resolv.conf
+tlsCertFile: {{ K8S_CERT_FILES_DIR }}/{{ inventory_hostname }}.crt.pem
+tlsPrivateKeyFile: {{ K8S_KEY_FILES_DIR }}/{{ inventory_hostname }}.key

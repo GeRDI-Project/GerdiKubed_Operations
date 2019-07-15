@@ -26,6 +26,14 @@
 - name: kubelet common | export kubeconfig path
   shell: export KUBECONFIG={{ K8S_KUBECONFIG }}
 
+- name: kubelet common | Create kubelet config file
+  template:
+    src: kubeletconfig.j2
+    dest: "{{ K8S_BASE_DIR }}/kubeletconfig"
+  notify:
+    - reload daemon
+    - restart kubelet
+
 - name: kubelet common | Create a systemd unit file
   template:
     src: kubelet.service.j2
