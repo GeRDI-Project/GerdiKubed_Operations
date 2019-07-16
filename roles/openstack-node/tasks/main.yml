@@ -16,7 +16,13 @@
   hostname:
     name: "{{ inventory_hostname }}"
 
-- name: Add all nodes to /etc/hosts with altIP, so kubelet exec functions correctly
+- name: openstack-node | Remove OpenStack junk from /root/.ssh/authorized_keys
+  lineinfile:
+    path: /root/.ssh/authorized_keys
+    state: absent
+    regexp: "no-port-forwarding,no-agent-forwarding,no-X11-forwarding,command=\"echo 'Please login as the user \"debian\" rather than the user \"root\".';echo;sleep 10\""
+
+- name: openstack-node | Add all nodes to /etc/hosts with altIP, so kubelet exec functions correctly
   lineinfile:
     dest: /etc/hosts
     state: present
@@ -25,13 +31,13 @@
     - "{{ groups['kubernetes_masters'] }}"
     - "{{ groups['kubernetes_nodes'] }}"
 
-- name: Remove update_etc_hosts from cloud config to make /etc/hosts reboot persistent
+- name: openstack-node | Remove update_etc_hosts from cloud config to make /etc/hosts reboot persistent
   lineinfile:
     dest: /etc/cloud/cloud.cfg
     state: absent
     line: " - update_etc_hosts"
 
-- name: Install necessary packages for OpenStack internal ip resolution
+- name: openstack-node | Install necessary packages for internal ip resolution
   apt:
     name: "{{ packages }}"
     state: latest

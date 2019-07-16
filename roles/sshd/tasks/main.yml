@@ -6,16 +6,10 @@
 #
 # ########################################################################### #
 ---
-- name: Check if we are already setup
-  shell: grep 'AllowGroups root {{ ansible_user }}' /etc/ssh/sshd_config
-  register: alreadySetup
-  ignore_errors: True
-
 - name: Get Private Interface
   set_fact:
     host_private_address: "{{ hostvars[inventory_hostname]['ansible_' +  item]['ipv4']['address'] }}"
-  when: alreadySetup is defined and alreadySetup.rc > 0 and
-        hostvars[inventory_hostname]['ansible_' + item] is defined and
+  when: hostvars[inventory_hostname]['ansible_' + item] is defined and
         hostvars[inventory_hostname]['ansible_' + item]['ipv4'] is defined and
         (hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('192.168.0.0/17') or
         hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('10.155.208.0/21') or
@@ -71,33 +65,27 @@
 #- name: Generate New RSA Hostkey
 #  shell: ssh-keygen -t rsa -b 4096 -f /etc/ssh/ssh_host_rsa_key -N "" < /dev/null
 #  when: alreadySetup is defined and alreadySetup.rc > 0
-- name: Remove junk from /root/.ssh/authorized_keys
+
+- name: sshd | Remove OpenStack junk from /root/.ssh/authorized_keys
   lineinfile:
     path: /root/.ssh/authorized_keys
     state: absent
     regexp: "no-port-forwarding,no-agent-forwarding,no-X11-forwarding,command=\"echo 'Please login as the user \"debian\" rather than the user \"root\".';echo;sleep 10\""
-  when: alreadySetup is defined and alreadySetup.rc > 0
 
-- name: Inject Public SSH Keys for Root Account
+- name: sshd | Add SSH public keys to authorized_hosts
   authorized_key:
     user: root
     state: present
     key: "{{ lookup('file', item) }}"
   with_fileglob:
     - "{{ openstack_node_ssh_public_keys }}/*.pub"
-  when: alreadySetup is defined and alreadySetup.rc > 0
 
-- name: Delete password of the provided user, only allow ssh pub key
-  shell: usermod -p '*' {{ ansible_user }}
-  when: alreadySetup is defined and alreadySetup.rc > 0
-
-- name: Update /etc/ssh/sshd_config for High Security One
+- name: sshd | Update /etc/ssh/sshd_config
   template:
     src: sshd_config.j2
     dest: /etc/ssh/sshd_config
   notify:
-    - Restart OpenSSH
-  when: alreadySetup is defined and alreadySetup.rc > 0
+    - Restart sshd
 
 #- name: Install Fail2Ban
 #  apt:
