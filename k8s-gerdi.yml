@@ -20,4 +20,4 @@
     - helm
     - persistent-volumes
     - keycloak
-    - jhub    
+    - jhub
