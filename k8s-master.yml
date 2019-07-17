@@ -30,26 +30,27 @@
 - name: Setup OpenStack nodes
   hosts: kubernetes_masters:&openstack_nodes
   remote_user: debian
+  become: true
   roles:
     - openstack-node
-
-- name: Initialize kubernetes nodes
-  hosts: kubernetes_masters
-  remote_user: root
-  roles:
     - sshd
-    - network-interfaces
-    - common
-    - ufw
-    - etcd
-    - k8s-binaries
-    - docker
-    - cni
-    - kubelet
-    - kube-proxy
-    - apiserver
-    - scheduler
-    - controller-manager
-    - network-ovn
-    - k8s-addons
-    - k8s-cordon
+
+-  name: Initialize kubernetes nodes
+   hosts: kubernetes_masters
+   remote_user: root
+   roles:
+     - network-interfaces
+     - common
+     - ufw
+     - etcd
+     - k8s-binaries
+     - docker
+     - cni
+     - kubelet
+     - kube-proxy
+     - apiserver
+     - scheduler
+     - controller-manager
+     - network-ovn
+     - k8s-addons
+     - k8s-cordon

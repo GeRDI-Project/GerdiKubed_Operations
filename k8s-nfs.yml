@@ -14,12 +14,12 @@
 ---
 # Replace remote_user with whatever distro you are using
 # Defaults to root
-- name: Secure and setup sshd
-  hosts: nfs_nodes
-  remote_user: debian
-  become: true
-  roles:
-    - sshd
+#- name: Secure and setup sshd
+#  hosts: nfs_nodes
+#  remote_user: debian
+#  become: true
+#  roles:
+#    - sshd
 
 - name: Setup VMWare nodes
   hosts: nfs_nodes:&vmware_nodes
@@ -33,11 +33,11 @@
   roles:
     - nebula-node
 
-- name: Setup OpenStack nodes
-  hosts: nfs_nodes:&openstack_nodes
-  remote_user: root
-  roles:
-    - openstack-node
+#- name: Setup OpenStack nodes
+#  hosts: nfs_nodes:&openstack_nodes
+#  remote_user: root
+#  roles:
+#    - openstack-node
 
 - name: Setup the nfs server
   hosts: nfs_nodes

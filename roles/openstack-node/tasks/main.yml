@@ -16,6 +16,29 @@
   hostname:
     name: "{{ inventory_hostname }}"
 
+- name: openstack-node | Check for presence of default /root/.ssh/authorized_keys
+  shell: grep "no-agent-forwarding" /root/.ssh/authorized_keys | cat
+  register: openstack_default_authorized_keys
+  ignore_errors: yes
+  check_mode: no
+
+- name: Delete default /root/.ssh/authorized_keys
+  file:
+    path: /root/.ssh/authorized_keys
+    state: absent
+  when: openstack_default_authorized_keys.rc == 0
+
+- name: Replace /root/.ssh/authorized_keys
+  copy:
+    src: "/home/{{ ansible_user }}/.ssh/authorized_keys"
+    dest: /root/.ssh/authorized_keys
+    remote_src: yes
+  when: openstack_default_authorized_keys.rc == 0
+
+- name: Delete password of the provided user, only allow ssh pub key
+  shell: usermod -p '*' debian
+  when: openstack_default_authorized_keys.rc == 0
+
 - name: Add all nodes to /etc/hosts with altIP, so kubelet exec functions correctly
   lineinfile:
     dest: /etc/hosts
@@ -24,6 +47,7 @@
   with_items:
     - "{{ groups['kubernetes_masters'] }}"
     - "{{ groups['kubernetes_nodes'] }}"
+    - "{{ groups['nfs_nodes'] }}"
 
 - name: Remove update_etc_hosts from cloud config to make /etc/hosts reboot persistent
   lineinfile:

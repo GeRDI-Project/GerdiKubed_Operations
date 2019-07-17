@@ -9,7 +9,7 @@ Name={{ host_interface }}
 DHCP=no
 DNS=1.1.1.1
 Address={{ host_address }}
-{% if ((host_public_interface is defined) and (iface_type == 'public')) %}
+{% if ((host_public_interface is not defined) and (iface_type == 'private')) %}
 Gateway={{ host_gateway }}
 {% endif %}
 IPForward=kernel
