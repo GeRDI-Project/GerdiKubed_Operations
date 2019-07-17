@@ -15,17 +15,20 @@
 - name: openstack-node | Set hostname to {{ inventory_hostname }}
   hostname:
     name: "{{ inventory_hostname }}"
+  become: true
 
 - name: openstack-node | Check for presence of default /root/.ssh/authorized_keys
   shell: grep "no-agent-forwarding" /root/.ssh/authorized_keys | cat
   register: openstack_default_authorized_keys
   ignore_errors: yes
   check_mode: no
+  become: true
 
 - name: Delete default /root/.ssh/authorized_keys
   file:
     path: /root/.ssh/authorized_keys
     state: absent
+  become: true
   when: openstack_default_authorized_keys.rc == 0
 
 - name: Replace /root/.ssh/authorized_keys
@@ -33,10 +36,7 @@
     src: "/home/{{ ansible_user }}/.ssh/authorized_keys"
     dest: /root/.ssh/authorized_keys
     remote_src: yes
-  when: openstack_default_authorized_keys.rc == 0
-
-- name: Delete password of the provided user, only allow ssh pub key
-  shell: usermod -p '*' debian
+  become: true
   when: openstack_default_authorized_keys.rc == 0
 
 - name: Add all nodes to /etc/hosts with altIP, so kubelet exec functions correctly
@@ -44,6 +44,7 @@
     dest: /etc/hosts
     state: present
     line: "{{ hostvars[item]['altIP'] }} {{ item }}"
+  become: true
   with_items:
     - "{{ groups['kubernetes_masters'] }}"
     - "{{ groups['kubernetes_nodes'] }}"
@@ -54,6 +55,7 @@
     dest: /etc/cloud/cloud.cfg
     state: absent
     line: " - update_etc_hosts"
+  become: true
 
 - name: openstack-node | Install necessary packages for internal ip resolution
   apt:
@@ -66,3 +68,4 @@
     - restart dnsmasq
   retries: 3
   delay: 3
+  become: true

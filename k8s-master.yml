@@ -30,7 +30,6 @@
 - name: Setup OpenStack nodes
   hosts: kubernetes_masters:&openstack_nodes
   remote_user: debian
-  become: true
   roles:
     - openstack-node
     - sshd

@@ -29,9 +29,10 @@
 
 - name: Setup OpenStack nodes
   hosts: kubernetes_nodes:&openstack_nodes
-  remote_user: root
+  remote_user: debian
   roles:
     - openstack-node
+    - sshd
 
 - name: Initialize kubernetes nodes
   hosts: kubernetes_nodes

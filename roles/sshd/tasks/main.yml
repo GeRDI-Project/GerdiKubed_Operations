@@ -71,14 +71,34 @@
     path: /root/.ssh/authorized_keys
     state: absent
     regexp: "no-port-forwarding,no-agent-forwarding,no-X11-forwarding,command=\"echo 'Please login as the user \"debian\" rather than the user \"root\".';echo;sleep 10\""
+  become: true
 
-- name: sshd | Add SSH public keys to authorized_hosts
+- name: sshd | Add SSH public keys to root authorized_keys
   authorized_key:
     user: root
     state: present
     key: "{{ lookup('file', item) }}"
   with_fileglob:
     - "{{ openstack_node_ssh_public_keys }}/*.pub"
+  become: true
+
+- name: sshd | Add SSH public keys to ansible_user authorized_keys
+  authorized_key:
+    user: "{{ ansible_user }}"
+    state: present
+    key: "{{ lookup('file', item) }}"
+  with_fileglob:
+    - "{{ openstack_node_ssh_public_keys }}/*.pub"
+
+- name: sshd | Save the current ssh user
+  shell: "whoami"
+  register: active_ssh_user
+
+# Because our config disables password login and the debian user has
+# some password set
+- name: sshd | Delete password of the provided user, only allow ssh pub key
+  shell: "usermod -p '*' {{ active_ssh_user.stdout_lines[0] }}"
+  become: true
 
 - name: sshd | Update /etc/ssh/sshd_config
   template:
@@ -86,6 +106,7 @@
     dest: /etc/ssh/sshd_config
   notify:
     - Restart sshd
+  become: true
 
 #- name: Install Fail2Ban
 #  apt:
