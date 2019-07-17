@@ -49,13 +49,13 @@
     - "{{ groups['kubernetes_nodes'] }}"
     - "{{ groups['nfs_nodes'] }}"
 
-- name: Remove update_etc_hosts from cloud config to make /etc/hosts reboot persistent
+- name: openstack-node | Remove update_etc_hosts from cloud config to make /etc/hosts reboot persistent
   lineinfile:
     dest: /etc/cloud/cloud.cfg
     state: absent
     line: " - update_etc_hosts"
 
-- name: Install necessary packages for OpenStack internal ip resolution
+- name: openstack-node | Install necessary packages for internal ip resolution
   apt:
     name: "{{ packages }}"
     state: latest
