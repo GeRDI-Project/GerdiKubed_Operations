@@ -20,6 +20,7 @@
   remote_user: root
   roles:
     - vmware-node
+    - sshd
 
 - name: Setup OpenNebula nodes
   hosts: kubernetes_nodes:&opennebula_nodes
