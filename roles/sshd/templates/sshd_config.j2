@@ -25,9 +25,9 @@ PasswordAuthentication no
 ChallengeResponseAuthentication no
 PubkeyAuthentication yes
 
-{% if ansible_user != 'root' %}
-AllowGroups root {{ ansible_user | default("''") }}
-AllowUsers root {{ ansible_user | default("''") }}
+{% if active_ssh_user.stdout_lines[0] != 'root' %}
+AllowGroups root {{ active_ssh_user.stdout_lines[0] | default("''") }}
+AllowUsers root {{ active_ssh_user.stdout_lines[0] | default("''") }}
 {% else %}
 AllowGroups root
 AllowUsers root

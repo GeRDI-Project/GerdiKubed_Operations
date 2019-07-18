@@ -20,6 +20,7 @@
   remote_user: root
   roles:
     - vmware-node
+    - sshd
 
 - name: Setup OpenNebula nodes
   hosts: kubernetes_masters:&opennebula_nodes
@@ -32,12 +33,12 @@
   remote_user: debian
   roles:
     - openstack-node
+    - sshd
 
 - name: Initialize kubernetes nodes
   hosts: kubernetes_masters
   remote_user: root
   roles:
-    - sshd
     - network-interfaces
     - common
     - ufw

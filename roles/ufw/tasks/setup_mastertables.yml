@@ -27,4 +27,6 @@
     - { addr: 10.156.10.20, comment: "LRZ SSH-Gateways wsc20/wsc40"}
     - { addr: 10.156.10.40, comment: "LRZ SSH-Gateways wsc20/wsc40"}
     - { addr: 192.168.0.0/17, comment: "LRZ OpenStack MWN Network"}
+    - { addr: "{{ K8S_CLUSTER_IP_SUBNET }}", comment: "Kubernetes POD Network"}
+    - { addr: "{{ K8S_SERVICE_IP_SUBNET }}", comment: "Kubernetes Service Network"}
   notify: Restart UFW
