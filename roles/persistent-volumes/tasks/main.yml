@@ -16,7 +16,7 @@
 #
 - name: persistent-volumes | Create nfs-persistent-volume path
   file:
-    path: "{{ NFS_VOLUME_PATH }}/nfs-{{ K8S_DEPLOYMENT_CONTEXT}}"
+    path: "{{ NFS_MOUNT_PATH }}/nfs-{{ K8S_DEPLOYMENT_CONTEXT}}"
     state: directory
 
 - name: persistent-volumes | Check whether nfs-client-provisioner is already installed
@@ -30,7 +30,7 @@
   shell: |
     helm install \
     --name "nfs-{{ K8S_DEPLOYMENT_CONTEXT }}" \
-    --set nfs.server="{{ hostvars[NFS_SERVER_DOMAIN]['altIP'] | default(NFS_SERVER_DOMAIN) + ':' + NFS_VOLUME_PATH }}" \
+    --set nfs.server="{{ NFS_SERVER_DOMAIN }}" \
     --set nfs.path="{{ NFS_VOLUME_PATH }}/nfs-{{ K8S_DEPLOYMENT_CONTEXT}}" \
     --set storageClass.defaultClass=true \
     --set storageClass.name=managed-nfs-storage \

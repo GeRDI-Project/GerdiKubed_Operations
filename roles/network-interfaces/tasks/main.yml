@@ -27,6 +27,7 @@
         hostvars[inventory_hostname]['ansible_' + item]['ipv4'] is defined and
         (hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('192.168.0.0/17') or
         hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('10.155.208.0/21') or
+        hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('10.155.92.0/22') or
         hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('10.156.116.0/22')) # OpenStack Cloud, OpenNebula Cloud, VMWare Cloud, RFC1918 24-bit, RFC1918 16-bit, RFC1918 20-bit
   with_items: "{{ ansible_interfaces }}"
 
@@ -40,6 +41,7 @@
         hostvars[inventory_hostname]['ansible_' + item]['ipv4'] is defined and
         (hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('192.168.128.0/17') or
         hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('141.40.254.0/23') or
+        hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('138.246.224.0/23') or
         hostvars[inventory_hostname]['ansible_' + item]['ipv4']['address'] | ipaddr('129.187.252.0/23')) # OpenStack Cloud # VMWare Cloud # OpenNebula Cloud
   with_items: "{{ ansible_interfaces }}"
 
@@ -47,9 +49,9 @@
   include_tasks: privateIface.yml
   when: host_private_interface is defined
 
-- name: network-interfaces | Configure private interface
+- name: network-interfaces | Configure public interface
   include_tasks: publicIface.yml
-  when: host_private_interface is defined
+  when: host_public_interface is defined
 
 - name: network-interfaces | Apply route repair in case of two interfaces
   include_tasks: routeRepair.yml

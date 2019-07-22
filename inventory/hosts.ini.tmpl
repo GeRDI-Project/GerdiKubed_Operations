@@ -1,36 +1,64 @@
-# Please use FQDNs for the hosts, IP addresses are not supported!
+# Copyright 2019 Alexander Goetz goetz@lrz.de
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-# Add all VMWare nodes, pattern:
-# HOSTNAME		     publicIP & publicNetMask (Required for VMware loadbalancers)
-[vmware_nodes]
-# mstr-1.staging.example.org
-# lb-1.staging.example.org   publicIP=1.2.3.12 publicNetMask=17
+all:
+  children:
+    vmware_nodes:
+      hosts:
+        lb-0.dev.test.gerdi.org:
+          network_interfaces:
+            - name: eth0
+              address: XXX.XXX.XXX.XXX
+              netmask: XX
+              gateway: XXX.XXX.XXX.XXX
+              dns_search:
+                - lrz.de
+                - srv.lrz.de
+                - srv.mwn.de
+                - ws.lrz.de
+            - name: eth1
+              address: XXX.XXX.XXX.XXX
+              netmask: XX
+        mstr-0.dev.test.gerdi.org:
+        nd-0.dev.test.gerdi.org:
+        nd-1.dev.test.gerdi.org:
+        nd-2.dev.test.gerdi.org:
+        nd-3.dev.test.gerdi.org:
 
-# Add all OpenNebula nodes, pattern:
-# HOSTNAME
-[opennebula_nodes]
+    openstack_nodes:
 
-# Add all OpenStack nodes, pattern:
-# HOSTNAME
-[openstack_nodes]
+    # Nodes which act as loadbalancer/gateways
+    loadbalancer_nodes:
+      hosts:
+        lb-0.dev.test.gerdi.org:
 
-# ------------------------------------------------------------- #
+    # k8s compute nodes
+    kubernetes_nodes:
+      hosts:
+        lb-0.dev.test.gerdi.org:
+        nd-0.dev.test.gerdi.org:
+        nd-1.dev.test.gerdi.org:
+        nd-2.dev.test.gerdi.org:
+        nd-3.dev.test.gerdi.org:
 
-# Add all NFS nodes, pattern:
-# HOSTNAME		       Alternative IP (for VMs with floating ips) (altIP, Optional)
-[nfs_nodes]
+    # k8s master servers
+    kubernetes_masters:
+      hosts:
+        mstr-0.dev.test.gerdi.org:
 
-# Add all loadbalancer nodes, pattern:
-# HOSTNAME
-[loadbalancer_nodes]
-
-# Add nodes that will be part of kubernetes cluster, pattern:
-# HOSTNAME                 Hostname Overwrite (hostname_overwrite, Optional)       Alternative IP (for VMs with floating ips) (altIP, Optional)
-[kubernetes_nodes]
-
-# Add all kubernetes cluster masters, pattern:
-# HOSTNAME                   Hostname Overwrite (hostname_overwrite, Optional)     Alternative IP (for VMs with floating ips) (altIP, Optional)
-[kubernetes_masters]
-
-# Add machine on which to create cluster certificates
-[kubernetes_management]
+    # CERT Generation on Localhost, don't change
+    kubernetes_management:
+      hosts:
+        localhost:
+          ansible_connection: local

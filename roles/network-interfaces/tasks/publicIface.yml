@@ -36,4 +36,4 @@
     host_address: "{{ host_public_address }}/{{ (host_public_address + '/' + host_public_netmask) | ipaddr('prefix') }}"
     host_network: "{{ host_public_network }}/{{ (host_public_address + '/' + host_public_netmask) | ipaddr('prefix') }}"
     host_gateway: "{{ host_public_gateway.split('/')[0] }}"
-    iface_type: "public"
+    iface_type: 'public'

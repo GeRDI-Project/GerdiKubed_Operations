@@ -16,12 +16,22 @@
 # Performs the network interface setup on vmware loadbalancer nodes
 # Making sure it uses systemd-networkd
 
-- name: vmware-node | Create script to setup NICs of VMware machine
-  template:
-    src: setupNIC.sh.j2
-    dest: /root/setupNIC.sh
+- name: Backup Default Configuration
+  copy:
+    src: /etc/network/interfaces
+    dest: /etc/network/interfaces.bak
+    remote_src: yes
   when: inventory_hostname in groups['loadbalancer_nodes']
 
-- name: vmware-node | Setup NICs of VMware machine
-  shell: bash /root/setupNIC.sh {{ publicIP }} {{ publicNetMask }}
+- name: Replace /etc/network/interfaces
+  template:
+    src: interfaces.j2
+    dest: /etc/network/interfaces
+  when: inventory_hostname in groups['loadbalancer_nodes']
+
+- name: Restart Network Interfaces
+  service:
+    name: networking
+    state: restarted
+  ignore_errors: yes
   when: inventory_hostname in groups['loadbalancer_nodes']
