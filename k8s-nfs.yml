@@ -28,12 +28,6 @@
     - vmware-node
     - sshd
 
-- name: Setup OpenNebula nodes
-  hosts: nfs_nodes:&opennebula_nodes
-  remote_user: root
-  roles:
-    - nebula-node
-
 - name: Setup OpenStack nodes
   hosts: nfs_nodes:&openstack_nodes
   remote_user: root

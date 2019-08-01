@@ -22,12 +22,6 @@
     - vmware-node
     - sshd
 
-- name: Setup OpenNebula nodes
-  hosts: kubernetes_masters:&opennebula_nodes
-  remote_user: root
-  roles:
-    - nebula-node
-
 - name: Setup OpenStack nodes
   hosts: kubernetes_masters:&openstack_nodes
   remote_user: debian
