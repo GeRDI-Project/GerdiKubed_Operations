@@ -141,6 +141,13 @@
         Require ip 138.246.224.141
       </RequireAny>
     </Location>
+
+    # Temporary routes for student projects
+    ProxyPass         /api/v1/opp/store       http://webdav-store-opp.default.svc.cluster.local:5678
+    ProxyPassReverse  /api/v1/opp/store       http://webdav-store-opp.default.svc.cluster.local:5678
+    ProxyPass         /api/v1/opp/store-jhub  http://jhub-store-opp.default.svc.cluster.local:5678
+    ProxyPassReverse  /api/v1/opp/store-jhub  http://jhub-store-opp.default.svc.cluster.local:5678
+
     # Frontend for presentation purposes
     # Order matters! First matching ProxyPass directive will do the job
     ProxyPass         /api/get            http://elasticsearch-data.default.svc.cluster.local:9200/gerdi/_all
