@@ -66,14 +66,16 @@
         AuthType        Basic
         AuthName        "Restricted"
         AuthUserFile    /etc/apache2/.htpasswd
-        Require         valid-user
+        AuthGroupFile   /etc/apache2/.htgroups
+        Require         group ADMIN HARVESTER
     </Location>
 
     <Location /harvest/>
         AuthType        Basic
         AuthName        "Restricted"
         AuthUserFile    /etc/apache2/.htpasswd
-        Require         valid-user
+        AuthGroupFile   /etc/apache2/.htgroups
+        Require         group ADMIN HARVESTER
     </Location>
 
     <Location /admin/auth>
@@ -89,28 +91,32 @@
         AuthType        Basic
         AuthName        "Restricted"
         AuthUserFile    /etc/apache2/.htpasswd
-        Require         valid-user
+        AuthGroupFile   /etc/apache2/.htgroups
+        Require         group ADMIN
     </Location>
 
     <Location /admin/mongo>
         AuthType        Basic
         AuthName        "Restricted"
         AuthUserFile    /etc/apache2/.htpasswd
-        Require         valid-user
+        AuthGroupFile   /etc/apache2/.htgroups
+        Require         group ADMIN
     </Location>
 
     <Location /admin/kibana/>
         AuthType	Basic
         AuthName	"Restricted"
         AuthUserFile	/etc/apache2/.htpasswd
-        Require		valid-user
+        AuthGroupFile   /etc/apache2/.htgroups
+        Require         group ADMIN KIBANA
     </Location>
 
     <Location /admin/prometheus>
         AuthType        Basic
         AuthName        "Restricted"
         AuthUserFile    /etc/apache2/.htpasswd
-        Require         valid-user
+        AuthGroupFile   /etc/apache2/.htgroups
+        Require         group ADMIN
     </Location>
 
     <Location /api/v1/collections>
