@@ -30,9 +30,10 @@
 
 - name: Setup OpenStack nodes
   hosts: nfs_nodes:&openstack_nodes
-  remote_user: root
+  remote_user: debian
   roles:
     - openstack-node
+    - sshd
 
 - name: Setup the nfs server
   hosts: nfs_nodes
