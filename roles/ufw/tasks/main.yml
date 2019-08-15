@@ -21,6 +21,14 @@
       - iptables
       - ufw
 
+- name: ufw common | Allow SSH Access from everywhere
+  ufw:
+    rule: limit
+    port: "22"
+    proto: tcp
+  notify: Restart UFW
+  when: not LRZ_INTERNAL
+
 - name: ufw common | Allow SSH Access from LRZ Networks
   ufw:
     rule: limit
@@ -36,6 +44,7 @@
     - { addr: 10.156.10.20, comment: "LRZ SSH-Gateways wsc20/wsc40"}
     - { addr: 10.156.10.40, comment: "LRZ SSH-Gateways wsc20/wsc40"}
   notify: Restart UFW
+  when: LRZ_INTERNAL
 
 - name: ufw common | Setup master iptables
   import_tasks: setup_mastertables.yml

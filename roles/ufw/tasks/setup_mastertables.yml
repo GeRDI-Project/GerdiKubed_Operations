@@ -12,6 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+- name: ufw master | Allow Access to k8s-API from k8s-ips only
+  ufw:
+    rule: allow
+    port: "443"
+    proto: tcp
+    src: "{{ item.addr }}"
+    comment: "{{ item.comment }}"
+  with_items:
+    - { addr: "{{ K8S_CLUSTER_IP_SUBNET }}", comment: "Kubernetes POD Network"}
+    - { addr: "{{ K8S_SERVICE_IP_SUBNET }}", comment: "Kubernetes Service Network"}
+  notify: Restart UFW
+  when: not LRZ_INTERNAL
+
 - name: ufw master | Allow Access to k8s-API from LRZ Networks
   ufw:
     rule: allow
@@ -30,3 +43,4 @@
     - { addr: "{{ K8S_CLUSTER_IP_SUBNET }}", comment: "Kubernetes POD Network"}
     - { addr: "{{ K8S_SERVICE_IP_SUBNET }}", comment: "Kubernetes Service Network"}
   notify: Restart UFW
+  when: LRZ_INTERNAL
