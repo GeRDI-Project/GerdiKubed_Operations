@@ -34,11 +34,23 @@
   retries: 3
   delay: 3
 
-- name: network-ovn common | Create ca.crt.pem symlink
-  file:
-    src: "{{ K8S_CERT_FILES_DIR }}/ca.crt.pem"
+- name: network-ovn common | Copy OVN CA cert
+  copy:
+    src: "{{ CONTROL_OVN_CA_DIR }}/switchca/cacert.pem"
     dest: "/etc/openvswitch/cacert.pem"
-    state: link
+    mode: '0700'
+
+- name: network-ovn common | Copy OVN host key
+  copy:
+    src: "{{ CONTROL_OVN_KEY_DIR }}/{{ filename.split('.')[0] | lower }}-privkey.pem"
+    dest: "/etc/openvswitch/ovn-privkey.pem"
+    mode: '0700'
+
+- name: network-ovn common | Copy OVN host cert
+  copy:
+    src: "{{ CONTROL_OVN_KEY_DIR }}/{{ filename.split('.')[0] | lower }}-cert.pem"
+    dest: "/etc/openvswitch/ovn-cert.pem"
+    mode: '0700'
 
 - name: network-ovn common | Set db entries on both masters and nodes
   shell: ovs-vsctl set Open_vSwitch . external_ids:{{item}}

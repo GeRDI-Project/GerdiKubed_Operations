@@ -17,18 +17,18 @@ plugin=ovn-k8s-cni-overlay
 
 [ovnnorth]
 address=ssl://{{ K8S_MASTER_IP }}:6641
-client-privkey=/etc/openvswitch/ovncontroller-privkey.pem
-client-cert=/etc/openvswitch/ovncontroller-cert.pem
+client-privkey=/etc/openvswitch/ovn-privkey.pem
+client-cert=/etc/openvswitch/ovn-cert.pem
 client-cacert=/etc/openvswitch/cacert.pem
-server-privkey=/etc/openvswitch/ovnnb-privkey.pem
-server-cert=/etc/openvswitch/ovnnb-cert.pem
+server-privkey=/etc/openvswitch/ovn-privkey.pem
+server-cert=/etc/openvswitch/ovn-cert.pem
 server-cacert=/etc/openvswitch/cacert.pem
 
 [ovnsouth]
 address=ssl://{{ K8S_MASTER_IP }}:6642
-client-privkey=/etc/openvswitch/ovncontroller-privkey.pem
-client-cert=/etc/openvswitch/ovncontroller-cert.pem
+client-privkey=/etc/openvswitch/ovn-privkey.pem
+client-cert=/etc/openvswitch/ovn-cert.pem
 client-cacert=/etc/openvswitch/cacert.pem
-server-privkey=/etc/openvswitch/ovnsb-privkey.pem
-server-cert=/etc/openvswitch/ovnsb-cert.pem
+server-privkey=/etc/openvswitch/ovn-privkey.pem
+server-cert=/etc/openvswitch/ovn-cert.pem
 server-cacert=/etc/openvswitch/cacert.pem
