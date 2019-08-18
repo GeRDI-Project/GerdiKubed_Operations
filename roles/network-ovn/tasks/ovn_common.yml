@@ -42,13 +42,13 @@
 
 - name: network-ovn common | Copy OVN host key
   copy:
-    src: "{{ CONTROL_OVN_KEY_DIR }}/{{ filename.split('.')[0] | lower }}-privkey.pem"
+    src: "{{ CONTROL_OVN_KEY_DIR }}/{{ inventory_hostname.split('.')[0] | lower }}-privkey.pem"
     dest: "/etc/openvswitch/ovn-privkey.pem"
     mode: '0700'
 
 - name: network-ovn common | Copy OVN host cert
   copy:
-    src: "{{ CONTROL_OVN_KEY_DIR }}/{{ filename.split('.')[0] | lower }}-cert.pem"
+    src: "{{ CONTROL_OVN_KEY_DIR }}/{{ inventory_hostname.split('.')[0] | lower }}-cert.pem"
     dest: "/etc/openvswitch/ovn-cert.pem"
     mode: '0700'
 

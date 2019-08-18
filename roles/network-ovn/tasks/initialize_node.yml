@@ -31,6 +31,20 @@
     - k8s-ca-certificate={{ K8S_CERT_FILES_DIR }}/ca.crt.pem
     - k8s-api-token={{ OVN_API_TOKEN }}
 
+- name: network-ovn node | Make ssl reboot persistent
+  lineinfile:
+    dest: /etc/default/ovn-host
+    state: present
+    line: 'OVN_CTL_OPTS="--ovn-controller-ssl-key=/etc/openvswitch/ovn-privkey.pem --ovn-controller-ssl-cert=/etc/openvswitch/ovn-cert.pem --ovn-controller-ssl-ca-cert=/etc/openvswitch/cacert.pem"'
+
+- name: network-ovn node | Setup ovn-controller
+  shell: | 
+    /usr/share/openvswitch/scripts/ovn-ctl \
+    --ovn-controller-ssl-key="/etc/openvswitch/ovn-privkey.pem" \
+    --ovn-controller-ssl-cert="/etc/openvswitch/ovn-cert.pem" \
+    --ovn-controller-ssl-ca-cert="/etc/openvswitch/cacert.pem" \
+    restart_controller
+
 - name: network-ovn node | Install ovn-k8s-node as a service
   template:
     src: ovn-k8s-node.service.j2
