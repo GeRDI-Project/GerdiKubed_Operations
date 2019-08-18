@@ -38,7 +38,7 @@
     line: 'OVN_CTL_OPTS="--ovn-controller-ssl-key=/etc/openvswitch/ovn-privkey.pem --ovn-controller-ssl-cert=/etc/openvswitch/ovn-cert.pem --ovn-controller-ssl-ca-cert=/etc/openvswitch/cacert.pem"'
 
 - name: network-ovn node | Setup ovn-controller
-  shell: | 
+  shell: |
     /usr/share/openvswitch/scripts/ovn-ctl \
     --ovn-controller-ssl-key="/etc/openvswitch/ovn-privkey.pem" \
     --ovn-controller-ssl-cert="/etc/openvswitch/ovn-cert.pem" \
