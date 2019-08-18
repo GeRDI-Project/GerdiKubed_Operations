@@ -115,7 +115,7 @@
   stat:
     path: "{{ CONTROL_OVN_CA_DIR }}/switchca/cacert.pem"
   register: ovnrootca
- 
+
 # This will only create them if they don't exists
 # Use --force to overwrite
 - name: Create OVN CA

@@ -366,7 +366,7 @@ verify_fingerprint() {
     if test $batch != yes; then
         echo "Does fingerprint match? (yes/no)"
         read answer
-        if test "$answer" != yes; then 
+        if test "$answer" != yes; then
             echo "Match failure, aborting" >&2
             exit 1
         fi
@@ -376,7 +376,7 @@ verify_fingerprint() {
 check_type() {
     if test x = x"$1"; then
         type=switch
-    elif test "$1" = switch || test "$1" = controller; then 
+    elif test "$1" = switch || test "$1" = controller; then
         type=$1
     else
         echo "$0: type argument must be 'switch' or 'controller'" >&2
@@ -470,8 +470,8 @@ sign_request() {
             ;;
     esac
 
-    (cd "$pkidir/${type}ca" && 
-     openssl ca -config ca.cnf -batch -in "$request_file") \
+    (cd "$pkidir/${type}ca" &&
+      openssl ca -config ca.cnf -batch -in "$request_file") \
         > "$2.tmp$$" 2>&3
     mv "$2.tmp$$" "$2"
 }
@@ -522,7 +522,7 @@ elif test "$command" = self-sign; then
 
     # Create both the private key and certificate with restricted permissions.
     (umask 077 && \
-     openssl x509 -in "$arg1-req.pem" -out "$arg1-cert.pem.tmp" \
+      openssl x509 -in "$arg1-req.pem" -out "$arg1-cert.pem.tmp" \
         -signkey "$arg1-privkey.pem" -req -days 3650 -text) 2>&3 || exit $?
 
     # Reset the permissions on the certificate to the user's default.
