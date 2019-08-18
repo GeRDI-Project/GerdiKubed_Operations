@@ -1,0 +1,26 @@
+# Copyright 2019 Walentin Lamonos lamonos@lrz.de
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+
+- name: "Check if {{ filename }} needs an OVN key"
+  stat:
+    path: "{{ CONTROL_OVN_KEY_DIR }}/{{ filename.split('.')[0] | lower }}-privkey.pem"
+  register: ovnroothostkey
+
+# We have to split the name because the full FQDN is too long for ovs-pki
+- name: "Create selfsigned cert with key for {{ filename }}"
+  shell: |
+    cd {{CONTROL_OVN_KEY_DIR}} && \
+    {{ CONTROL_OVN_BIN_DIR }}/ovs-pki -d {{ CONTROL_OVN_CA_DIR }} -l {{ CONTROL_OVN_BIN_DIR }}/ovn-cert-log req+sign {{ filename.split('.')[0] | lower }}
+  when: ovnroothostkey.stat.exists == False
