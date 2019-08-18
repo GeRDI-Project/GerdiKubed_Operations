@@ -81,33 +81,33 @@ for option; do
             dashdash=yes ;;
         -h|--help)
             cat <<EOF
-ovs-pki, for managing a simple OpenFlow public key infrastructure 
+ovs-pki, for managing a simple OpenFlow public key infrastructure
 usage: $0 [OPTION...] COMMAND [ARG...]
 
 The valid stand-alone commands and their arguments are:
   init                 Initialize the PKI
   req NAME             Create new private key and certificate request
-                       named NAME-privkey.pem and NAME-req.pem, resp.
+                        named NAME-privkey.pem and NAME-req.pem, resp.
   sign NAME [TYPE]     Sign switch certificate request NAME-req.pem,
-                       producing certificate NAME-cert.pem
+                        producing certificate NAME-cert.pem
   req+sign NAME [TYPE] Combine the above two steps, producing all three files.
   verify NAME [TYPE]   Checks that NAME-cert.pem is a valid TYPE certificate
   fingerprint FILE     Prints the fingerprint for FILE
   self-sign NAME       Sign NAME-req.pem with NAME-privkey.pem,
-                       producing self-signed certificate NAME-cert.pem
+                        producing self-signed certificate NAME-cert.pem
 Each TYPE above is a certificate type: 'switch' (default) or 'controller'.
 
 Options for 'init', 'req', and 'req+sign' only:
   -k, --key=rsa|dsa    Type of keys to use (default: rsa)
   -B, --bits=NBITS     Number of bits in keys (default: 2048).  For DSA keys,
-                         this has an effect only on 'init'.
+                          this has an effect only on 'init'.
   -D, --dsaparam=FILE  File with DSA parameters (DSA only)
-                         (default: dsaparam.pem within PKI directory)
+                          (default: dsaparam.pem within PKI directory)
 Options for use with the 'sign' command:
   -b, --batch          Skip fingerprint verification
 Options that apply to any command:
   -d, --dir=DIR        Directory where the PKI is located
-                         (default: $pkidir)
+                          (default: $pkidir)
   -f, --force          Continue even if file or directory already exists
   -l, --log=FILE       Log openssl output to FILE (default: ovs-log.log)
   -h, --help           Print this usage message.
