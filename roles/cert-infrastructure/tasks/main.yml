@@ -42,7 +42,6 @@
     - { path: "{{CONTROL_CONFIG_DIR}}", mode: '0700' }
     - { path: "{{CONTROL_CSR_DIR}}"   , mode: '0700' }
     - { path: "{{CONTROL_CA_DIR}}"    , mode: '0700' }
-    - { path: "{{CONTROL_OVN_CA_DIR}}", mode: '0700' }
     - { path: "{{CONTROL_OVN_KEY_DIR}}", mode: '0700' }
     - { path: "{{CONTROL_OVN_BIN_DIR}}", mode: '0700' }
 
@@ -121,7 +120,7 @@
 - name: Create OVN CA
   shell: |
     {{ CONTROL_OVN_BIN_DIR }}/ovs-pki init -d {{ CONTROL_OVN_CA_DIR }} -l {{ CONTROL_OVN_BIN_DIR }}/ovn-cert-log
-  when: ovnrootca.stat.size == 0
+  when: ovnrootca.stat.exists == False
 
 # Create keys for all the hosts
 - name: Create OVN server certs and keys
