@@ -1,0 +1,587 @@
+heat_template_version: 2015-04-30
+
+description: Setup kubernetes cluster machines
+
+parameters:
+  key_name:
+    type: string
+    label: Public Key
+    description: Name of key-pair to be used for compute instance (e.g. wal-pub)
+
+  image_id:
+    type: string
+    label: ImageID
+    description: Image to be used for the instances (e.g. Debian-10-buster)
+
+  instance_type:
+    type: string
+    label: Instance (flavor) Type
+    description: Type of instance (flavor) to be used
+    constraints:
+      - allowed_values:
+        - lrz.medium
+        - lrz.small
+        - lrz.large
+        - lrz.xlarge
+        - tiny
+
+  availability_zone:
+    type: string
+    label: Availability Zone
+    description: Availability zone to use for volumes
+    constraints:
+      - allowed_values:
+        - nova
+
+  addon_volume_size:
+    type: number
+    label: Node Addon Volume Size
+    description: Size of the addon volumes in GB
+    constraints:
+      - range: { min: 25, max: 5000 }
+
+  image_volume_size:
+    type: number
+    label: Base Image Volume Size
+    description: Size of the image's volume (e.g. debian)
+    constraints:
+      - range: { min: 20, max: 5000 }
+
+  mstrlb_volume_size:
+    type: number
+    label: Master & LB Addon Volume Size
+    description: Size of the addon volumes in GB
+    constraints:
+      - range: { min: 1, max: 5000 }
+
+  nfs_volume_size:
+    type: number
+    label: NFS Addon Volume Size
+    description: Size of the addon volume in GB
+    constraints:
+      - range: { min: 10, max: 5000 }
+
+resources:
+###########################################
+## Create security groups
+###########################################
+  sg-cluster-lb:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      name: sg-cluster-lb
+      rules: [ {"direction": ingress,
+                "remote_ip_prefix": 0.0.0.0/0,
+                "port_range_min": 80,
+                "port_range_max": 80,
+                "ethertype": IPv4,
+                "protocol": tcp},
+               {"direction": ingress,
+                "remote_ip_prefix": 0.0.0.0/0,
+                "port_range_min": 443,
+                "port_range_max": 443,
+                "ethertype": IPv4,
+                "protocol": tcp} ]
+
+  sg-cluster:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      name: sg-cluster
+      rules: [ {"direction": egress,
+                "remote_ip_prefix": 0.0.0.0/0,
+                "port_range_min": 1,
+                "port_range_max": 65535,
+                "ethertype": IPv4,
+                "protocol": tcp},
+               {"direction": egress,
+                "remote_ip_prefix": 0.0.0.0/0,
+                "port_range_min": 1,
+                "port_range_max": 65535,
+                "ethertype": IPv4,
+                "protocol": udp},
+               {"direction": ingress,
+                "remote_ip_prefix": 0.0.0.0/0,
+                "port_range_min": 22,
+                "port_range_max": 22,
+                "ethertype": IPv4,
+                "protocol": tcp},
+               {"direction": ingress,
+                "port_range_min": 1,
+                "port_range_max": 65535,
+                "ethertype": IPv4,
+                "protocol": tcp,
+                "remote_mode": remote_group_id },
+               {"direction": ingress,
+                "port_range_min": 1,
+                "port_range_max": 65535,
+                "ethertype": IPv4,
+                "protocol": udp,
+                "remote_mode": remote_group_id },
+               {"direction": ingress,
+                "protocol": ICMP,
+                "remote_mode": remote_group_id } ]
+
+###########################################
+## Create floating ips
+###########################################
+  floating-ip-mstr0:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: MWN_pool
+
+  floating-ip-nd0:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: MWN_pool
+
+  floating-ip-nd1:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: MWN_pool
+
+  floating-ip-nd2:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: MWN_pool
+
+  floating-ip-nfs:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: MWN_pool
+
+  floating-ip-lb0:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: MWN_pool
+
+  floating-ip-lb0-pub:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: internet_pool
+
+###########################################
+## Create boot and addon volumes
+###########################################
+  volume-mstr0:
+    type: OS::Cinder::Volume
+    properties:
+      description: Addon volume mstr0
+      size: { get_param: mstrlb_volume_size }
+      availability_zone: { get_param: availability_zone }
+      volume_type: ceph
+
+  volume-mstr0-boot:
+    type: OS::Cinder::Volume
+    properties:
+      description: Boot volume mstr0
+      image: { get_param: image_id }
+      name: Boot volume cluster-mstr0
+      size: { get_param: image_volume_size }
+      availability_zone: { get_param: availability_zone }
+
+  volume-nd0:
+    type: OS::Cinder::Volume
+    properties:
+      description: Addon volume nd0
+      size: { get_param: addon_volume_size }
+      availability_zone: { get_param: availability_zone }
+      volume_type: ceph
+
+  volume-nd0-boot:
+    type: OS::Cinder::Volume
+    properties:
+      description: Boot volume nd0
+      image: { get_param: image_id }
+      name: Boot volume cluster-nd0
+      size: { get_param: image_volume_size }
+      availability_zone: { get_param: availability_zone }
+
+  volume-nd1:
+    type: OS::Cinder::Volume
+    properties:
+      description: Addon volume nd1
+      size: { get_param: addon_volume_size }
+      availability_zone: { get_param: availability_zone }
+      volume_type: ceph
+
+  volume-nd1-boot:
+    type: OS::Cinder::Volume
+    properties:
+      description: Boot volume nd1
+      image: { get_param: image_id }
+      name: Boot volume cluster-nd1
+      size: { get_param: image_volume_size }
+      availability_zone: { get_param: availability_zone }
+
+  volume-nd2:
+    type: OS::Cinder::Volume
+    properties:
+      description: Addon volume nd2
+      size: { get_param: addon_volume_size }
+      availability_zone: { get_param: availability_zone }
+      volume_type: ceph
+
+  volume-nd2-boot:
+    type: OS::Cinder::Volume
+    properties:
+      description: Boot volume nd2
+      image: { get_param: image_id }
+      name: Boot volume cluster-nd2
+      size: { get_param: image_volume_size }
+      availability_zone: { get_param: availability_zone }
+
+  volume-lb0:
+    type: OS::Cinder::Volume
+    properties:
+      description: Addon volume lb0
+      size: { get_param: mstrlb_volume_size }
+      availability_zone: { get_param: availability_zone }
+      volume_type: ceph
+
+  volume-lb0-boot:
+    type: OS::Cinder::Volume
+    properties:
+      description: Boot volume lb0
+      image: { get_param: image_id }
+      name: Boot volume cluster-lb0
+      size: { get_param: image_volume_size }
+      availability_zone: { get_param: availability_zone }
+
+  volume-nfs:
+    type: OS::Cinder::Volume
+    properties:
+      description: Addon volume nfs node
+      size: { get_param: nfs_volume_size }
+      availability_zone: { get_param: availability_zone }
+      volume_type: ceph
+
+  volume-nfs-boot:
+    type: OS::Cinder::Volume
+    properties:
+      description: Boot volume nfs
+      image: { get_param: image_id }
+      name: Boot volume cluster-nfs
+      size: { get_param: image_volume_size }
+      availability_zone: { get_param: availability_zone }
+
+###########################################
+## Create cluster VMs
+###########################################
+  cluster-mstr0:
+    type: OS::Nova::Server
+    properties:
+      key_name: { get_param: key_name }
+      block_device_mapping:
+        - volume_id: { get_resource: volume-mstr0-boot }
+          device_name: vda
+      flavor: { get_param: instance_type }
+      security_groups: [ { get_resource: sg-cluster } ]
+      networks:
+        - network: MWN
+      user_data: |
+        #!/bin/bash
+        apt install -y parted
+        DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+        while ! mountpoint -q /mnt/vdb
+        do
+          sleep 5
+          udevadm trigger
+          DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+          parted -a optimal /dev/vdb mklabel gpt -- mkpart primary ext4 0% 100%<<-EOF
+            yes
+            EOF
+          mkfs.ext4 -F $DISKNAME'-part1'
+          mkdir -p /mnt/vdb
+          mount -a
+        done
+        echo $DISKNAME'-part1 /mnt/vdb ext4 defaults,nofail,discard 0 2' | tee -a /etc/fstab
+ 
+  cluster-nd0:
+    type: OS::Nova::Server
+    properties:
+      key_name: { get_param: key_name }
+      block_device_mapping:
+        - volume_id: { get_resource: volume-nd0-boot }
+          device_name: vda
+      flavor: { get_param: instance_type }
+      security_groups: [ { get_resource: sg-cluster } ]
+      networks:
+        - network: MWN
+      user_data: |
+        #!/bin/bash
+        apt install -y parted
+        DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+        while ! mountpoint -q /mnt/vdb
+        do
+          sleep 5
+          udevadm trigger
+          DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+          parted -a optimal /dev/vdb mklabel gpt -- mkpart primary ext4 0% 100%<<-EOF
+            yes
+            EOF
+          mkfs.ext4 -F $DISKNAME'-part1'
+          mkdir -p /mnt/vdb
+          mount -a
+        done
+        echo $DISKNAME'-part1 /mnt/vdb ext4 defaults,nofail,discard 0 2' | tee -a /etc/fstab
+
+  cluster-nd1:
+    type: OS::Nova::Server
+    properties:
+      key_name: { get_param: key_name }
+      block_device_mapping:
+        - volume_id: { get_resource: volume-nd1-boot }
+          device_name: vda
+      flavor: { get_param: instance_type }
+      security_groups: [ { get_resource: sg-cluster } ]
+      networks:
+        - network: MWN
+      user_data: |
+        #!/bin/bash
+        apt install -y parted
+        DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+        while ! mountpoint -q /mnt/vdb
+        do
+          sleep 5
+          udevadm trigger
+          DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+          parted -a optimal /dev/vdb mklabel gpt -- mkpart primary ext4 0% 100%<<-EOF
+            yes
+            EOF
+          mkfs.ext4 -F $DISKNAME'-part1'
+          mkdir -p /mnt/vdb
+          mount -a
+        done
+        echo $DISKNAME'-part1 /mnt/vdb ext4 defaults,nofail,discard 0 2' | tee -a /etc/fstab
+
+  cluster-nd2:
+    type: OS::Nova::Server
+    properties:
+      key_name: { get_param: key_name }
+      block_device_mapping:
+        - volume_id: { get_resource: volume-nd2-boot }
+          device_name: vda
+      flavor: { get_param: instance_type }
+      security_groups: [ { get_resource: sg-cluster } ]
+      networks:
+        - network: MWN
+      user_data: |
+        #!/bin/bash
+        apt install -y parted
+        DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+        while ! mountpoint -q /mnt/vdb
+        do
+          sleep 5
+          udevadm trigger
+          DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+          parted -a optimal /dev/vdb mklabel gpt -- mkpart primary ext4 0% 100%<<-EOF
+            yes
+            EOF
+          mkfs.ext4 -F $DISKNAME'-part1'
+          mkdir -p /mnt/vdb
+          mount -a
+        done
+        echo $DISKNAME'-part1 /mnt/vdb ext4 defaults,nofail,discard 0 2' | tee -a /etc/fstab
+
+  cluster-lb0:
+    type: OS::Nova::Server
+    properties:
+      key_name: { get_param: key_name }
+      block_device_mapping:
+        - volume_id: { get_resource: volume-lb0-boot }
+          device_name: vda
+      flavor: { get_param: instance_type }
+      security_groups: [ { get_resource: sg-cluster }, { get_resource: sg-cluster-lb } ]
+      networks:
+        - network: MWN
+        - network: internet
+      user_data: |
+        #!/bin/bash
+        apt install -y parted
+        DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+        while ! mountpoint -q /mnt/vdb
+        do
+          sleep 5
+          udevadm trigger
+          DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+          parted -a optimal /dev/vdb mklabel gpt -- mkpart primary ext4 0% 100%<<-EOF
+            yes
+            EOF
+          mkfs.ext4 -F $DISKNAME'-part1'
+          mkdir -p /mnt/vdb
+          mount -a
+        done
+        echo $DISKNAME'-part1 /mnt/vdb ext4 defaults,nofail,discard 0 2' | tee -a /etc/fstab
+        sed -i 's/#ListenAddress 0.0.0.0/ListenAddress '`ip addr | grep -e 'inet[[:space:]]' | grep -v '127.0.0.1' | grep -E 'eth0' | awk '{print $2}' | sed 's/\// /g' | awk '{print $1}'`'/
+        s/#AddressFamily.*/AddressFamily inet/;' /etc/ssh/sshd_config
+        systemctl restart sshd
+        service sshd restart
+        service networking restart
+
+  cluster-nfs:
+    type: OS::Nova::Server
+    properties:
+      key_name: { get_param: key_name }
+      block_device_mapping:
+        - volume_id: { get_resource: volume-nfs-boot }
+          device_name: vda
+      flavor: { get_param: instance_type }
+      security_groups: [ { get_resource: sg-cluster } ]
+      networks:
+        - network: MWN
+      user_data: |
+        #!/bin/bash
+        apt install -y parted
+        DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+        while ! mountpoint -q /mnt/vdb
+        do
+          sleep 5
+          udevadm trigger
+          DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+          parted -a optimal /dev/vdb mklabel gpt -- mkpart primary ext4 0% 100%<<-EOF
+            yes
+            EOF
+          mkfs.ext4 -F $DISKNAME'-part1'
+          mkdir -p /mnt/vdb
+          mount -a
+        done
+        echo $DISKNAME'-part1 /mnt/vdb ext4 defaults,nofail,discard 0 2' | tee -a /etc/fstab
+
+###########################################
+## Associate IPs
+###########################################
+  ip-association-mstr0:
+    type: OS::Neutron::FloatingIPAssociation
+    properties:
+      floatingip_id: { get_resource: floating-ip-mstr0 }
+      port_id: { get_attr: [cluster-mstr0, addresses, MWN, 0, port] }
+
+  ip-association-nd0:
+    type: OS::Neutron::FloatingIPAssociation
+    properties:
+      floatingip_id: { get_resource: floating-ip-nd0 }
+      port_id: { get_attr: [cluster-nd0, addresses, MWN, 0, port] }
+
+  ip-association-nd1:
+    type: OS::Neutron::FloatingIPAssociation
+    properties:
+      floatingip_id: { get_resource: floating-ip-nd1 }
+      port_id: { get_attr: [cluster-nd1, addresses, MWN, 0, port] }
+
+  ip-association-nd2:
+    type: OS::Neutron::FloatingIPAssociation
+    properties:
+      floatingip_id: { get_resource: floating-ip-nd2 }
+      port_id: { get_attr: [cluster-nd2, addresses, MWN, 0, port] }
+
+  ip-association-nfs:
+    type: OS::Neutron::FloatingIPAssociation
+    properties:
+      floatingip_id: { get_resource: floating-ip-nfs }
+      port_id: { get_attr: [cluster-nfs, addresses, MWN, 0, port] }
+
+  ip-association-lb0:
+    type: OS::Neutron::FloatingIPAssociation
+    properties:
+      floatingip_id: { get_resource: floating-ip-lb0 }
+      port_id: { get_attr: [cluster-lb0, addresses, MWN, 0, port] }
+
+  ip-association-lb0-pub:
+    type: OS::Neutron::FloatingIPAssociation
+    properties:
+      floatingip_id: { get_resource: floating-ip-lb0-pub }
+      port_id: { get_attr: [cluster-lb0, addresses, internet, 0, port] }
+
+###########################################
+## Attach addon volumes
+###########################################
+  volume-attachment-mstr0:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      volume_id: { get_resource: volume-mstr0 }
+      instance_uuid: { get_resource: cluster-mstr0 }
+
+  volume-attachment-nd0:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      volume_id: { get_resource: volume-nd0 }
+      instance_uuid: { get_resource: cluster-nd0 }
+
+  volume-attachment-nd1:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      volume_id: { get_resource: volume-nd1 }
+      instance_uuid: { get_resource: cluster-nd1 }
+
+  volume-attachment-nd2:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      volume_id: { get_resource: volume-nd2 }
+      instance_uuid: { get_resource: cluster-nd2 }
+
+  volume-attachment-lb0:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      volume_id: { get_resource: volume-lb0 }
+      instance_uuid: { get_resource: cluster-lb0 }
+
+  volume-attachment-nfs:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      volume_id: { get_resource: volume-nfs }
+      instance_uuid: { get_resource: cluster-nfs }
+
+outputs:
+###########################################
+## Output new ips
+###########################################
+  ip-mstr0:
+    description: IP of the newly created mstr instance.
+    value: { get_attr: [cluster-mstr0, networks] }
+  
+  ip-mstr0-float:
+    description: Floating IP of the newly created mstr instance.
+    value: { get_attr: [floating-ip-mstr0, floating_ip_address] }
+    
+  ip-nd0:
+    description: IP of the newly created nd0 instance.
+    value: { get_attr: [cluster-nd0, networks] }
+
+  ip-nd0-float:
+    description: Floating IP of the newly created nd0 instance.
+    value: { get_attr: [floating-ip-nd0, floating_ip_address] }
+
+  ip-nd1:
+    description: IP of the newly created nd1 instance.
+    value: { get_attr: [cluster-nd1, networks] }
+
+  ip-nd1-float:
+    description: Floating IP of the newly created nd1 instance.
+    value: { get_attr: [floating-ip-nd1, floating_ip_address] }
+
+  ip-nd2:
+    description: IP of the newly created nd2 instance.
+    value: { get_attr: [cluster-nd2, networks] }
+
+  ip-nd2-float:
+    description: Floating IP of the newly created nd2 instance.
+    value: { get_attr: [floating-ip-nd2, floating_ip_address] }
+
+  ip-lb0:
+    description: IP of the newly created lb0 instance.
+    value: { get_attr: [cluster-lb0, networks] }
+
+  ip-lb0-float:
+    description: Floating IP of the newly created lb0 instance.
+    value: { get_attr: [floating-ip-lb0, floating_ip_address] }
+
+  ip-lb0-float-pub:
+    description: Public Floating IP of the newly created lb0 instance.
+    value: { get_attr: [floating-ip-lb0-pub, floating_ip_address] }
+
+  ip-nfs:
+    description: IP of the newly created nfs instance.
+    value: { get_attr: [cluster-nfs, networks] }
+
+  ip-nfs-float:
+    description: Floating IP of the newly created nfs instance.
+    value: { get_attr: [floating-ip-nfs, floating_ip_address] }
