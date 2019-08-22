@@ -513,11 +513,11 @@ outputs:
   ip-mstr0:
     description: IP of the newly created mstr instance.
     value: { get_attr: [cluster-mstr0, networks] }
-  
+
   ip-mstr0-float:
     description: Floating IP of the newly created mstr instance.
     value: { get_attr: [floating-ip-mstr0, floating_ip_address] }
-    
+
   ip-nd0:
     description: IP of the newly created nd0 instance.
     value: { get_attr: [cluster-nd0, networks] }
