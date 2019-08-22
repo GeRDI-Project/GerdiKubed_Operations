@@ -280,21 +280,17 @@ resources:
       user_data: |
         #!/bin/bash
         apt install -y parted
-        DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
-        while ! mountpoint -q /mnt/vdb
-        do
-          sleep 5
-          udevadm trigger
-          DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
-          parted -a optimal /dev/vdb mklabel gpt -- mkpart primary ext4 0% 100%<<-EOF
-            yes
-            EOF
-          mkfs.ext4 -F $DISKNAME'-part1'
-          mkdir -p /mnt/vdb
-          mount -a
+        while ! mountpoint -q /mnt/vdb; do
+            DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+            udevadm trigger
+            DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+            yes | parted -a optimal /dev/vdb mklabel gpt -- mkpart primary ext4 0% 100%
+            mkfs.ext4 -F $DISKNAME'-part1'
+            mkdir -p /mnt/vdb
+            echo $DISKNAME'-part1 /mnt/vdb ext4 defaults,nofail,discard 0 2' | tee -a /etc/fstab
+            mount -a
         done
-        echo $DISKNAME'-part1 /mnt/vdb ext4 defaults,nofail,discard 0 2' | tee -a /etc/fstab
- 
+
   cluster-nd0:
     type: OS::Nova::Server
     properties:
@@ -309,20 +305,16 @@ resources:
       user_data: |
         #!/bin/bash
         apt install -y parted
-        DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
-        while ! mountpoint -q /mnt/vdb
-        do
-          sleep 5
-          udevadm trigger
-          DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
-          parted -a optimal /dev/vdb mklabel gpt -- mkpart primary ext4 0% 100%<<-EOF
-            yes
-            EOF
-          mkfs.ext4 -F $DISKNAME'-part1'
-          mkdir -p /mnt/vdb
-          mount -a
+        while ! mountpoint -q /mnt/vdb; do
+            DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+            udevadm trigger
+            DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+            yes | parted -a optimal /dev/vdb mklabel gpt -- mkpart primary ext4 0% 100%
+            mkfs.ext4 -F $DISKNAME'-part1'
+            mkdir -p /mnt/vdb
+            echo $DISKNAME'-part1 /mnt/vdb ext4 defaults,nofail,discard 0 2' | tee -a /etc/fstab
+            mount -a
         done
-        echo $DISKNAME'-part1 /mnt/vdb ext4 defaults,nofail,discard 0 2' | tee -a /etc/fstab
 
   cluster-nd1:
     type: OS::Nova::Server
@@ -338,20 +330,16 @@ resources:
       user_data: |
         #!/bin/bash
         apt install -y parted
-        DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
-        while ! mountpoint -q /mnt/vdb
-        do
-          sleep 5
-          udevadm trigger
-          DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
-          parted -a optimal /dev/vdb mklabel gpt -- mkpart primary ext4 0% 100%<<-EOF
-            yes
-            EOF
-          mkfs.ext4 -F $DISKNAME'-part1'
-          mkdir -p /mnt/vdb
-          mount -a
+        while ! mountpoint -q /mnt/vdb; do
+            DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+            udevadm trigger
+            DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+            yes | parted -a optimal /dev/vdb mklabel gpt -- mkpart primary ext4 0% 100%
+            mkfs.ext4 -F $DISKNAME'-part1'
+            mkdir -p /mnt/vdb
+            echo $DISKNAME'-part1 /mnt/vdb ext4 defaults,nofail,discard 0 2' | tee -a /etc/fstab
+            mount -a
         done
-        echo $DISKNAME'-part1 /mnt/vdb ext4 defaults,nofail,discard 0 2' | tee -a /etc/fstab
 
   cluster-nd2:
     type: OS::Nova::Server
@@ -367,20 +355,16 @@ resources:
       user_data: |
         #!/bin/bash
         apt install -y parted
-        DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
-        while ! mountpoint -q /mnt/vdb
-        do
-          sleep 5
-          udevadm trigger
-          DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
-          parted -a optimal /dev/vdb mklabel gpt -- mkpart primary ext4 0% 100%<<-EOF
-            yes
-            EOF
-          mkfs.ext4 -F $DISKNAME'-part1'
-          mkdir -p /mnt/vdb
-          mount -a
+        while ! mountpoint -q /mnt/vdb; do
+            DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+            udevadm trigger
+            DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+            yes | parted -a optimal /dev/vdb mklabel gpt -- mkpart primary ext4 0% 100%
+            mkfs.ext4 -F $DISKNAME'-part1'
+            mkdir -p /mnt/vdb
+            echo $DISKNAME'-part1 /mnt/vdb ext4 defaults,nofail,discard 0 2' | tee -a /etc/fstab
+            mount -a
         done
-        echo $DISKNAME'-part1 /mnt/vdb ext4 defaults,nofail,discard 0 2' | tee -a /etc/fstab
 
   cluster-lb0:
     type: OS::Nova::Server
@@ -397,20 +381,16 @@ resources:
       user_data: |
         #!/bin/bash
         apt install -y parted
-        DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
-        while ! mountpoint -q /mnt/vdb
-        do
-          sleep 5
-          udevadm trigger
-          DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
-          parted -a optimal /dev/vdb mklabel gpt -- mkpart primary ext4 0% 100%<<-EOF
-            yes
-            EOF
-          mkfs.ext4 -F $DISKNAME'-part1'
-          mkdir -p /mnt/vdb
-          mount -a
+        while ! mountpoint -q /mnt/vdb; do
+            DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+            udevadm trigger
+            DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+            yes | parted -a optimal /dev/vdb mklabel gpt -- mkpart primary ext4 0% 100%
+            mkfs.ext4 -F $DISKNAME'-part1'
+            mkdir -p /mnt/vdb
+            echo $DISKNAME'-part1 /mnt/vdb ext4 defaults,nofail,discard 0 2' | tee -a /etc/fstab
+            mount -a
         done
-        echo $DISKNAME'-part1 /mnt/vdb ext4 defaults,nofail,discard 0 2' | tee -a /etc/fstab
         sed -i 's/#ListenAddress 0.0.0.0/ListenAddress '`ip addr | grep -e 'inet[[:space:]]' | grep -v '127.0.0.1' | grep -E 'eth0' | awk '{print $2}' | sed 's/\// /g' | awk '{print $1}'`'/
         s/#AddressFamily.*/AddressFamily inet/;' /etc/ssh/sshd_config
         systemctl restart sshd
@@ -431,20 +411,16 @@ resources:
       user_data: |
         #!/bin/bash
         apt install -y parted
-        DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
-        while ! mountpoint -q /mnt/vdb
-        do
-          sleep 5
-          udevadm trigger
-          DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
-          parted -a optimal /dev/vdb mklabel gpt -- mkpart primary ext4 0% 100%<<-EOF
-            yes
-            EOF
-          mkfs.ext4 -F $DISKNAME'-part1'
-          mkdir -p /mnt/vdb
-          mount -a
+        while ! mountpoint -q /mnt/vdb; do
+            DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+            udevadm trigger
+            DISKNAME=$(file /dev/disk/by-id/* | grep vdb | grep -v part | head -1 | awk '{print $1;}' | sed 's/:$//')
+            yes | parted -a optimal /dev/vdb mklabel gpt -- mkpart primary ext4 0% 100%
+            mkfs.ext4 -F $DISKNAME'-part1'
+            mkdir -p /mnt/vdb
+            echo $DISKNAME'-part1 /mnt/vdb ext4 defaults,nofail,discard 0 2' | tee -a /etc/fstab
+            mount -a
         done
-        echo $DISKNAME'-part1 /mnt/vdb ext4 defaults,nofail,discard 0 2' | tee -a /etc/fstab
 
 ###########################################
 ## Associate IPs
