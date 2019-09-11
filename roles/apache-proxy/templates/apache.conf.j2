@@ -160,8 +160,8 @@
     ProxyPassReverse  /api/get            http://elasticsearch-data.default.svc.cluster.local:9200/gerdi/_all
     ProxyPass         /api/search         http://elasticsearch-data.default.svc.cluster.local:9200/gerdi/_search
     ProxyPassReverse  /api/search         http://elasticsearch-data.default.svc.cluster.local:9200/gerdi/_search
-    ProxyPass         /api/index          http://elasticsearch-data.default.svc.cluster.local:9200/gerdi/metadata
-    ProxyPassReverse  /api/index          http://elasticsearch-data.default.svc.cluster.local:9200/gerdi/metadata
+    ProxyPass         /api/index          http://elasticsearch-data.default.svc.cluster.local:9200/gerdi
+    ProxyPassReverse  /api/index          http://elasticsearch-data.default.svc.cluster.local:9200/gerdi
 
     ProxyPass         /harvest/arcgis     http://arcgis-harvester.default.svc.cluster.local:8080/arcgis/harvest
     ProxyPassReverse  /harvest/arcgis     http://arcgis-harvester.default.svc.cluster.local:8080/arcgis/harvest
