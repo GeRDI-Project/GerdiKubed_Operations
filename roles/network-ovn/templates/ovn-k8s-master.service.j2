@@ -15,8 +15,8 @@ ExecStart=/usr/bin/ovnkube \
   -k8s-token {{ OVN_API_TOKEN }} \
   -k8s-cacert {{ K8S_CERT_FILES_DIR }}/ca.crt.pem \
   -k8s-apiserver "https://{{ K8S_MASTER_IP }}:443" \
-  -nb-address="tcp://127.0.0.1:6641" \
-  -sb-address="tcp://127.0.0.1:6642"
+  -nb-address="ssl://127.0.0.1:6641" \
+  -sb-address="ssl://127.0.0.1:6642"
 Restart=on-failure
 RestartSec=10
 WorkingDirectory=/root/

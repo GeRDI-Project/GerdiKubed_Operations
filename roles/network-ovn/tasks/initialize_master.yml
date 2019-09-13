@@ -18,10 +18,17 @@
   with_items:
     - ovn-central={{ OVN_CENTRAL_VERSION }}
 
-- name: network-ovn master | open tcp ports for ovn databases
+- name: network-ovn master | Set SSL on ovnnb and ovnsb
   shell: |
-    ovn-nbctl set-connection ptcp:6641 &&
-    ovn-sbctl set-connection ptcp:6642
+    ovn-nbctl set-ssl /etc/openvswitch/ovn-privkey.pem \
+    /etc/openvswitch/ovn-cert.pem /etc/openvswitch/cacert.pem &&
+    ovn-sbctl set-ssl /etc/openvswitch/ovn-privkey.pem \
+    /etc/openvswitch/ovn-cert.pem /etc/openvswitch/cacert.pem
+
+- name: network-ovn master | open ports for ovn databases
+  shell: |
+    ovn-nbctl set-connection pssl:6641 &&
+    ovn-sbctl set-connection pssl:6642
   changed_when: false
 
 - name: network-ovn master | Set the k8s api server address in the Open vSwitch database
