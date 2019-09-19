@@ -160,8 +160,8 @@
     ProxyPassReverse  /api/get            http://elasticsearch-data.default.svc.cluster.local:9200/gerdi/_all
     ProxyPass         /api/search         http://elasticsearch-data.default.svc.cluster.local:9200/gerdi/_search
     ProxyPassReverse  /api/search         http://elasticsearch-data.default.svc.cluster.local:9200/gerdi/_search
-    ProxyPass         /api/index          http://elasticsearch-data.default.svc.cluster.local:9200/gerdi/metadata
-    ProxyPassReverse  /api/index          http://elasticsearch-data.default.svc.cluster.local:9200/gerdi/metadata
+    ProxyPass         /api/index          http://elasticsearch-data.default.svc.cluster.local:9200/gerdi
+    ProxyPassReverse  /api/index          http://elasticsearch-data.default.svc.cluster.local:9200/gerdi
 
     ProxyPass         /harvest/arcgis     http://arcgis-harvester.default.svc.cluster.local:8080/arcgis/harvest
     ProxyPassReverse  /harvest/arcgis     http://arcgis-harvester.default.svc.cluster.local:8080/arcgis/harvest
@@ -209,12 +209,12 @@
     ProxyPass         /api/v1/collections http://bookmark-persistence-api.default.svc.cluster.local:4567/api/v1/collections
     ProxyPassReverse  /api/v1/collections http://bookmark-persistence-api.default.svc.cluster.local:4567/api/v1/collections
 
-    ProxyPass         /store              http://webdav-store-ui.default.svc.cluster.local/store
-    ProxyPassReverse  /store              http://webdav-store-ui.default.svc.cluster.local/store
+    ProxyPass         /store/webdav       http://webdav-store-ui.default.svc.cluster.local/store/webdav
+    ProxyPassReverse  /store/webdav       http://webdav-store-ui.default.svc.cluster.local/store/webdav
     ProxyPass         /callback           http://callback-test-frontend.default.svc.cluster.local/callback
     ProxyPassReverse  /callback           http://callback-test-frontend.default.svc.cluster.local/callback
-    ProxyPass         /store-jhub         http://jhub-store-ui.default.svc.cluster.local/store-jhub
-    ProxyPassReverse  /store-jhub         http://jhub-store-ui.default.svc.cluster.local/store-jhub
+    ProxyPass         /store/jhub         http://jhub-store-ui.default.svc.cluster.local/store/jhub
+    ProxyPassReverse  /store/jhub         http://jhub-store-ui.default.svc.cluster.local/store/jhub
 
     ProxyPass         /bookmark           http://bookmark-frontend.default.svc.cluster.local/bookmark
     ProxyPassReverse  /bookmark           http://bookmark-frontend.default.svc.cluster.local/bookmark

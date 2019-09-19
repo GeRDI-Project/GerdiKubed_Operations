@@ -26,9 +26,9 @@
 - name: "Create openssl.cnf file for {{ filename }}"
   template:
     src:  "openssl.cnf.j2"
-    dest: "{{CONTROL_CONFIG_DIR}}/{{ filename }}.openssl.cnf"
+    dest: "{{ CONTROL_CONFIG_DIR }}/{{ filename }}.openssl.cnf"
 
-- name: "Create selfsigned cert with    key for {{ filename }}"
+- name: "Create selfsigned cert with key for {{ filename }}"
   shell: |
     openssl req \
       -nodes \
@@ -51,7 +51,7 @@
       -extensions v3_ca
   when: check.results[0].stat.exists == True and check.results[1].stat.exists == False and sign == False
 
-- name: "Create csr with    key for {{ filename }}"
+- name: "Create csr with key for {{ filename }}"
   shell: |
     openssl req \
       -nodes \

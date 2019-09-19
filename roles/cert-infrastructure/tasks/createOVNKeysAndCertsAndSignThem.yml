@@ -12,31 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-# Replace remote_user with whatever distro you are using
-# Defaults to root
-#- name: Secure and setup sshd
-#  hosts: nfs_nodes
-#  remote_user: debian
-#  become: true
-#  roles:
-#    - sshd
 
-- name: Setup VMWare nodes
-  hosts: nfs_nodes:&vmware_nodes
-  remote_user: root
-  roles:
-    - vmware-node
-    - sshd
+- name: "Check if {{ filename }} needs an OVN key"
+  stat:
+    path: "{{ CONTROL_OVN_KEY_DIR }}/{{ filename.split('.')[0] | lower }}-privkey.pem"
+  register: ovnroothostkey
 
-- name: Setup OpenStack nodes
-  hosts: nfs_nodes:&openstack_nodes
-  remote_user: debian
-  roles:
-    - openstack-node
-    - sshd
-
-- name: Setup the nfs server
-  hosts: nfs_nodes
-  remote_user: root
-  roles:
-    - nfs-server
+# We have to split the name because the full FQDN is too long for ovs-pki
+- name: "Create selfsigned cert with key for {{ filename }}"
+  shell: |
+    cd {{CONTROL_OVN_KEY_DIR}} && \
+    {{ CONTROL_OVN_BIN_DIR }}/ovs-pki -d {{ CONTROL_OVN_CA_DIR }} -l {{ CONTROL_OVN_BIN_DIR }}/ovn-cert-log req+sign {{ filename.split('.')[0] | lower }}
+  when: ovnroothostkey.stat.exists == False

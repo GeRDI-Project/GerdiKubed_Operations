@@ -11,3 +11,12 @@ port: 10250
 resolvConf: /run/systemd/resolve/resolv.conf
 tlsCertFile: {{ K8S_CERT_FILES_DIR }}/{{ inventory_hostname }}.crt.pem
 tlsPrivateKeyFile: {{ K8S_KEY_FILES_DIR }}/{{ inventory_hostname }}.key
+# Restore default authentication and authorization modes from K8s < 1.9
+# https://github.com/kubernetes/kubernetes/issues/63128
+authentication:
+  anonymous:
+    enabled: true
+  webhook:
+    enabled: false
+authorization:
+  mode: AlwaysAllow

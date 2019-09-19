@@ -42,6 +42,8 @@
     - { path: "{{CONTROL_CONFIG_DIR}}", mode: '0700' }
     - { path: "{{CONTROL_CSR_DIR}}"   , mode: '0700' }
     - { path: "{{CONTROL_CA_DIR}}"    , mode: '0700' }
+    - { path: "{{CONTROL_OVN_KEY_DIR}}", mode: '0700' }
+    - { path: "{{CONTROL_OVN_BIN_DIR}}", mode: '0700' }
 
 - name: Initialize ca administration files
   file:
@@ -97,6 +99,34 @@
         name: "{{ K8S_CLUSTER_IP_PRE }}.0.2"
       - type: "IP"
         name: "{{ hostvars[item]['altIP'] | default(lookup('dig', item, 'qtype=A')) }}"
+  with_items:
+    - "{{ groups['kubernetes_masters'] }}"
+    - "{{ groups['kubernetes_nodes'] }}"
+
+# Setup OVN binary (extracted from package openvswitch-common)
+- name: Install OVN requirements
+  copy:
+    src: "ovs-pki"
+    dest: "{{ CONTROL_OVN_BIN_DIR }}"
+    mode: '0700'
+
+- name: Check if OVN CA must be initialized
+  stat:
+    path: "{{ CONTROL_OVN_CA_DIR }}/switchca/cacert.pem"
+  register: ovnrootca
+
+# This will only create them if they don't exists
+# Use --force to overwrite
+- name: Create OVN CA
+  shell: |
+    {{ CONTROL_OVN_BIN_DIR }}/ovs-pki init -d {{ CONTROL_OVN_CA_DIR }} -l {{ CONTROL_OVN_BIN_DIR }}/ovn-cert-log
+  when: ovnrootca.stat.exists == False
+
+# Create keys for all the hosts
+- name: Create OVN server certs and keys
+  include_tasks: createOVNKeysAndCertsAndSignThem.yml
+  vars:
+    filename: "{{ item }}"
   with_items:
     - "{{ groups['kubernetes_masters'] }}"
     - "{{ groups['kubernetes_nodes'] }}"

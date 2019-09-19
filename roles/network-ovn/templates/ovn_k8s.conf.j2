@@ -16,7 +16,19 @@ conf-dir=/etc/cni/net.d
 plugin=ovn-k8s-cni-overlay
 
 [ovnnorth]
-address=tcp://{{ K8S_MASTER_IP }}:6641
+address=ssl://{{ K8S_MASTER_IP }}:6641
+client-privkey=/etc/openvswitch/ovn-privkey.pem
+client-cert=/etc/openvswitch/ovn-cert.pem
+client-cacert=/etc/openvswitch/cacert.pem
+server-privkey=/etc/openvswitch/ovn-privkey.pem
+server-cert=/etc/openvswitch/ovn-cert.pem
+server-cacert=/etc/openvswitch/cacert.pem
 
 [ovnsouth]
-address=tcp://{{ K8S_MASTER_IP }}:6642
+address=ssl://{{ K8S_MASTER_IP }}:6642
+client-privkey=/etc/openvswitch/ovn-privkey.pem
+client-cert=/etc/openvswitch/ovn-cert.pem
+client-cacert=/etc/openvswitch/cacert.pem
+server-privkey=/etc/openvswitch/ovn-privkey.pem
+server-cert=/etc/openvswitch/ovn-cert.pem
+server-cacert=/etc/openvswitch/cacert.pem

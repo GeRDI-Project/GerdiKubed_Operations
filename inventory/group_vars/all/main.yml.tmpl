@@ -23,6 +23,9 @@ CONTROL_KEY_DIR:              "{{ CONTROL_BASE_DIR }}/keys"
 CONTROL_CONFIG_DIR:           "{{ CONTROL_BASE_DIR }}/configs"
 CONTROL_CSR_DIR:              "{{ CONTROL_BASE_DIR }}/csrs"
 CONTROL_CA_DIR:               "{{ CONTROL_BASE_DIR }}/ca"
+CONTROL_OVN_CA_DIR:           "{{ CONTROL_BASE_DIR }}/ovn/ca"
+CONTROL_OVN_KEY_DIR:          "{{ CONTROL_BASE_DIR }}/ovn/keys"
+CONTROL_OVN_BIN_DIR:          "{{ CONTROL_BASE_DIR }}/ovn/bin"
 
 ################################################################################
 # Version of Installed Software Packages. Only default variables are tested!
@@ -31,7 +34,7 @@ CONTROL_CA_DIR:               "{{ CONTROL_BASE_DIR }}/ca"
 # OPENVSWITCH_VERSION:        "2.10.0+2018.08.28+git.8ca7c82b7d+ds1-12"
 # CNI_VERSION:                "v0.5.2"
 # K8S_VERSION:                "v1.14.1"
-# DOCKER_VERSION:             "5:18.09.1~3-0~debian-stretch"
+# DOCKER_VERSION:             "5:18.09.1~3-0~debian-{{ ansible_distribution_release }}"
 # PROMETHEUS_VERSION:         2.10.0
 # GRAFANA_VERSION:            6.2.1
 
