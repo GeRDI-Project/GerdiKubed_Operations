@@ -25,11 +25,3 @@
     rule: allow
     port: "443"
     proto: tcp
-
-- name: ufw loadbalancer | Allow access from tx.lrz.de
-  ufw:
-    rule: allow
-    port: "22"
-    proto: tcp
-    from: 129.187.10.91
-  when: LRZ_INTERNAL
