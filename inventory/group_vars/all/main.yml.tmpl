@@ -66,6 +66,29 @@ CNI_DIR:                      "{{ K8S_BASE_DIR }}/cni-{{ CNI_VERSION }}"
 CNI_CONF_DIR:                 /etc/cni/net.d
 
 ################################################################################
+# Configuration for Firewall
+# Limit access to your cluster by setting up a whitelist
+# !NOTE! If misconfigured, this can lock you out of your cluster!
+# If you wish to disable the whitelist, then just leave the variable blank
+# or remove it
+################################################################################
+UFW_SSH_WHITELIST:
+  - { addr: 129.187.12.0/24, comment: "LRZ Mitarbeiternetz"}
+  - { addr: 129.187.15.0/24, comment: "LRZ Mitarbeiternetz"}
+  - { addr: 129.187.48.0/24, comment: "LRZ Mitarbeiter VPN"}
+  - { addr: 129.187.49.0/24, comment: "LRZ Mitarbeiter VPN"}
+  - { addr: 10.156.10.20, comment: "LRZ SSH-Gateways wsc20/wsc40"}
+  - { addr: 10.156.10.40, comment: "LRZ SSH-Gateways wsc20/wsc40"}
+UFW_K8S_APISERVER_WHITELIST:
+  - { addr: 129.187.12.0/24, comment: "LRZ Mitarbeiternetz"}
+  - { addr: 129.187.15.0/24, comment: "LRZ Mitarbeiternetz"}
+  - { addr: 129.187.48.0/24, comment: "LRZ Mitarbeiter VPN"}
+  - { addr: 129.187.49.0/24, comment: "LRZ Mitarbeiter VPN"}
+  - { addr: 10.156.10.20, comment: "LRZ SSH-Gateways wsc20/wsc40"}
+  - { addr: 10.156.10.40, comment: "LRZ SSH-Gateways wsc20/wsc40"}
+  - { addr: 192.168.0.0/17, comment: "LRZ OpenStack MWN Network"}
+
+################################################################################
 # Configuration of the NFS Storage Backend
 ################################################################################
 NFS_SERVER_DOMAIN:            # DNS Entry of IP Address of NFS Server
