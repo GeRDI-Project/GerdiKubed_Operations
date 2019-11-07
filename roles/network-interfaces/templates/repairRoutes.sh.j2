@@ -12,7 +12,7 @@ done
 # This prevents duplicate entries if this service is restarted
 ip rule del from {{ host_private_address }} lookup {{ host_private_rtable }} > /dev/null 2>&1
 ip rule del to {{ host_private_network }}/{{ (host_private_address + '/' + host_private_netmask) | ipaddr('prefix') }} lookup {{ host_private_rtable }} > /dev/null 2>&1
-{% if NFS_SERVER_DOMAIN is defined %}
+{% if NFS_SERVER_DOMAIN is defined and (NFS_SERVER_DOMAIN|length > 0) %}
 ip rule del to {{ lookup('dig', NFS_SERVER_DOMAIN, 'qtype=A') }} table {{ host_private_rtable }} > /dev/null 2>&1
 {% endif %}
 {% if LRZ_INTERNAL and inventory_hostname in groups['vmware_nodes'] %}
@@ -22,7 +22,7 @@ ip rule del from all to 10.156.10.40 lookup {{ host_private_rtable }} > /dev/nul
 
 ip rule add from {{ host_private_address }} lookup {{ host_private_rtable }}
 ip rule add to {{ host_private_network }}/{{ (host_private_address + '/' + host_private_netmask) | ipaddr('prefix') }} lookup {{ host_private_rtable }}
-{% if NFS_SERVER_DOMAIN is defined %}
+{% if NFS_SERVER_DOMAIN is defined and (NFS_SERVER_DOMAIN|length > 0) %}
 # Allow access to NFS
 ip rule add to {{ lookup('dig', NFS_SERVER_DOMAIN, 'qtype=A') }} table {{ host_private_rtable }}
 {% endif %}
