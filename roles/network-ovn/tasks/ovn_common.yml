@@ -113,6 +113,7 @@
 - name: network-ovn common | Ensure /etc/hosts is updated
   lineinfile:
     path: /etc/hosts
+    regexp: '.*{{ inventory_hostname }}$'
     line: "{{ host_private_address | default(lookup('dig', inventory_hostname, 'qtype=A'), true) }} {{ inventory_hostname }}"
 
 # Gets rid of $OVS_CTL_OPTS in service file ExecStart

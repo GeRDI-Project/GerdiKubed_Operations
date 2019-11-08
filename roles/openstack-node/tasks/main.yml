@@ -42,6 +42,7 @@
 - name: Add all nodes to /etc/hosts with altIP, so kubelet exec functions correctly
   lineinfile:
     dest: /etc/hosts
+    regexp: '.*{{ item }}$'
     state: present
     line: "{{ hostvars[item]['altIP'] }} {{ item }}"
   become: true
