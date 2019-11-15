@@ -89,5 +89,3 @@
 - name: k8s-ingress | Create ACME production issuer
   shell: kubectl apply -f /etc/kubernetes/addons/production-issuer.yml
   when: K8S_INGRESS_ACME_EMAIL is defined and (K8S_INGRESS_ACME_EMAIL|length > 0) and not K8S_INGRESS_ACME_USE_STAGING
-
-
