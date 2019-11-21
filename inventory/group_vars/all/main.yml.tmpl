@@ -129,7 +129,7 @@ K8S_DNS_IP:                   "{{ K8S_SERVICE_IP_PRE }}.0.10"
 
 ################################################################################
 # LRZ Specific Configurations
-# TODO Replace those variabales to be more generic
+# TODO Replace those variables to be more generic
 ################################################################################
 LRZ_INTERNAL:                 false
 K8S_DEPLOYMENT_CONTEXT:       # Domain prefix
@@ -140,3 +140,11 @@ OTHER_DOMAINS:
 K8S_GLOBAL_LOG_LEVEL:         "v=1"
 K8S_MASTER_DOMAIN:            "{{ 'mstr-0.' + K8S_DEPLOYMENT_CONTEXT + '.' + K8S_DOMAIN_NAMESPACE }}"
 K8S_MASTER_IP:                "{{ hostvars[K8S_MASTER_DOMAIN]['altIP'] | default(lookup('dig', K8S_MASTER_DOMAIN)) }}"
+
+################################################################################
+# K8S Ingress Configuration
+# Leave blank/Remove ACME variables if you wish to setup the certificates manually
+# MAIN_DOMAIN will be used as the domain in the ACME request
+################################################################################
+K8S_INGRESS_ACME_EMAIL: 	test@example.de # Email address to use for ACME registration (Let's Encrypt)
+K8S_INGRESS_ACME_USE_STAGING: 	true		# Use false if you are sure your setup is correct

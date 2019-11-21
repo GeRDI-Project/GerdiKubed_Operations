@@ -1,4 +1,4 @@
-# Copyright 2018 Tobias Weber weber@lrz.de
+# Copyright 2019 Walentin Lamonos lamonos@lrz.de
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,11 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Initialize loadbalancer nodes
-  hosts: loadbalancer_nodes
-  remote_user: root
-  roles:
-    - cluster-dns
-    - k8s-ingress
-  environment:
-    KUBECONFIG: "{{ K8S_KUBECONFIG }}"
+K8S_INGRESS_MANDATORY: "https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/mandatory.yaml"
+K8S_INGRESS_CERT_MANAGER: "https://github.com/jetstack/cert-manager/releases/download/v0.11.0/cert-manager.yaml"

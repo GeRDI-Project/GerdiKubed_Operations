@@ -29,8 +29,8 @@
   delay: 5
   when: inventory_hostname in groups['kubernetes_masters']
 
-- name: k8s-cordon master & loadbalancer | Cordon node, if master or loadbalancer
+- name: k8s-cordon master | Cordon node, if master
   shell: kubectl cordon {{ inventory_hostname }}
-  when: inventory_hostname in groups['kubernetes_masters'] + groups['loadbalancer_nodes']
+  when: inventory_hostname in groups['kubernetes_masters']
   environment:
     KUBECONFIG: '{{ K8S_KUBECONFIG }}'
