@@ -20,6 +20,12 @@
 # Once staging succeeded, you may change the issuer to letsencrypt-prod and just reapply
 # this example, this will then issue a SSL certificate and force all requests to HTTPS
 # -Walentin
+#
+# Additional Notes: 
+# All requests are rate-limited, hence the reason you should be using the staging
+# issuer first if you conduct testing. Find out more here: "https://letsencrypt.org/docs/rate-limits/"
+# Certificates are refreshed automatically before the expire.
+# Only changes to the "tls" section of this example will retrigger a Let's Encrypt request.
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -27,16 +33,18 @@ metadata:
   name: nginx-test
   annotations:
     kubernetes.io/ingress.class: "nginx"    
-    cert-manager.io/issuer: "letsencrypt-staging" # "letsencrypt-prod"
+    cert-manager.io/issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
-
+    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+ 
 spec:
   tls:
   - hosts:
     - ltds.gerdi.org
+    - www.ltds.gerdi.org
     secretName: ltds-gerdi-tls
   rules:
-  - host: ltds.gerdi.org
+  - host: www.ltds.gerdi.org
     http:
       paths:
       - path: /
