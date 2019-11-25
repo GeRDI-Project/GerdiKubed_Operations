@@ -25,7 +25,8 @@
 # All requests are rate-limited, hence the reason you should be using the staging
 # issuer first if you conduct testing. Find out more here: "https://letsencrypt.org/docs/rate-limits/"
 # Certificates are refreshed automatically before the expire.
-# Only changes to the "tls" section of this example will retrigger a Let's Encrypt request.
+# Only changes to the "tls" section or "cert-manager.io/issuer" annotation of this example
+# will retrigger a Let's Encrypt request.
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
