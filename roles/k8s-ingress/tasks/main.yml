@@ -60,32 +60,28 @@
 - name: k8s-ingress | Create cert-manager
   shell: kubectl apply --validate=false -f /etc/kubernetes/addons/kube-ingress-cert-manager.yml
 
-- name: k8s-ingress | Set issuer to ACME staging
-  set_fact:
-    K8S_INGRESS_ISSUER: letsencrypt-staging
-  when: K8S_INGRESS_ACME_EMAIL is defined and (K8S_INGRESS_ACME_EMAIL|length > 0) and K8S_INGRESS_ACME_USE_STAGING
-
 - name: k8s-ingress | Create a yml-file to setup ACME staging issuer
   template:
     src: "staging-issuer.yml.j2"
     dest: "/etc/kubernetes/addons/staging-issuer.yml"
-  when: K8S_INGRESS_ACME_EMAIL is defined and (K8S_INGRESS_ACME_EMAIL|length > 0) and K8S_INGRESS_ACME_USE_STAGING
+  when: K8S_INGRESS_ACME_EMAIL is defined and (K8S_INGRESS_ACME_EMAIL|length > 0)
 
+# This might require a couple of tries (it needs the above services to run)
 - name: k8s-ingress | Create ACME staging issuer
   shell: kubectl apply -f /etc/kubernetes/addons/staging-issuer.yml
-  when: K8S_INGRESS_ACME_EMAIL is defined and (K8S_INGRESS_ACME_EMAIL|length > 0) and K8S_INGRESS_ACME_USE_STAGING
+  when: K8S_INGRESS_ACME_EMAIL is defined and (K8S_INGRESS_ACME_EMAIL|length > 0)
+  retries: 10
+  delay: 3
 
-- name: k8s-ingress | Set issuer to ACME production
-  set_fact:
-    K8S_INGRESS_ISSUER: letsencrypt-prod
-  when: K8S_INGRESS_ACME_EMAIL is defined and (K8S_INGRESS_ACME_EMAIL|length > 0) and not K8S_INGRESS_ACME_USE_STAGING
-
+# This might require a couple of tries (it needs the above services to run)
 - name: k8s-ingress | Create a yml-file to setup ACME production issuer
   template:
     src: "production-issuer.yml.j2"
     dest: "/etc/kubernetes/addons/production-issuer.yml"
-  when: K8S_INGRESS_ACME_EMAIL is defined and (K8S_INGRESS_ACME_EMAIL|length > 0) and not K8S_INGRESS_ACME_USE_STAGING
+  when: K8S_INGRESS_ACME_EMAIL is defined and (K8S_INGRESS_ACME_EMAIL|length > 0)
+  retries: 10
+  delay: 3
 
 - name: k8s-ingress | Create ACME production issuer
   shell: kubectl apply -f /etc/kubernetes/addons/production-issuer.yml
-  when: K8S_INGRESS_ACME_EMAIL is defined and (K8S_INGRESS_ACME_EMAIL|length > 0) and not K8S_INGRESS_ACME_USE_STAGING
+  when: K8S_INGRESS_ACME_EMAIL is defined and (K8S_INGRESS_ACME_EMAIL|length > 0)

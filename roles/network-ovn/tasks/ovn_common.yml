@@ -28,6 +28,7 @@
     update_cache: yes
   vars:
     packages:
+      - openvswitch-common={{ OPENVSWITCH_VERSION }}
       - openvswitch-switch={{ OPENVSWITCH_VERSION }}
       - make
       - gcc
