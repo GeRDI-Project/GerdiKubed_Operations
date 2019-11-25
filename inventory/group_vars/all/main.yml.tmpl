@@ -147,4 +147,3 @@ K8S_MASTER_IP:                "{{ hostvars[K8S_MASTER_DOMAIN]['altIP'] | default
 # MAIN_DOMAIN will be used as the domain in the ACME request
 ################################################################################
 K8S_INGRESS_ACME_EMAIL: 	test@example.de # Email address to use for ACME registration (Let's Encrypt)
-K8S_INGRESS_ACME_USE_STAGING: 	true		# Use false if you are sure your setup is correct
