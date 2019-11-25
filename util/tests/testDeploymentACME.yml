@@ -21,7 +21,7 @@
 # this example, this will then issue a SSL certificate and force all requests to HTTPS
 # -Walentin
 #
-# Additional Notes: 
+# Additional Notes:
 # All requests are rate-limited, hence the reason you should be using the staging
 # issuer first if you conduct testing. Find out more here: "https://letsencrypt.org/docs/rate-limits/"
 # Certificates are refreshed automatically before the expire.
