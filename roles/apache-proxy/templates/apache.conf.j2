@@ -197,6 +197,8 @@
     ProxyPassReverse  /harvest/oglp       http://oglp-harvester.default.svc.cluster.local:8080/oaipmh/harvest
     ProxyPass         /harvest/eurostat   http://eurostat-harvester.default.svc.cluster.local:8080/eurostat/harvest
     ProxyPassReverse  /harvest/eurostat   http://eurostat-harvester.default.svc.cluster.local:8080/eurostat/harvest
+    ProxyPass         /harvest/dryad   http://dryad-harvester.default.svc.cluster.local:8080/dryad/harvest
+    ProxyPassReverse  /harvest/dryad   http://dryad-harvester.default.svc.cluster.local:8080/dryad/harvest
     ProxyPass         /harvest/hccenter   http://hccenter.default.svc.cluster.local
     ProxyPassReverse  /harvest/hccenter   http://hccenter.default.svc.cluster.local
 
